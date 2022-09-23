@@ -35,8 +35,8 @@ export class AuthController extends Controller {
                     user.googleId,
                     user.email,
                 );
-                console.log(req.user, 'Ahihi');
-                res.redirect(`http://localhost:3000/login?token=${token}`);
+                console.log(req, 'Ahihi');
+                res.redirect(`https://game.gdsc.app/login?token=${token}`);
             },
         );
         // Force authenticate all routes

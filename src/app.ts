@@ -74,7 +74,7 @@ class App {
             },
         });
 
-        // ServerEventSystem.initialize(io);
+        // ServerEventSystem.initialize(this.io);
 
         this.server.listen(this.port, () => {
             console.log(`[${SERVICE_NAME}] listening on the port ${this.port}`);

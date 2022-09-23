@@ -32,7 +32,7 @@ import {
 } from './controllers';
 import { ServiceType } from './types';
 
-// import { SocketService } from './server-events';
+import { SocketService } from './server-events';
 
 // Binding service
 container
@@ -79,10 +79,10 @@ container
 //     .bind<DeviceService>(ServiceType.Device)
 //     .to(DeviceService)
 //     .inSingletonScope();
-// container
-//     .bind<SocketService>(ServiceType.Socket)
-//     .to(SocketService)
-//     .inSingletonScope();
+container
+    .bind<SocketService>(ServiceType.Socket)
+    .to(SocketService)
+    .inSingletonScope();
 // container
 //     .bind<DeviceStatusService>(ServiceType.DeviceStatus)
 //     .to(DeviceStatusService)
@@ -113,5 +113,5 @@ Promise.all([
     );
 
     app.listen();
-    // container.get<SocketService>(ServiceType.Socket).initialize(app.io);
+    container.get<SocketService>(ServiceType.Socket).initialize(app.io);
 });

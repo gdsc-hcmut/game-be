@@ -7,17 +7,17 @@ import ClientUser from './client-user';
 import TrackingUser from './tracking-user';
 import { Request, Response, ServiceType } from '../types';
 import TrackingDevice from './tracking-device';
-
-import IllegalDetection from './illegal-detection';
-import PlantWatering from './plant-watering';
-import FireAlarm from './fire-alarm';
-import EntranceManagement from './entrance-management';
-import AutoLighting from './auto-lighting';
+import passport from 'passport';
+// import IllegalDetection from './illegal-detection';
+// import PlantWatering from './plant-watering';
+// import FireAlarm from './fire-alarm';
+// import EntranceManagement from './entrance-management';
+// import AutoLighting from './auto-lighting';
 import {
-    DeviceService,
-    DeviceStatusService,
+    // DeviceService,
+    // DeviceStatusService,
     AuthService,
-    MQTTService,
+    // MQTTService,
 } from '../services';
 
 // let socketIOServer = null;
@@ -35,10 +35,10 @@ export class SocketService {
     private trackingDevice: TrackingDevice;
 
     constructor(
-        @inject(ServiceType.MQTT) private mqttService: MQTTService,
-        @inject(ServiceType.Device) private deviceService: DeviceService,
-        @inject(ServiceType.DeviceStatus)
-        private deviceStatusService: DeviceStatusService,
+        // @inject(ServiceType.MQTT) private mqttService: MQTTService,
+        // @inject(ServiceType.Device) private deviceService: DeviceService,
+        // @inject(ServiceType.DeviceStatus)
+        // private deviceStatusService: DeviceStatusService,
         @inject(ServiceType.Auth) private authService: AuthService,
     ) {
         console.log('[SOCKET IO Service] Construct');
@@ -119,23 +119,33 @@ export class SocketService {
 
     initialize = (socketServer: any) => {
         this.socketIOServer = socketServer;
-        let test = new EntranceManagement(this.deviceService, this.mqttService);
-        this.trackingDevice.add(new IllegalDetection(), ['INFRARED']);
-        this.trackingDevice.add(
-            new PlantWatering(this.deviceService, this.mqttService),
-            ['RELAY', 'SOIL'],
+        // let test = new EntranceManagement(this.deviceService, this.mqttService);
+        // this.trackingDevice.add(new IllegalDetection(), ['INFRARED']);
+        // this.trackingDevice.add(
+        //     new PlantWatering(this.deviceService, this.mqttService),
+        //     ['RELAY', 'SOIL'],
+        // );
+        // this.trackingDevice.add(
+        //     new EntranceManagement(this.deviceService, this.mqttService),
+        //     ['MAGNETIC'],
+        // );
+        // this.trackingDevice.add(
+        //     new AutoLighting(this.deviceService, this.mqttService),
+        //     ['LIGHT'],
+        // );
+        // this.trackingDevice.add(
+        //     new FireAlarm(this.deviceService, this.mqttService),
+        //     ['TEMP-HUMID', 'GAS'],
+        // );
+        const wrapMiddlewareForSocketIo =
+            (middleware: any) => (socket: any, next: any) =>
+                middleware(socket.request, {}, next);
+        this.socketIOServer.use(
+            wrapMiddlewareForSocketIo(passport.initialize()),
         );
-        this.trackingDevice.add(
-            new EntranceManagement(this.deviceService, this.mqttService),
-            ['MAGNETIC'],
-        );
-        this.trackingDevice.add(
-            new AutoLighting(this.deviceService, this.mqttService),
-            ['LIGHT'],
-        );
-        this.trackingDevice.add(
-            new FireAlarm(this.deviceService, this.mqttService),
-            ['TEMP-HUMID', 'GAS'],
+        this.socketIOServer.use(wrapMiddlewareForSocketIo(passport.session()));
+        this.socketIOServer.use(
+            wrapMiddlewareForSocketIo(passport.authenticate(['jwt'])),
         );
 
         this.socketIOServer.on('connection', this.onConnection);
