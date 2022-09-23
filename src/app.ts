@@ -65,14 +65,14 @@ class App {
         // this.server.on('listening', () => {
         //     console.log(`[${SERVICE_NAME}] listening on the port ${this.port}`);
         // });
-        this.io = require('socket.io')(this.server, {
-            cors: {
-                origin: '*',
-                methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-                preflightContinue: false,
-                optionsSuccessStatus: 204,
-            },
-        });
+        // this.io = require('socket.io')(this.server, {
+        //     cors: {
+        //         origin: '*',
+        //         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        //         preflightContinue: false,
+        //         optionsSuccessStatus: 204,
+        //     },
+        // });
 
         // ServerEventSystem.initialize(this.io);
 

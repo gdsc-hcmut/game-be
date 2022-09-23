@@ -113,5 +113,5 @@ Promise.all([
     );
 
     app.listen();
-    container.get<SocketService>(ServiceType.Socket).initialize(app.io);
+    // container.get<SocketService>(ServiceType.Socket).initialize(app.io);
 });
