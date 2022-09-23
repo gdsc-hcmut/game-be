@@ -22,7 +22,7 @@ export class GameController extends Controller {
         // Confing child routes
         this.router.post(
             '/public/session',
-            this.createNewSessioWithoutLogin.bind(this),
+            this.createNewSessionWithoutLogin.bind(this),
         );
         this.router.post(
             '/public/session/:sessionId/next',
@@ -46,7 +46,7 @@ export class GameController extends Controller {
         );
     }
 
-    async createNewSessioWithoutLogin(req: Request, res: Response) {
+    async createNewSessionWithoutLogin(req: Request, res: Response) {
         try {
             let newSession =
                 await this.gameService.createGameSessionWithoutUser();
