@@ -16,6 +16,8 @@ export const ServiceType = {
     User: Symbol.for('UserService'),
     Game: Symbol.for('GameService'),
     Socket: Symbol.for('Socket'),
+    Item: Symbol.for('Item'),
+    MarketplaceItem: Symbol.for('MarketplaceItem'),
 };
 
 export enum PrivacyType {

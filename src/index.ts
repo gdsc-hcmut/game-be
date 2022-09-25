@@ -10,8 +10,16 @@ import {
     DatabaseService,
     UserService,
     GameService,
+    ItemService,
+    MarketplaceItemService,
 } from './services';
-import { AuthController, UserController, GameController } from './controllers';
+import {
+    AuthController,
+    UserController,
+    GameController,
+    ItemController,
+    MarketplaceController,
+} from './controllers';
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
@@ -33,6 +41,14 @@ container
     .bind<GameService>(ServiceType.Game)
     .to(GameService)
     .inSingletonScope();
+container
+    .bind<ItemService>(ServiceType.Item)
+    .to(ItemService)
+    .inSingletonScope();
+container
+    .bind<MarketplaceItemService>(ServiceType.MarketplaceItem)
+    .to(MarketplaceItemService)
+    .inSingletonScope();
 
 // Initialize service first
 Promise.all([
@@ -42,6 +58,8 @@ Promise.all([
         [
             container.resolve<AuthController>(AuthController),
             container.resolve<GameController>(GameController),
+            container.resolve<ItemController>(ItemController),
+            container.resolve<MarketplaceController>(MarketplaceController),
         ],
         SERVICE_PORT,
         [

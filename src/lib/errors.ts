@@ -39,3 +39,8 @@ export class ErrorDeviceStatusInvalid extends Error {
     public static readonly code = 'device_status/invalid';
     message = 'Invalid Device status';
 }
+
+export class ErrorItemInvalid extends Error {
+    public static readonly code = 'item/invalid';
+    message = 'Invalid Item';
+}
