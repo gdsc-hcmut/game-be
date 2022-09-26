@@ -51,6 +51,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
         this.router.get('/:userid/following', this.getFollowing.bind(this));
         this.router.get('/:userid/followers', this.getFollower.bind(this));
+        this.router.get('/balance', this.getUserBalance.bind(this));
     }
 
     public async shouldFilterData(req: Request) {
@@ -119,6 +120,8 @@ export class UserController extends Controller {
 
     async getUsers(req: Request, res: Response) {
         try {
+            console.log('hihihihhihii');
+
             const users = await this.userService.find();
             res.composer.success(users);
         } catch (error) {
@@ -218,5 +221,17 @@ export class UserController extends Controller {
         // } catch (error) {
         //     res.composer.badRequest(error.message);
         // }
+    }
+
+    async getUserBalance(req: Request, res: Response) {
+        try {
+            const userId = req.tokenMeta.userId.toString();
+            console.log('hihi');
+
+            const balance = await this.userService.getUserBalance(userId);
+            res.composer.success({ balance });
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
     }
 }

@@ -44,3 +44,8 @@ export class ErrorItemInvalid extends Error {
     public static readonly code = 'item/invalid';
     message = 'Invalid Item';
 }
+
+export class ErrorBidInvalid extends Error {
+    public static readonly code = 'bid/invalid';
+    message = 'Invalid Bid';
+}

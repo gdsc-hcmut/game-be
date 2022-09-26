@@ -4,19 +4,21 @@ import { Controller } from './controller';
 import _ from 'lodash';
 
 import { Request, Response, ServiceType } from '../types';
-import { AuthService, ItemService } from '../services';
+import { AuthService, ItemService, UserService } from '../services';
 import { ItemDocument } from '../models/item.model';
-import { UserDocument } from '../models/user.model';
+import { USER_TYPES } from '../models/user.model';
+import { ErrorUserInvalid } from '../lib/errors';
 
 @injectable()
 export class ItemController extends Controller {
     public readonly router = Router();
-    public readonly path = '/item';
+    public readonly path = '/';
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
-        @inject(ServiceType.Item) private itemService: ItemService,
-    ) {
+        @inject(ServiceType.Item) private itemService: ItemService, // @inject(ServiceType.User) private userService: UserService,
+    ) // TODO: Why inject this leads to fail db connection
+    {
         super();
 
         // Configuring child routes
@@ -35,11 +37,14 @@ export class ItemController extends Controller {
                 'imgUrl',
                 'description',
                 'value',
-                'priceHistory',
             ]) as any;
             const ownerId = req.tokenMeta.userId.toString();
-            console.log('userId:::', ownerId);
             item.ownerId = ownerId;
+            // TODO
+            // const user = await this.userService.findById(ownerId);
+            // if (user.type !== USER_TYPES.SYSTEM) {
+            //     throw new ErrorUserInvalid('User not allow to create new item');
+            // }
 
             const newItem = await this.itemService.createNewItem(item);
             res.composer.success(newItem);

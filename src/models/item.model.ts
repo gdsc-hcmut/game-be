@@ -14,7 +14,7 @@ export type ItemDocument = Document & {
     imgUrl: string;
     description: string;
     value: string;
-    priceHistory: PriceHistory[];
+    priceHistory?: PriceHistory[];
 };
 
 const itemSchema = new Schema<ItemDocument>({

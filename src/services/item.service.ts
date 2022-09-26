@@ -5,14 +5,12 @@ import Item, { ItemDocument } from '../models/item.model';
 export class ItemService {
     async createNewItem(item: ItemDocument): Promise<ItemDocument> {
         let newItem = new Item();
-        const { ownerId, name, imgUrl, description, value, priceHistory } =
-            item;
+        const { ownerId, name, imgUrl, description, value } = item;
         newItem.ownerId = ownerId;
         newItem.name = name;
         newItem.imgUrl = imgUrl;
         newItem.description = description;
         newItem.value = value;
-        newItem.priceHistory = priceHistory;
         await newItem.save();
         return newItem;
     }

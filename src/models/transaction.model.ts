@@ -7,7 +7,6 @@ export type TransactionDocument = Document & {
     toUser: string;
     amount: number;
     createdAt: number;
-    orderId: string;
 };
 
 const transactionSchema = new Schema<TransactionDocument>({
@@ -15,7 +14,6 @@ const transactionSchema = new Schema<TransactionDocument>({
     toUser: String,
     amount: Number,
     createdAt: Number,
-    orderId: String,
 });
 
 const Transaction = mongoose.model<TransactionDocument>(

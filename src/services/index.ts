@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { GameService } from './game.service';
 import { ItemService } from './item.service';
 import { MarketplaceItemService } from './marketplace_item.service';
+import { TransactionService } from './transaction.service';
 
 export {
     AuthService,
@@ -12,4 +13,5 @@ export {
     GameService,
     ItemService,
     MarketplaceItemService,
+    TransactionService,
 };

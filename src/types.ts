@@ -18,6 +18,8 @@ export const ServiceType = {
     Socket: Symbol.for('Socket'),
     Item: Symbol.for('Item'),
     MarketplaceItem: Symbol.for('MarketplaceItem'),
+    Transaction: Symbol.for('Transaction'),
+    Order: Symbol.for('Order'),
 };
 
 export enum PrivacyType {

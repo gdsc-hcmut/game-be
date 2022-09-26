@@ -10,6 +10,11 @@ export const USER_FORBIDDEN_FIELDS = [
     'verifyAccountCode',
 ];
 
+export const USER_TYPES = {
+    SYSTEM: 'SYSTEM',
+    USER: 'USER',
+};
+
 const Schema = mongoose.Schema;
 
 export type UserDocument = Document & {
@@ -25,7 +30,11 @@ const userSchema = new Schema<UserDocument>({
     email: String,
     googleId: String,
     balance: Number,
-    type: String,
+    type: {
+        type: String,
+        enum: Object.values(USER_TYPES),
+        default: USER_TYPES.USER,
+    },
 });
 
 const User = mongoose.model<UserDocument>('User', userSchema);

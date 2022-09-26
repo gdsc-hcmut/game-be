@@ -19,7 +19,7 @@ import {
 import { ServiceType } from '../types';
 import { randomPassword, encodeObjectId } from '../lib/helper';
 // import { MailService } from '.';
-import { UserDocument } from '../models/user.model';
+import User, { UserDocument } from '../models/user.model';
 
 const USER_CREATE_ALLOW_FIELDS = [
     'password',
@@ -138,6 +138,15 @@ export class UserService {
         return users.map((user) => _.omit(user, USER_FORBIDDEN_FIELDS));
     }
 
+    async findById(userId: string, keepAll = false): Promise<UserDocument> {
+        const user = await User.findById(userId);
+
+        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
+        return keepAll
+            ? user
+            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+    }
+
     async findOne(query: any = {}, keepAll = false): Promise<UserDocument> {
         const user = (await this.userCollection.findOne(query)) as UserDocument;
 
@@ -145,6 +154,23 @@ export class UserService {
         return keepAll
             ? user
             : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+    }
+
+    async getUserBalance(userId: string): Promise<number> {
+        console.log('userId::::', userId);
+        const { balance } = await User.findById(userId, { balance: 1 });
+        console.log('balance::::', balance);
+        return balance;
+    }
+
+    async transferBalance(
+        fromUser: string,
+        toUser: string,
+        amount: number,
+    ): Promise<boolean> {
+        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+        await User.findByIdAndUpdate(toUser, { $inc: { balance: amount } });
+        return true;
     }
 
     // async findByKeyword(keyword: string): {
