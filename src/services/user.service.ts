@@ -272,7 +272,7 @@ export class UserService {
         return balance;
     }
 
-    async find() {
+    async find(): Promise<UserDocument[]> {
         const users = await User.find({});
         return users;
     }
@@ -293,5 +293,15 @@ export class UserService {
         return keepAll
             ? user
             : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+    }
+
+    async updatePrivate(
+        userId: string,
+        update: { balance?: number; type?: string },
+    ): Promise<UserDocument> {
+        const updatedUser = await User.findByIdAndUpdate(userId, update, {
+            new: true,
+        });
+        return updatedUser;
     }
 }

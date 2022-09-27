@@ -11,9 +11,10 @@ export type PriceHistory = {
 export type MarketplaceItemDocument = Document & {
     itemId: string;
     currentPrice: number;
+    currentBidUserId?: string;
     minPrice: number;
     maxPrice: number;
-    priceHistory: PriceHistory[];
+    priceHistory?: PriceHistory[];
     createdAt: number;
     expiredAt: number;
     ownerName: string;
@@ -22,6 +23,7 @@ export type MarketplaceItemDocument = Document & {
 const marketplaceItemSchema = new Schema<MarketplaceItemDocument>({
     itemId: String,
     currentPrice: Number,
+    currentBidUserId: String,
     minPrice: Number,
     maxPrice: Number,
     priceHistory: [{ email: String, createdAt: Number, price: Number }],

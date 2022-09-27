@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { inject, injectable } from 'inversify';
 import _ from 'lodash';
-import { Request, Response, ServiceType, PrivacyType } from '../types';
+import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
 
 // import { User } from '../models/user.model';
@@ -15,7 +15,8 @@ import { ObjectID, ObjectId } from 'mongodb';
 import { EMAIL_SENDER, LIMIT_PAGING } from '../config';
 import { Bundle } from '../models/bundle.model';
 import { LeetCode } from 'leetcode-query';
-import { UserDocument } from '../models/user.model';
+import User, { UserDocument } from '../models/user.model';
+import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 
 @injectable()
 export class UserController extends Controller {
@@ -45,7 +46,9 @@ export class UserController extends Controller {
 
         this.router.get('/', this.getUsers.bind(this));
         this.router.get('/me', this.getMe.bind(this));
+        this.router.patch('/me', this.updatePrivate.bind(this));
         this.router.get('/balance', this.getUserBalance.bind(this));
+        this.router.patch('/balance', this.increaseBalance.bind(this)); // TODO: Test only
         this.router.get('/search', this.getByKeyword.bind(this));
         this.router.get('/:username', this.getByUsername.bind(this));
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
@@ -230,6 +233,46 @@ export class UserController extends Controller {
             const user = await this.userService.findById(userId);
 
             res.composer.success(user);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async updatePrivate(req: Request, res: Response) {
+        try {
+            const userId = req.tokenMeta.userId.toString();
+            const user = await this.userService.findById(userId);
+            if (!user) {
+                throw new ErrorNotFound('User not found');
+            }
+            if (user.type !== 'SYSTEM') {
+                throw new ErrorUserInvalid('Permission denied');
+            }
+
+            const update = _.pick(req.body, ['balance', 'type']);
+            const updatedUser = await this.userService.updatePrivate(
+                userId,
+                update,
+            );
+            res.composer.success(updatedUser);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async increaseBalance(req: Request, res: Response) {
+        try {
+            const { userId, amount } = req.body;
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                {
+                    balance: amount,
+                },
+                { new: true },
+            );
+            res.composer.success(updatedUser);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

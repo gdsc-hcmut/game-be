@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import {
     ErrorBidInvalid,
+    ErrorInvalidData,
     ErrorItemInvalid,
     ErrorUserInvalid,
 } from '../lib/errors';
@@ -50,11 +51,27 @@ export class MarketplaceItemService {
             currentPrice: minPrice,
             createdAt: Date.now(),
             expiredAt: expiredAt,
-            ownerName: owner.username,
+            ownerName: owner.email, // TODO: change to owner.username when available
         });
 
         await newMarketplaceItem.save();
         return newMarketplaceItem;
+    }
+
+    async updateAuctionedItem(
+        marketplaceItemId: string,
+        update: {
+            minPrice?: number;
+            maxPrice?: number;
+            expiredAt?: number;
+        },
+    ) {
+        const updatedItem = await MarketplaceItem.findByIdAndUpdate(
+            marketplaceItemId,
+            update,
+            { new: true },
+        );
+        return updatedItem;
     }
 
     async bidForItem(
@@ -66,9 +83,12 @@ export class MarketplaceItemService {
         const marketplaceItem = await MarketplaceItem.findOne({
             itemId: _itemId,
         });
+        console.log('marketplaceItem:::', marketplaceItem);
+
         const {
             itemId,
             currentPrice,
+            currentBidUserId,
             minPrice,
             maxPrice,
             priceHistory,
@@ -76,7 +96,7 @@ export class MarketplaceItemService {
         } = marketplaceItem;
 
         if (bidPrice < minPrice) {
-            throw new ErrorBidInvalid(
+            throw new ErrorInvalidData(
                 'Bid price must be greater than or equal to min price',
             );
         }
@@ -85,8 +105,8 @@ export class MarketplaceItemService {
         if (minPrice <= bidPrice && bidPrice < maxPrice) {
             // Compare with currentPrice
             if (bidPrice <= currentPrice) {
-                throw new ErrorBidInvalid(
-                    'Bid price must be greater than or equal to current price',
+                throw new ErrorInvalidData(
+                    'Bid price must be greater than current price',
                 );
             }
 
@@ -124,6 +144,8 @@ export class MarketplaceItemService {
                 createdAt: Date.now(),
                 price: bidPrice,
             });
+            marketplaceItem.currentPrice = bidPrice;
+            marketplaceItem.currentBidUserId = fromUser;
             await marketplaceItem.save();
             return newOrder;
         }
@@ -187,10 +209,36 @@ export class MarketplaceItemService {
         }
     }
 
-    async getMarketplaceItems() {
+    async getAllMarketplaceItems() {
         const marketplaceItems = await MarketplaceItem.find({
             expiredAt: { $gt: Date.now() },
         });
         return marketplaceItems;
+    }
+
+    async getAuctionedItems(
+        ownerName: string,
+    ): Promise<MarketplaceItemDocument[]> {
+        console.log('ownerName', ownerName);
+
+        const auctionedItems = await MarketplaceItem.find({ ownerName });
+        return auctionedItems;
+    }
+
+    async getBids(userId: string): Promise<MarketplaceItemDocument[]> {
+        const bids = await MarketplaceItem.find({ currentBidUserId: userId });
+        return bids;
+    }
+
+    async findByItemId(itemId: string) {
+        const item = await MarketplaceItem.findOne({ itemId });
+        return item;
+    }
+
+    async findById(marketplaceItemId: string) {
+        const marketplaceItem = await MarketplaceItem.findById(
+            marketplaceItemId,
+        );
+        return marketplaceItem;
     }
 }
