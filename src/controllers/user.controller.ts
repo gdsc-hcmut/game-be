@@ -23,10 +23,8 @@ export class UserController extends Controller {
     public readonly path = '/users';
 
     constructor(
-        @inject(ServiceType.User) private userService: UserService,
-        // @inject(ServiceType.Bundle) private bundleService: BundleService,
-        // @inject(ServiceType.Mail) private mailService: MailService,
         @inject(ServiceType.Auth) private authService: AuthService,
+        @inject(ServiceType.User) private userService: UserService,
     ) {
         super();
 
@@ -46,128 +44,95 @@ export class UserController extends Controller {
         this.router.all('*', this.authService.authenticate(false));
 
         this.router.get('/', this.getUsers.bind(this));
+        this.router.get('/me', this.getMe.bind(this));
+        this.router.get('/balance', this.getUserBalance.bind(this));
         this.router.get('/search', this.getByKeyword.bind(this));
         this.router.get('/:username', this.getByUsername.bind(this));
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
         this.router.get('/:userid/following', this.getFollowing.bind(this));
         this.router.get('/:userid/followers', this.getFollower.bind(this));
-        this.router.get('/balance', this.getUserBalance.bind(this));
     }
 
-    public async shouldFilterData(req: Request) {
-        const { userid } = req.params;
-        const { userId: tokenUserId } = req.tokenMeta;
-        const user = await this.userService.findOne({
-            _id: ObjectID.createFromHexString(userid),
-        });
+    // public async shouldFilterData(req: Request) {
+    //     const { userid } = req.params;
+    //     const { userId: tokenUserId } = req.tokenMeta;
+    //     const user = await this.userService.findOne({
+    //         _id: ObjectID.createFromHexString(userid),
+    //     });
 
-        return !(tokenUserId && userid == tokenUserId.toHexString());
-    }
+    //     return !(tokenUserId && userid == tokenUserId.toHexString());
+    // }
 
     async createUser(req: Request, res: Response) {
-        const user: UserDocument = _.pick(req.body, [
-            'username',
-            'password',
-        ]) as any;
-
-        try {
-            const createdUser = await this.userService.create(user);
-            // await this.userService.verifyAccountRequest(createdUser.email);
-
-            res.composer.success(createdUser._id);
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
-    }
-
-    async findLeetcodeUser(req: Request, res: Response) {
-        const { username } = req.params;
-        console.log('Ahi');
-        try {
-            const leetcode = new LeetCode();
-            const userProfile = await leetcode.user(username);
-
-            res.composer.success({ userProfile });
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        // const user: UserDocument = _.pick(req.body, [
+        //     'username',
+        //     'password',
+        // ]) as any;
+        // try {
+        //     const createdUser = await this.userService.create(user);
+        //     // await this.userService.verifyAccountRequest(createdUser.email);
+        //     res.composer.success(createdUser._id);
+        // } catch (error) {
+        //     res.composer.badRequest(error.message);
+        // }
     }
 
     async verifyAccountRequest(req: Request, res: Response) {
-        const { email: rawEmail } = req.body;
-        const email = _.trim(rawEmail).toLowerCase().toString();
-
-        try {
-            res.composer.success(
-                await this.userService.verifyAccountRequest(email),
-            );
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        // const { email: rawEmail } = req.body;
+        // const email = _.trim(rawEmail).toLowerCase().toString();
+        // try {
+        //     res.composer.success(
+        //         await this.userService.verifyAccountRequest(email),
+        //     );
+        // } catch (error) {
+        //     res.composer.badRequest(error.message);
+        // }
     }
 
     async verifyAccount(req: Request, res: Response) {
-        const { verifyAccountCode } = req.body;
-
-        try {
-            res.composer.success(
-                await this.userService.verifyAccount(verifyAccountCode),
-            );
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
-    }
-
-    async getUsers(req: Request, res: Response) {
-        try {
-            console.log('hihihihhihii');
-
-            const users = await this.userService.find();
-            res.composer.success(users);
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        // const { verifyAccountCode } = req.body;
+        // try {
+        //     res.composer.success(
+        //         await this.userService.verifyAccount(verifyAccountCode),
+        //     );
+        // } catch (error) {
+        //     res.composer.badRequest(error.message);
+        // }
     }
 
     async getByUsername(req: Request, res: Response) {
-        const { username } = req.params;
-        const { userId: tokenUserId } = req.tokenMeta;
-
-        try {
-            const user = await this.userService.findOne({ username });
-            if (!user) {
-                res.composer.notFound('User not found');
-            }
-
-            // if (!user.isPublishedProfile && !_.isEqual(tokenUserId, user._id)) {
-            //     res.composer.notFound('User not published');
-            //     return;
-            // }
-
-            // if (!user.isPublishedContact && !_.isEqual(tokenUserId, user._id)) {
-            //     delete user.contact;
-            // }
-
-            // delete user.isPublishedProfile;
-            // delete user.isPublishedContact;
-
-            res.composer.success(user);
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        // const { username } = req.params;
+        // const { userId: tokenUserId } = req.tokenMeta;
+        // try {
+        //     const user = await this.userService.findOne({ username });
+        //     if (!user) {
+        //         res.composer.notFound('User not found');
+        //     }
+        //     // if (!user.isPublishedProfile && !_.isEqual(tokenUserId, user._id)) {
+        //     //     res.composer.notFound('User not published');
+        //     //     return;
+        //     // }
+        //     // if (!user.isPublishedContact && !_.isEqual(tokenUserId, user._id)) {
+        //     //     delete user.contact;
+        //     // }
+        //     // delete user.isPublishedProfile;
+        //     // delete user.isPublishedContact;
+        //     res.composer.success(user);
+        // } catch (error) {
+        //     res.composer.badRequest(error.message);
+        // }
     }
 
     async getByKeyword(req: Request, res: Response) {
-        const { keyword } = req.body;
-
-        try {
-            const users = await this.userService.find({
-                $text: { $search: keyword },
-            });
-            res.composer.success(users);
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        // const { keyword } = req.body;
+        // try {
+        //     const users = await this.userService.find({
+        //         $text: { $search: keyword },
+        //     });
+        //     res.composer.success(users);
+        // } catch (error) {
+        //     res.composer.badRequest(error.message);
+        // }
     }
 
     async getBundles(req: Request, res: Response) {
@@ -223,14 +188,50 @@ export class UserController extends Controller {
         // }
     }
 
+    async findLeetcodeUser(req: Request, res: Response) {
+        const { username } = req.params;
+        console.log('Ahi');
+        try {
+            const leetcode = new LeetCode();
+            const userProfile = await leetcode.user(username);
+
+            res.composer.success({ userProfile });
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getUsers(req: Request, res: Response) {
+        try {
+            console.log('req.user', req.user);
+            console.log('req.tokenMeta', req.tokenMeta);
+
+            const users = await this.userService.find();
+            res.composer.success(users);
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
     async getUserBalance(req: Request, res: Response) {
         try {
             const userId = req.tokenMeta.userId.toString();
-            console.log('hihi');
-
             const balance = await this.userService.getUserBalance(userId);
+
             res.composer.success({ balance });
         } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getMe(req: Request, res: Response) {
+        try {
+            const userId = req.tokenMeta.userId.toString();
+            const user = await this.userService.findById(userId);
+
+            res.composer.success(user);
+        } catch (error) {
+            console.log(error);
             res.composer.badRequest(error.message);
         }
     }

@@ -33,19 +33,17 @@ const USER_CREATE_ALLOW_FIELDS = [
 export class UserService {
     private userCollection: Collection;
 
-    constructor(
-        @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Mail) private mailService: MailService,
-    ) {
-        this.userCollection = this.dbService.db.collection('users');
-
-        this.setupIndexes();
+    constructor() {
+        // @inject(ServiceType.Mail) private mailService: MailService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Database) private dbService: DatabaseService,
+        // this.userCollection = this.dbService.db.collection('users');
+        // this.setupIndexes();
     }
 
-    private async setupIndexes() {
-        this.userCollection.createIndex('email', { unique: true });
-        this.userCollection.createIndex('username', { unique: true });
-        this.userCollection.createIndex({ name: 'text', username: 'text' });
-    }
+    // private async setupIndexes() {
+    //     this.userCollection.createIndex('email', { unique: true });
+    //     this.userCollection.createIndex('username', { unique: true });
+    //     this.userCollection.createIndex({ name: 'text', username: 'text' });
+    // }
 
     async create(user: any): Promise<UserDocument> {
         if (_.isEmpty(user.password) || _.isEmpty(user.username)) {
@@ -88,19 +86,18 @@ export class UserService {
     }
 
     async verifyAccount(verifyAccountCode: string) {
-        let user = null;
-        try {
-            user = await this.findOne({ verifyAccountCode }, true);
-        } catch (err) {
-            throw new Error(
-                `The email address that you've entered doesn't match any account.`,
-            );
-        }
-
-        await this.updateOne(user._id, {
-            verifyAccountCode: '',
-            isVerified: true,
-        });
+        // let user = null;
+        // try {
+        //     user = await this.findOne({ verifyAccountCode }, true);
+        // } catch (err) {
+        //     throw new Error(
+        //         `The email address that you've entered doesn't match any account.`,
+        //     );
+        // }
+        // await this.updateOne(user._id, {
+        //     verifyAccountCode: '',
+        //     isVerified: true,
+        // });
     }
 
     createSocial(type: SocialAccountType, socialData: any) {
@@ -133,34 +130,131 @@ export class UserService {
         // return this.create(userData);
     }
 
-    async find(query: any = {}) {
-        const users = await this.userCollection.find(query).toArray();
-        return users.map((user) => _.omit(user, USER_FORBIDDEN_FIELDS));
+    // async findByKeyword(keyword: string): {
+    //     const users = await this.userCollection.find(query).toArray();
+    //     return users.map((user) => _.omit(user, USER_FORBIDDEN_FIELDS));
+    // }
+
+    async updateOne(userId: ObjectID, data: any) {
+        // const opUpdateResult = await this.userCollection.updateOne(
+        //     { _id: userId },
+        //     { $set: data },
+        // );
+        // return opUpdateResult.result.nModified;
     }
 
-    async findById(userId: string, keepAll = false): Promise<UserDocument> {
-        const user = await User.findById(userId);
-
-        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
-        return keepAll
-            ? user
-            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+    async increase(userId: ObjectID, field: string, value: number) {
+        // const opUpdateResult = await this.userCollection.updateOne(
+        //     { _id: userId },
+        //     { $inc: { [field]: value } },
+        // );
+        // return opUpdateResult.result.nModified;
     }
 
-    async findOne(query: any = {}, keepAll = false): Promise<UserDocument> {
-        const user = (await this.userCollection.findOne(query)) as UserDocument;
-
-        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
-        return keepAll
-            ? user
-            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+    async changePassword(
+        userId: ObjectID,
+        currentPassword: string,
+        newPassword: string,
+    ) {
+        // const user = await this.userCollection.findOne({ _id: userId });
+        // const passwordMatch = await bcrypt.compare(
+        //     currentPassword,
+        //     user.password,
+        // );
+        // if (!passwordMatch) {
+        //     throw new Error('Your current password does not match.');
+        // }
+        // newPassword = await bcrypt.hash(newPassword, HASH_ROUNDS);
+        // const opUpdateResult = await this.userCollection.updateOne(
+        //     { _id: userId },
+        //     { $set: { password: newPassword } },
+        // );
+        // return opUpdateResult.result.nModified;
     }
 
-    async getUserBalance(userId: string): Promise<number> {
-        console.log('userId::::', userId);
-        const { balance } = await User.findById(userId, { balance: 1 });
-        console.log('balance::::', balance);
-        return balance;
+    async follow(userId: ObjectID, followedId: ObjectID) {
+        // if (userId === followedId)
+        //     throw new Error('Followed user same as user excute.');
+        // const followedUser = await this.userCollection.findOne({
+        //     _id: followedId,
+        // });
+        // if (!followedUser) throw new Error('Followed User Not Found');
+        // const promises: Array<Promise<any>> = [];
+        // promises.push(
+        //     this.userCollection.updateOne(
+        //         { _id: userId, following: { $nin: [followedId] } },
+        //         {
+        //             $push: { following: followedId },
+        //             $inc: { followingCount: 1 },
+        //         },
+        //     ),
+        // );
+        // promises.push(
+        //     this.userCollection.updateOne(
+        //         { _id: followedId, followers: { $nin: [userId] } },
+        //         {
+        //             $push: { followers: userId },
+        //             $inc: { followerCount: 1 },
+        //         },
+        //     ),
+        // );
+        // const results = await Promise.all(promises);
+        // return results[0].result.nModified;
+    }
+
+    async unfollow(userId: ObjectID, followedId: ObjectID) {
+        // if (userId === followedId)
+        //     throw new Error('Followed user same as user excute.');
+        // // const followedUser = await this.userCollection.findOne({ _id: followedId });
+        // // if (!followedUser) throw new Error('Followed User Not Found');
+        // const promises: Array<Promise<any>> = [];
+        // promises.push(
+        //     this.userCollection.updateOne(
+        //         { _id: userId, following: { $in: [followedId] } },
+        //         {
+        //             $pull: { following: followedId },
+        //             $inc: { followingCount: -1 },
+        //         },
+        //     ),
+        // );
+        // promises.push(
+        //     this.userCollection.updateOne(
+        //         { _id: followedId, followers: { $in: [userId] } },
+        //         {
+        //             $pull: { followers: userId },
+        //             $inc: { followerCount: -1 },
+        //         },
+        //     ),
+        // );
+        // const results = await Promise.all(promises);
+        // return results[0].result.nModified;
+    }
+
+    async saveBundle(userId: ObjectId, bundleId: ObjectId) {
+        // Validate bundle
+        // const bundleCount = await this.bundleService.count({ _id: bundleId });
+        // if (bundleCount != 1) throw new Error('Invalid bundle id');
+        // const updateResult = await this.userCollection.updateOne(
+        //     { _id: userId, savedBundles: { $nin: [bundleId] } },
+        //     {
+        //         $push: { savedBundles: bundleId },
+        //     },
+        // );
+        // if (updateResult.result.nModified != 1)
+        //     throw new Error('Bundle already saved');
+        // return true;
+    }
+
+    async unsaveBundle(userId: ObjectId, bundleId: ObjectId) {
+        // const updateResult = await this.userCollection.updateOne(
+        //     { _id: userId, savedBundles: { $in: [bundleId] } },
+        //     {
+        //         $pull: { savedBundles: bundleId },
+        //     },
+        // );
+        // if (updateResult.result.nModified != 1)
+        //     throw new Error('Bundle not exist / already deleted');
+        // return true;
     }
 
     async transferBalance(
@@ -173,143 +267,31 @@ export class UserService {
         return true;
     }
 
-    // async findByKeyword(keyword: string): {
-    //     const users = await this.userCollection.find(query).toArray();
-    //     return users.map((user) => _.omit(user, USER_FORBIDDEN_FIELDS));
-    // }
-
-    async updateOne(userId: ObjectID, data: any) {
-        const opUpdateResult = await this.userCollection.updateOne(
-            { _id: userId },
-            { $set: data },
-        );
-        return opUpdateResult.result.nModified;
+    async getUserBalance(userId: string): Promise<number> {
+        const { balance } = await User.findById(userId, { balance: 1 });
+        return balance;
     }
 
-    async increase(userId: ObjectID, field: string, value: number) {
-        const opUpdateResult = await this.userCollection.updateOne(
-            { _id: userId },
-            { $inc: { [field]: value } },
-        );
-        return opUpdateResult.result.nModified;
+    async find() {
+        const users = await User.find({});
+        return users;
     }
 
-    async changePassword(
-        userId: ObjectID,
-        currentPassword: string,
-        newPassword: string,
-    ) {
-        const user = await this.userCollection.findOne({ _id: userId });
+    async findById(userId: string, keepAll = false): Promise<UserDocument> {
+        const user = await User.findById(userId);
 
-        const passwordMatch = await bcrypt.compare(
-            currentPassword,
-            user.password,
-        );
-        if (!passwordMatch) {
-            throw new Error('Your current password does not match.');
-        }
-
-        newPassword = await bcrypt.hash(newPassword, HASH_ROUNDS);
-        const opUpdateResult = await this.userCollection.updateOne(
-            { _id: userId },
-            { $set: { password: newPassword } },
-        );
-        return opUpdateResult.result.nModified;
+        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
+        return keepAll
+            ? user
+            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
     }
 
-    async follow(userId: ObjectID, followedId: ObjectID) {
-        if (userId === followedId)
-            throw new Error('Followed user same as user excute.');
-        const followedUser = await this.userCollection.findOne({
-            _id: followedId,
-        });
-        if (!followedUser) throw new Error('Followed User Not Found');
+    async findOne(query: any = {}, keepAll = false): Promise<UserDocument> {
+        const user = (await User.findOne(query)) as UserDocument;
 
-        const promises: Array<Promise<any>> = [];
-
-        promises.push(
-            this.userCollection.updateOne(
-                { _id: userId, following: { $nin: [followedId] } },
-                {
-                    $push: { following: followedId },
-                    $inc: { followingCount: 1 },
-                },
-            ),
-        );
-
-        promises.push(
-            this.userCollection.updateOne(
-                { _id: followedId, followers: { $nin: [userId] } },
-                {
-                    $push: { followers: userId },
-                    $inc: { followerCount: 1 },
-                },
-            ),
-        );
-
-        const results = await Promise.all(promises);
-        return results[0].result.nModified;
-    }
-
-    async unfollow(userId: ObjectID, followedId: ObjectID) {
-        if (userId === followedId)
-            throw new Error('Followed user same as user excute.');
-        // const followedUser = await this.userCollection.findOne({ _id: followedId });
-        // if (!followedUser) throw new Error('Followed User Not Found');
-
-        const promises: Array<Promise<any>> = [];
-
-        promises.push(
-            this.userCollection.updateOne(
-                { _id: userId, following: { $in: [followedId] } },
-                {
-                    $pull: { following: followedId },
-                    $inc: { followingCount: -1 },
-                },
-            ),
-        );
-
-        promises.push(
-            this.userCollection.updateOne(
-                { _id: followedId, followers: { $in: [userId] } },
-                {
-                    $pull: { followers: userId },
-                    $inc: { followerCount: -1 },
-                },
-            ),
-        );
-
-        const results = await Promise.all(promises);
-        return results[0].result.nModified;
-    }
-
-    async saveBundle(userId: ObjectId, bundleId: ObjectId) {
-        // Validate bundle
-        // const bundleCount = await this.bundleService.count({ _id: bundleId });
-        // if (bundleCount != 1) throw new Error('Invalid bundle id');
-
-        const updateResult = await this.userCollection.updateOne(
-            { _id: userId, savedBundles: { $nin: [bundleId] } },
-            {
-                $push: { savedBundles: bundleId },
-            },
-        );
-
-        if (updateResult.result.nModified != 1)
-            throw new Error('Bundle already saved');
-        return true;
-    }
-
-    async unsaveBundle(userId: ObjectId, bundleId: ObjectId) {
-        const updateResult = await this.userCollection.updateOne(
-            { _id: userId, savedBundles: { $in: [bundleId] } },
-            {
-                $pull: { savedBundles: bundleId },
-            },
-        );
-
-        if (updateResult.result.nModified != 1)
-            throw new Error('Bundle not exist / already deleted');
-        return true;
+        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
+        return keepAll
+            ? user
+            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
     }
 }

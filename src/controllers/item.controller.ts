@@ -16,9 +16,8 @@ export class ItemController extends Controller {
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
-        @inject(ServiceType.Item) private itemService: ItemService, // @inject(ServiceType.User) private userService: UserService,
-    ) // TODO: Why inject this leads to fail db connection
-    {
+        @inject(ServiceType.Item) private itemService: ItemService,
+    ) {
         super();
 
         // Configuring child routes
@@ -28,6 +27,10 @@ export class ItemController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.post('/private/items', this.createNewItem.bind(this));
         this.router.get('/private/items', this.getUserItems.bind(this));
+        this.router.patch(
+            '/private/items/:itemId',
+            this.updateItemById.bind(this),
+        );
     }
 
     async createNewItem(req: Request, res: Response) {
@@ -75,6 +78,26 @@ export class ItemController extends Controller {
             const items = await this.itemService.getUserItems(userId);
 
             return res.composer.success(items);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async updateItemById(req: Request, res: Response) {
+        try {
+            const { itemId } = req.params;
+            const update = _.pick(req.body, [
+                'name',
+                'imgUrl',
+                'description',
+                'value',
+            ]);
+            const updatedItem = await this.itemService.updateItemById(
+                itemId,
+                update,
+            );
+            res.composer.success(updatedItem);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

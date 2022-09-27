@@ -29,7 +29,7 @@ const userSchema = new Schema<UserDocument>({
     username: String,
     email: String,
     googleId: String,
-    balance: Number,
+    balance: { type: Number, default: 0 },
     type: {
         type: String,
         enum: Object.values(USER_TYPES),

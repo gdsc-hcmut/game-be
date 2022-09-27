@@ -12,6 +12,7 @@ import {
     GameService,
     ItemService,
     MarketplaceItemService,
+    TransactionService,
 } from './services';
 import {
     AuthController,
@@ -49,6 +50,10 @@ container
     .bind<MarketplaceItemService>(ServiceType.MarketplaceItem)
     .to(MarketplaceItemService)
     .inSingletonScope();
+container
+    .bind<TransactionService>(ServiceType.Transaction)
+    .to(TransactionService)
+    .inSingletonScope();
 
 // Initialize service first
 Promise.all([
@@ -57,6 +62,7 @@ Promise.all([
     const app = new App(
         [
             container.resolve<AuthController>(AuthController),
+            container.resolve<UserController>(UserController),
             container.resolve<GameController>(GameController),
             container.resolve<ItemController>(ItemController),
             container.resolve<MarketplaceController>(MarketplaceController),

@@ -24,4 +24,11 @@ export class ItemService {
         const items = await Item.find({ ownerId: userId });
         return items;
     }
+
+    async updateItemById(itemId: string, update: any): Promise<ItemDocument> {
+        const updatedItem = await Item.findByIdAndUpdate(itemId, update, {
+            new: true,
+        });
+        return updatedItem;
+    }
 }
