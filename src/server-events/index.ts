@@ -17,8 +17,11 @@ import {
     // DeviceService,
     // DeviceStatusService,
     AuthService,
+    GameService,
     // MQTTService,
 } from '../services';
+import { JWT_SECRET } from '../config';
+import { nextTick } from 'process';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -40,11 +43,12 @@ export class SocketService {
         // @inject(ServiceType.DeviceStatus)
         // private deviceStatusService: DeviceStatusService,
         @inject(ServiceType.Auth) private authService: AuthService,
+        @inject(ServiceType.Game) private gameService: GameService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
         this.socketIOServer = null;
-        this.connectedUser = [] as any;
+        this.connectedUser = [] as ClientUser[];
         this.tracking = new TrackingUser();
         this.trackingDevice = new TrackingDevice();
         this.clientSockets = [];
@@ -64,44 +68,25 @@ export class SocketService {
 
     onConnection = (socket: any) => {
         console.log('New user connected');
+        console.log('Has a new connection', socket.id);
+        console.log('Connected User', socket.userId);
+        if (!_.has(this.connectedUser, socket.userId)) {
+            this.connectedUser[socket.userId] = new ClientUser(
+                socket.userId,
+                this.gameService,
+            );
+        }
+        this.connectedUser[socket.userId].registerSocket(socket);
 
-        // Thanh's code: store all client sockets connection in an array
-        this.clientSockets.push(socket);
+        this.tracking.addUserConnecting(socket.id, socket.userId);
 
-        // // A new user setup a socket connection with server
-        // this.connectedUser[socket.id] = new ClientUser(socket.id);
-        // this.connectedUser[socket.id].registerSocket(socket);
+        console.log('Connection Pool', this.connectedUser);
 
-        // // Update tracking service: a new socket from a user
-        // this.tracking.addUserConnecting(socket.id, socket.id);
+        socket.emit(EventTypes.AUTHENTICATE, { success: true });
 
-        // Authenticate user with token
-        socket.on(EventTypes.AUTHENTICATE, async (userId: any) => {
-            console.log('Has a new connection', socket.id);
-            console.log('Connected User', this.connectedUser);
-            try {
-                // Authenticate success
-
-                // const { _id: userId } = decodedToken;
-
-                // Create a user if not connect, else register new socket
-                if (!_.has(this.connectedUser, userId)) {
-                    this.connectedUser[userId] = new ClientUser(userId);
-                }
-                this.connectedUser[userId].registerSocket(socket);
-
-                this.tracking.addUserConnecting(socket.id, userId);
-
-                socket.emit(EventTypes.AUTHENTICATE, { success: true });
-            } catch (err) {
-                const errMessage =
-                    'Invalid token, disconnect NOW - ' + socket.id;
-                console.log(errMessage);
-                console.log(err);
-                socket.emit(EventTypes.AUTHENTICATE, { error: errMessage });
-                setTimeout(() => socket.disconnect(true), 5000);
-            }
-        });
+        socket.on(EventTypes.CREATE_NEW_GAME, () =>
+            this.connectedUser[socket.userId].createNewSessionGame(socket.id),
+        );
 
         socket.on(EventTypes.DISCONNECT, () => {
             this.tracking.removeUserConnecting(socket.id);
@@ -119,35 +104,20 @@ export class SocketService {
 
     initialize = (socketServer: any) => {
         this.socketIOServer = socketServer;
-        // let test = new EntranceManagement(this.deviceService, this.mqttService);
-        // this.trackingDevice.add(new IllegalDetection(), ['INFRARED']);
-        // this.trackingDevice.add(
-        //     new PlantWatering(this.deviceService, this.mqttService),
-        //     ['RELAY', 'SOIL'],
-        // );
-        // this.trackingDevice.add(
-        //     new EntranceManagement(this.deviceService, this.mqttService),
-        //     ['MAGNETIC'],
-        // );
-        // this.trackingDevice.add(
-        //     new AutoLighting(this.deviceService, this.mqttService),
-        //     ['LIGHT'],
-        // );
-        // this.trackingDevice.add(
-        //     new FireAlarm(this.deviceService, this.mqttService),
-        //     ['TEMP-HUMID', 'GAS'],
-        // );
         const wrapMiddlewareForSocketIo =
             (middleware: any) => (socket: any, next: any) =>
                 middleware(socket.request, {}, next);
         this.socketIOServer.use(
             wrapMiddlewareForSocketIo(passport.initialize()),
         );
-        this.socketIOServer.use(wrapMiddlewareForSocketIo(passport.session()));
-        this.socketIOServer.use(
-            wrapMiddlewareForSocketIo(passport.authenticate(['jwt'])),
-        );
-
+        this.socketIOServer.use((socket: any, next: any) => {
+            passport.authenticate('jwt', (err, tokenMeta, info, x, y) => {
+                if (err || !tokenMeta)
+                    return next(new Error('Authentication error'));
+                socket.userId = tokenMeta.userId;
+                next();
+            })(socket.request, {}, next);
+        });
         this.socketIOServer.on('connection', this.onConnection);
     };
 }

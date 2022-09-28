@@ -54,7 +54,10 @@ container
     .bind<TransactionService>(ServiceType.Transaction)
     .to(TransactionService)
     .inSingletonScope();
-
+container
+    .bind<SocketService>(ServiceType.Socket)
+    .to(SocketService)
+    .inSingletonScope();
 // Initialize service first
 Promise.all([
     container.get<DatabaseService>(ServiceType.Database).initialize(),
@@ -73,6 +76,6 @@ Promise.all([
             container.get<AuthService>(ServiceType.Auth).applyMiddleware(),
         ],
     );
-
+    container.get<SocketService>(ServiceType.Socket).initialize(app.io);
     app.listen();
 });

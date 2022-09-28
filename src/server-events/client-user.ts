@@ -2,17 +2,30 @@ import _ from 'lodash';
 import * as UserService from '../services/user.service';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
+import { GameService } from '../services';
 
 class ClientUser {
     private sockets: any;
-    private userData: any;
+    private userId: any;
+    private gameService: GameService;
 
-    constructor(userId: ObjectId) {
+    constructor(userId: ObjectId, gameService: GameService) {
         this.sockets = [] as any;
-        this.userData = [] as any;
-        this.userData = userId;
+        this.userId = [] as any;
+        this.userId = userId;
+        this.gameService = gameService;
         // UserService.getOne(userId).then((data: any) => (this.userData = data));
         this.onDisconnect = this.onDisconnect.bind(this);
+    }
+
+    async createNewSessionGame(socketId: any) {
+        let sessionId = await this.gameService.createGameSessionWithUserLogin(
+            this.userId,
+        );
+        this.sockets[socketId].emit(
+            EventTypes.RECEIVE_NEW_GAME_SESSION,
+            sessionId,
+        );
     }
 
     registerSocket(socket: any) {

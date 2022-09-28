@@ -3,16 +3,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import useragent from 'express-useragent';
 import http from 'http';
-import socketIoInit from 'socket.io';
-// import { ServerEventSystem } from './server-events';
-
 import { Controller } from './controllers';
 
 import { SERVICE_NAME, STATIC_DIR } from './config';
 import { COOKIE_KEY } from './config';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
-
 class App {
     public app: any;
     public server: any;
@@ -25,6 +21,16 @@ class App {
 
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
+
+        this.server = http.createServer(this.app);
+        this.io = require('socket.io')(this.server, {
+            cors: {
+                origin: '*',
+                methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+                preflightContinue: false,
+                optionsSuccessStatus: 204,
+            },
+        });
     }
 
     private initializeMiddlewares(middlewares: any[]) {
@@ -57,7 +63,6 @@ class App {
     }
 
     public listen() {
-        this.server = http.createServer(this.app);
         // this.server.listen(this.port);
         // this.server.on('error', () => {
         //     console.log('Err');
@@ -65,16 +70,6 @@ class App {
         // this.server.on('listening', () => {
         //     console.log(`[${SERVICE_NAME}] listening on the port ${this.port}`);
         // });
-        // this.io = require('socket.io')(this.server, {
-        //     cors: {
-        //         origin: '*',
-        //         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        //         preflightContinue: false,
-        //         optionsSuccessStatus: 204,
-        //     },
-        // });
-
-        // ServerEventSystem.initialize(this.io);
 
         this.server.listen(this.port, () => {
             console.log(`[${SERVICE_NAME}] listening on the port ${this.port}`);
