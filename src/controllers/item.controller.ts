@@ -35,14 +35,26 @@ export class ItemController extends Controller {
 
     async createNewItem(req: Request, res: Response) {
         try {
-            const item: ItemDocument = _.pick(req.body, [
+            const item = _.pick(req.body, [
                 'name',
                 'imgUrl',
                 'description',
                 'value',
+                'quantity',
+                'isAutoSendToRandomPool',
             ]) as any;
             const ownerId = req.tokenMeta.userId.toString();
             item.ownerId = ownerId;
+
+            if (item.quantity) {
+                await this.itemService.createMany(
+                    item,
+                    item.quantity,
+                    item.isAutoSendToRandomPool,
+                );
+                res.composer.success(`Created ${item.quantity} new items`);
+                return;
+            }
             // TODO
             // const user = await this.userService.findById(ownerId);
             // if (user.type !== USER_TYPES.SYSTEM) {

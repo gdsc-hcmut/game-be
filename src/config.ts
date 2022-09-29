@@ -164,3 +164,7 @@ export const SupportedDevices = [
 ];
 
 export const LIMIT_PAGING = 24;
+
+export const BOX_PRICE = 10000;
+
+export const SYSTEM_ACCOUNT_ID = '633015d8913376839c72e7f0';

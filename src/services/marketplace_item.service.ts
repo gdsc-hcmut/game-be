@@ -17,6 +17,7 @@ import { ServiceType } from '../types';
 import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
 import { ItemService } from './item.service';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 
 @injectable()
 export class MarketplaceItemService {
@@ -43,6 +44,7 @@ export class MarketplaceItemService {
             throw new ErrorUserInvalid('User not authorized');
         }
         const owner = await User.findById(userId);
+        console.log('owner:::::', owner);
 
         const newMarketplaceItem = new MarketplaceItem({
             itemId: item._id.toString(),
@@ -93,7 +95,18 @@ export class MarketplaceItemService {
             maxPrice,
             priceHistory,
             ownerName,
+            expiredAt,
         } = marketplaceItem;
+
+        if (expiredAt < Date.now()) {
+            throw new ErrorInvalidData('Expired, cannot make bid');
+        }
+
+        const owner = await this.userService.findOne({ email: ownerName });
+
+        if (fromUser === owner._id.toString()) {
+            throw new ErrorInvalidData('You cannot buy your item.');
+        }
 
         if (bidPrice < minPrice) {
             throw new ErrorInvalidData(
@@ -146,6 +159,9 @@ export class MarketplaceItemService {
             });
             marketplaceItem.currentPrice = bidPrice;
             marketplaceItem.currentBidUserId = fromUser;
+            if (!marketplaceItem.followedUsers.includes(fromUser)) {
+                marketplaceItem.followedUsers.push(fromUser);
+            }
             await marketplaceItem.save();
             return newOrder;
         }
@@ -194,7 +210,11 @@ export class MarketplaceItemService {
                 price: bidPrice,
             });
             // Remove marketplace item
+            // TODO: claimed = true
             marketplaceItem.expiredAt = Date.now();
+            if (!marketplaceItem.followedUsers.includes(fromUser)) {
+                marketplaceItem.followedUsers.push(fromUser);
+            }
             await marketplaceItem.save();
 
             // Change owner of item, write priceHistory of item
@@ -212,21 +232,32 @@ export class MarketplaceItemService {
     async getAllMarketplaceItems() {
         const marketplaceItems = await MarketplaceItem.find({
             expiredAt: { $gt: Date.now() },
-        });
+        }).sort({ createdAt: -1 });
         return marketplaceItems;
     }
 
     async getAuctionedItems(
         ownerName: string,
     ): Promise<MarketplaceItemDocument[]> {
-        console.log('ownerName', ownerName);
+        console.log('ownerName:::::::', ownerName);
 
         const auctionedItems = await MarketplaceItem.find({ ownerName });
+        console.log('auctionedItems', auctionedItems);
+
         return auctionedItems;
     }
 
     async getBids(userId: string): Promise<MarketplaceItemDocument[]> {
-        const bids = await MarketplaceItem.find({ currentBidUserId: userId });
+        // user get bid that they have involved
+        // if user own bid of bids, that bid will be showed until claimed
+        let bids = await MarketplaceItem.find({
+            followedUsers: { $elemMatch: { $eq: userId } },
+            claimed: false,
+        });
+        console.log('bids:::', bids);
+
+        // TODO: FE check if user owns bid, and if user has claim bid or not (userId ===currentBidUserId, claimed===true)
+
         return bids;
     }
 
@@ -240,5 +271,46 @@ export class MarketplaceItemService {
             marketplaceItemId,
         );
         return marketplaceItem;
+    }
+
+    async claimBid(userId: string, bidId: string) {
+        // Check if user is the current bid user
+        const bid = await MarketplaceItem.findById(bidId);
+        if (bid.currentBidUserId !== userId) {
+            throw new ErrorInvalidData('You not own this bid');
+        }
+
+        // Check if it's right time or not?
+        if (bid.expiredAt > Date.now()) {
+            throw new ErrorInvalidData(
+                'Bid time has not expired, cannot claim item',
+            );
+        }
+
+        // Find previous owner
+        const prevOwner = await this.userService.findOne({
+            email: bid.ownerName,
+        });
+
+        // Transfer money from system account to previous owner
+        const newTransaction =
+            await this.transactionService.createNewTransaction(
+                SYSTEM_ACCOUNT_ID,
+                prevOwner._id.toString(),
+                bid.currentPrice,
+            );
+
+        // Update owner of item
+        const item = await this.itemService.getItemById(bid.itemId);
+        item.ownerId = userId;
+        const user = await this.userService.findById(userId);
+        item.priceHistory.push({
+            email: user.email,
+            createdAt: Date.now(),
+            price: bid.currentPrice,
+        });
+        await item.save();
+        bid.claimed = true;
+        await bid.save();
     }
 }

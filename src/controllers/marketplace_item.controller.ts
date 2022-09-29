@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { inject, injectable } from 'inversify';
 import _ from 'lodash';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 
 import { ErrorInvalidData } from '../lib/errors';
 import {
@@ -48,6 +49,7 @@ export class MarketplaceController extends Controller {
         );
         this.router.post('/private/bids', this.bidForItem.bind(this));
         this.router.get('/private/bids', this.getBids.bind(this));
+        this.router.post('/private/bids/claim', this.claimBid.bind(this));
     }
 
     async getAllMarketplaceItems(req: Request, res: Response) {
@@ -76,17 +78,12 @@ export class MarketplaceController extends Controller {
 
     async getAunctionedItems(req: Request, res: Response) {
         try {
-            console.log('hihi');
-
             const userId = req.tokenMeta.userId.toString();
-            console.log('userId::::', userId);
-
             const user = await this.userService.findById(userId);
-            console.log('user:::', user);
 
             const auctionedItems =
                 await this.marketplaceItemService.getAuctionedItems(user.email);
-            return auctionedItems;
+            res.composer.success(auctionedItems);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
@@ -167,7 +164,7 @@ export class MarketplaceController extends Controller {
                 itemId,
                 bidPrice,
                 userId,
-                '633015d8913376839c72e7f0',
+                SYSTEM_ACCOUNT_ID,
             );
             res.composer.success(order);
         } catch (error) {
@@ -181,6 +178,21 @@ export class MarketplaceController extends Controller {
             const userId = req.tokenMeta.userId.toString();
             const bids = await this.marketplaceItemService.getBids(userId);
             res.composer.success(bids);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async claimBid(req: Request, res: Response) {
+        try {
+            const userId = req.tokenMeta.userId.toString();
+            const { bidId } = req.body;
+            const item = await this.marketplaceItemService.claimBid(
+                userId,
+                bidId,
+            );
+            res.composer.success(item);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
