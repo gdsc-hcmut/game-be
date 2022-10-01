@@ -84,7 +84,6 @@ export class ItemController extends Controller {
     async getUserItems(req: Request, res: Response) {
         try {
             // const user = req.tokenMeta as UserDocument;
-            console.log(req.tokenMeta);
             const userId = req.tokenMeta.userId.toString();
 
             const items = await this.itemService.getUserItems(userId);

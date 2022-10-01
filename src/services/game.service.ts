@@ -88,7 +88,6 @@ export class GameService {
 
     async getUserSessions(userId: string): Promise<GameSessionDocument[]> {
         const sessions = await GameSession.find({ userId }, { level: -1 });
-        console.log('user sessions:::::', sessions);
         return sessions;
     }
 }

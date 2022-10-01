@@ -193,7 +193,6 @@ export class UserController extends Controller {
 
     async findLeetcodeUser(req: Request, res: Response) {
         const { username } = req.params;
-        console.log('Ahi');
         try {
             const leetcode = new LeetCode();
             const userProfile = await leetcode.user(username);
@@ -206,9 +205,6 @@ export class UserController extends Controller {
 
     async getUsers(req: Request, res: Response) {
         try {
-            console.log('req.user', req.user);
-            console.log('req.tokenMeta', req.tokenMeta);
-
             const users = await this.userService.find();
             res.composer.success(users);
         } catch (error) {

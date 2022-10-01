@@ -17,11 +17,8 @@ export class ItemService {
         if (isAutoSendToRandomPool) {
             const itemIds: string[] = items.map((item) => item._id.toString());
             const pool = await RandomPool.findOne();
-            console.log('pool::::', pool);
-
             pool.itemIds = [...itemIds, ...pool?.itemIds];
             await pool.save();
-            console.log('pool::::', pool);
         }
         return true;
     }

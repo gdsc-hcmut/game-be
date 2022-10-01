@@ -146,7 +146,6 @@ export class GameController extends Controller {
     // TODO: EXTRACT TO SERVICES
     async openMysteryBox(req: Request, res: Response) {
         try {
-            console.log('open mystery box... 🧃');
             const userId = req.tokenMeta.userId.toString();
             const balance = await this.userService.getUserBalance(userId);
             if (balance < BOX_PRICE) {
@@ -180,12 +179,7 @@ export class GameController extends Controller {
 
     async getUserSessions(req: Request, res: Response) {
         try {
-            console.log('req.user::::', req.user);
-
-            console.log('tokenmeta:::', req.tokenMeta);
-
             const userId = req.tokenMeta.userId.toString();
-            console.log('userId:::', userId);
             const sessions = await this.gameService.getUserSessions(userId);
             res.composer.success(sessions);
         } catch (error) {

@@ -44,7 +44,6 @@ export class MarketplaceItemService {
             throw new ErrorUserInvalid('User not authorized');
         }
         const owner = await User.findById(userId);
-        console.log('owner:::::', owner);
 
         const newMarketplaceItem = new MarketplaceItem({
             itemId: item._id.toString(),
@@ -85,7 +84,6 @@ export class MarketplaceItemService {
         const marketplaceItem = await MarketplaceItem.findOne({
             itemId: _itemId,
         });
-        console.log('marketplaceItem:::', marketplaceItem);
 
         const {
             itemId,
@@ -239,10 +237,7 @@ export class MarketplaceItemService {
     async getAuctionedItems(
         ownerName: string,
     ): Promise<MarketplaceItemDocument[]> {
-        console.log('ownerName:::::::', ownerName);
-
         const auctionedItems = await MarketplaceItem.find({ ownerName });
-        console.log('auctionedItems', auctionedItems);
 
         return auctionedItems;
     }
@@ -254,7 +249,6 @@ export class MarketplaceItemService {
             followedUsers: { $elemMatch: { $eq: userId } },
             claimed: false,
         });
-        console.log('bids:::', bids);
 
         // TODO: FE check if user owns bid, and if user has claim bid or not (userId ===currentBidUserId, claimed===true)
 
