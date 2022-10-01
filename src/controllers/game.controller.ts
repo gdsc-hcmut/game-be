@@ -16,8 +16,9 @@ import { UserDocument } from '../models/user.model';
 import { GameService } from '../services';
 import { ErrorInvalidData } from '../lib/errors';
 import { ItemDocument } from '../models/item.model';
-import { BOX_PRICE, SYSTEM_ACCOUNT_ID } from '../config';
+import { BOX_PRICE, GIFT_THRESHOLD, SYSTEM_ACCOUNT_ID } from '../config';
 import RandomPool from '../models/random_pool.model';
+import BookFair from '../models/book_fair';
 @injectable()
 export class GameController extends Controller {
     public readonly router = Router();
@@ -59,6 +60,8 @@ export class GameController extends Controller {
             this.nextLevel.bind(this),
         );
         this.router.post('/private/box', this.openMysteryBox.bind(this));
+        this.router.get('/private/session', this.getUserSessions.bind(this));
+        this.router.post('/private/gift', this.scanBookFairQr.bind(this));
     }
 
     async createNewSessionWithoutLogin(req: Request, res: Response) {
@@ -140,6 +143,7 @@ export class GameController extends Controller {
         }
     }
 
+    // TODO: EXTRACT TO SERVICES
     async openMysteryBox(req: Request, res: Response) {
         try {
             console.log('open mystery box... 🧃');
@@ -168,6 +172,62 @@ export class GameController extends Controller {
                     BOX_PRICE,
                 );
             res.composer.success(item);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getUserSessions(req: Request, res: Response) {
+        try {
+            console.log('req.user::::', req.user);
+
+            console.log('tokenmeta:::', req.tokenMeta);
+
+            const userId = req.tokenMeta.userId.toString();
+            console.log('userId:::', userId);
+            const sessions = await this.gameService.getUserSessions(userId);
+            res.composer.success(sessions);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async scanBookFairQr(req: Request, res: Response) {
+        try {
+            const { userId } = req.body;
+            if (!userId) {
+                res.composer.badRequest('Lack userId');
+                return;
+            }
+
+            const sessions = await this.gameService.getUserSessions(userId);
+            if (sessions.length === 0) {
+                res.composer.badRequest('You have not played any game');
+                return;
+            }
+
+            if (sessions[0].level < GIFT_THRESHOLD) {
+                res.composer.badRequest(
+                    `You have not reached level ${GIFT_THRESHOLD} to claim a gift`,
+                );
+                return;
+            }
+
+            const hasClaimedGift = await BookFair.findOne({ userId });
+            if (hasClaimedGift) {
+                res.composer.badRequest('You have claimed the gift');
+                return;
+            }
+
+            const newGift = new BookFair({
+                userId,
+                level: sessions[0].level,
+                claimAt: Date.now(),
+            });
+            await newGift.save();
+            res.composer.success('Success');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
