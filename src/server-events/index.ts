@@ -86,6 +86,10 @@ export class SocketService {
             this.connectedUser[socket.userId].createNewSessionGame(socket.id),
         );
 
+        socket.on(EventTypes.ON_CHOOSE_CELL, (cellId: number) =>
+            this.connectedUser[socket.userId].onClickCell(socket.id, cellId),
+        );
+
         socket.on(EventTypes.DISCONNECT, () => {
             this.tracking.removeUserConnecting(socket.id);
         });

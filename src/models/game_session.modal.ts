@@ -19,6 +19,7 @@ export type GameSessionDocument = Document & {
     userId?: string;
     createdAt: number;
     finishAt: number;
+    chooseFields: number[];
 };
 
 const gameSessionSchema = new Schema<GameSessionDocument>({
@@ -27,6 +28,7 @@ const gameSessionSchema = new Schema<GameSessionDocument>({
     createdAt: Number,
     finishAt: Number,
     levelInfo: Schema.Types.Mixed,
+    chooseFields: Array<Number>,
 });
 
 const GameSession = mongoose.model<GameSessionDocument>(

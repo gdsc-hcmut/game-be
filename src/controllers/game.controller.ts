@@ -69,16 +69,8 @@ export class GameController extends Controller {
 
     async createNewSessionWithoutLogin(req: Request, res: Response) {
         try {
-            let level: LevelInfo = levels[0];
-            const { field, hiddenCells } = generateGameField(
-                level.cellCount,
-                level.memoryCount,
-            );
-
-            level = { ...level, field, hiddenCells };
-
             let newSession =
-                await this.gameService.createGameSessionWithoutUser(level);
+                await this.gameService.createGameSessionWithoutUser();
             res.composer.success(newSession);
         } catch (error) {
             console.log(error);
@@ -89,19 +81,9 @@ export class GameController extends Controller {
     async createNewSession(req: Request, res: Response) {
         try {
             let user = req.user as UserDocument;
-            let level: LevelInfo = levels[0];
-            const { field, hiddenCells } = generateGameField(
-                level.cellCount,
-                level.memoryCount,
-            );
-
-            level = { ...level, field, hiddenCells };
 
             let newSession =
-                await this.gameService.createGameSessionWithUserLogin(
-                    user.id,
-                    level,
-                );
+                await this.gameService.createGameSessionWithUserLogin(user.id);
             res.composer.success(newSession);
         } catch (error) {
             console.log(error);

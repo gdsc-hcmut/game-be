@@ -24,21 +24,47 @@ class ClientUser {
     }
 
     async createNewSessionGame(socketId: any) {
-        let level: LevelInfo = levels[INIT_LEVEL];
-        const { field, hiddenCells } = generateGameField(
-            level.cellCount,
-            level.memoryCount,
-        );
-
-        level = { ...level, field, hiddenCells };
         let newSession = await this.gameService.createGameSessionWithUserLogin(
             this.userId,
-            level,
         );
         this.sockets[socketId].emit(
             EventTypes.RECEIVE_NEW_GAME_SESSION,
             newSession,
         );
+    }
+
+    async onClickCell(socketId: any, cellId: any, sessionId: any) {
+        let gameSession = await this.gameService.getSessionById(sessionId);
+
+        if (gameSession.finishAt || gameSession.userId != this.userId) return;
+
+        let isCorrect = _.includes(gameSession.levelInfo.hiddenCells, cellId);
+
+        if (!isCorrect) {
+            let userBalance = await this.gameService.endSessionGame(
+                gameSession._id,
+            );
+            this.sockets[socketId].emit(
+                EventTypes.END_SESSION_GAME,
+                userBalance,
+            );
+        }
+
+        const chooseFields = await this.gameService.ChooseField(
+            gameSession,
+            cellId,
+        );
+
+        if (chooseFields.length === gameSession.levelInfo.hiddenCells.length) {
+            let newLevelGame = await this.gameService.nextLevel(
+                this.userId,
+                gameSession._id,
+            );
+            this.sockets[socketId].emit(
+                EventTypes.NEXT_LEVEL_GAME,
+                newLevelGame,
+            );
+        }
     }
 
     registerSocket(socket: any) {
