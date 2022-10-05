@@ -27,6 +27,7 @@ class ClientUser {
         let newSession = await this.gameService.createGameSessionWithUserLogin(
             this.userId,
         );
+        this.sockets[socketId].sessionId = newSession._id;
         this.sockets[socketId].emit(
             EventTypes.RECEIVE_NEW_GAME_SESSION,
             newSession,
@@ -68,7 +69,7 @@ class ClientUser {
     }
 
     registerSocket(socket: any) {
-        this.sockets[socket.id] = socket;
+        this.sockets[socket.id] = { socket, sessionId: '' };
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
             this.onDisconnect(socket, reason),
         );
@@ -81,11 +82,14 @@ class ClientUser {
         });
     }
 
-    onDisconnect(socket: any, reason: any) {
+    async onDisconnect(socket: any, reason: any) {
         console.log('Disconnect from: ', socket.id);
         console.log('reason: ', reason);
         // console.log('User data: ', this.userData.username);
-
+        if (this.sockets[socket.id].sessionId)
+            await this.gameService.endSessionGame(
+                this.sockets[socket.id].sessionId,
+            );
         delete this.sockets[socket.id];
     }
 }
