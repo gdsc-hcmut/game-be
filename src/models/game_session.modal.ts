@@ -26,6 +26,7 @@ const gameSessionSchema = new Schema<GameSessionDocument>({
     userId: String,
     createdAt: Number,
     finishAt: Number,
+    levelInfo: Schema.Types.Mixed,
 });
 
 const GameSession = mongoose.model<GameSessionDocument>(
