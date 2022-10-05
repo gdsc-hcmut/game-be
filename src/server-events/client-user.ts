@@ -3,8 +3,8 @@ import * as UserService from '../services/user.service';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
 import { GameService } from '../services';
-import levels from './game/levels.json';
-import { generateGameField } from './game/game-logic';
+import levels from '../game/levels.json';
+import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
 
 const INIT_LEVEL = 0;

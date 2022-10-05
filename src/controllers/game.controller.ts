@@ -19,6 +19,9 @@ import { ItemDocument } from '../models/item.model';
 import { BOX_PRICE, GIFT_THRESHOLD, SYSTEM_ACCOUNT_ID } from '../config';
 import RandomPool from '../models/random_pool.model';
 import BookFair from '../models/book_fair';
+import { generateGameField } from '../game/game-logic';
+import levels from '../game/levels.json';
+import { LevelInfo } from '../models/game_session.modal';
 @injectable()
 export class GameController extends Controller {
     public readonly router = Router();
@@ -66,8 +69,16 @@ export class GameController extends Controller {
 
     async createNewSessionWithoutLogin(req: Request, res: Response) {
         try {
+            let level: LevelInfo = levels[0];
+            const { field, hiddenCells } = generateGameField(
+                level.cellCount,
+                level.memoryCount,
+            );
+
+            level = { ...level, field, hiddenCells };
+
             let newSession =
-                await this.gameService.createGameSessionWithoutUser();
+                await this.gameService.createGameSessionWithoutUser(level);
             res.composer.success(newSession);
         } catch (error) {
             console.log(error);
@@ -78,9 +89,19 @@ export class GameController extends Controller {
     async createNewSession(req: Request, res: Response) {
         try {
             let user = req.user as UserDocument;
+            let level: LevelInfo = levels[0];
+            const { field, hiddenCells } = generateGameField(
+                level.cellCount,
+                level.memoryCount,
+            );
+
+            level = { ...level, field, hiddenCells };
 
             let newSession =
-                await this.gameService.createGameSessionWithUserLogin(user.id);
+                await this.gameService.createGameSessionWithUserLogin(
+                    user.id,
+                    level,
+                );
             res.composer.success(newSession);
         } catch (error) {
             console.log(error);
