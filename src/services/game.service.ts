@@ -20,7 +20,10 @@ import { ServiceType } from '../types';
 import { randomPassword, encodeObjectId } from '../lib/helper';
 // import { MailService } from '.';
 import { UserDocument } from '../models/user.model';
-import GameSession, { GameSessionDocument } from '../models/game_session.modal';
+import GameSession, {
+    GameSessionDocument,
+    LevelInfo,
+} from '../models/game_session.modal';
 
 @injectable()
 export class GameService {
@@ -30,9 +33,12 @@ export class GameService {
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Mail) private mailService: MailService,
     ) {}
 
-    async createGameSessionWithoutUser(): Promise<GameSessionDocument> {
+    async createGameSessionWithoutUser(
+        levelInfo: LevelInfo,
+    ): Promise<GameSessionDocument> {
         let newGameSession = new GameSession();
         newGameSession.level = 1;
+        newGameSession.levelInfo = levelInfo;
         newGameSession.createdAt = Date.now();
         await newGameSession.save();
         return newGameSession;
@@ -40,9 +46,11 @@ export class GameService {
 
     async createGameSessionWithUserLogin(
         userId: string,
+        levelInfo: LevelInfo,
     ): Promise<GameSessionDocument> {
         let newGameSession = new GameSession();
         newGameSession.level = 1;
+        newGameSession.levelInfo = levelInfo;
         newGameSession.createdAt = Date.now();
         newGameSession.userId = userId;
         await newGameSession.save();

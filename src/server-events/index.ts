@@ -80,8 +80,6 @@ export class SocketService {
 
         this.tracking.addUserConnecting(socket.id, socket.userId);
 
-        console.log('Connection Pool', this.connectedUser);
-
         socket.emit(EventTypes.AUTHENTICATE, { success: true });
 
         socket.on(EventTypes.CREATE_NEW_GAME, () =>

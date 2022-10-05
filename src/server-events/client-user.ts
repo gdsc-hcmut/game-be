@@ -3,6 +3,11 @@ import * as UserService from '../services/user.service';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
 import { GameService } from '../services';
+import levels from './game/levels.json';
+import { generateGameField } from './game/game-logic';
+import { LevelInfo } from '../models/game_session.modal';
+
+const INIT_LEVEL = 0;
 
 class ClientUser {
     private sockets: any;
@@ -19,12 +24,20 @@ class ClientUser {
     }
 
     async createNewSessionGame(socketId: any) {
-        let sessionId = await this.gameService.createGameSessionWithUserLogin(
+        let level: LevelInfo = levels[INIT_LEVEL];
+        const { field, hiddenCells } = generateGameField(
+            level.cellCount,
+            level.memoryCount,
+        );
+
+        level = { ...level, field, hiddenCells };
+        let newSession = await this.gameService.createGameSessionWithUserLogin(
             this.userId,
+            level,
         );
         this.sockets[socketId].emit(
             EventTypes.RECEIVE_NEW_GAME_SESSION,
-            sessionId,
+            newSession,
         );
     }
 

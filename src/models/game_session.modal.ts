@@ -2,7 +2,19 @@ import mongoose, { Document } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+export interface LevelInfo {
+    cellCount: number;
+    memoryCount: number;
+    fieldSize: number;
+    space: number;
+    score: number;
+    time?: number;
+    field?: number[];
+    hiddenCells?: number[];
+}
+
 export type GameSessionDocument = Document & {
+    levelInfo: LevelInfo;
     level: number;
     userId?: string;
     createdAt: number;
