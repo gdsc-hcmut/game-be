@@ -92,11 +92,12 @@ export class GameService {
         if (gameSession.finishAt) return;
 
         gameSession.finishAt = Date.now();
-        gameSession.save();
         let user = await User.findById(gameSession.userId);
 
-        if (gameSession.level === 1) return;
-
+        if (gameSession.level === 1) {
+            gameSession.save();
+            return;
+        }
         user.balance = user.balance + levels[gameSession.level - 1].score;
         gameSession.save();
 
