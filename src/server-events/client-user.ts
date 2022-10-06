@@ -28,7 +28,7 @@ class ClientUser {
             this.userId,
         );
         this.sockets[socketId].sessionId = newSession._id;
-        this.sockets[socketId].emit(
+        this.sockets[socketId].socket.emit(
             EventTypes.RECEIVE_NEW_GAME_SESSION,
             newSession,
         );
@@ -45,7 +45,7 @@ class ClientUser {
             let userBalance = await this.gameService.endSessionGame(
                 gameSession._id,
             );
-            this.sockets[socketId].emit(
+            this.sockets[socketId].socket.emit(
                 EventTypes.END_SESSION_GAME,
                 userBalance,
             );
@@ -61,7 +61,7 @@ class ClientUser {
                 this.userId,
                 gameSession._id,
             );
-            this.sockets[socketId].emit(
+            this.sockets[socketId].socket.emit(
                 EventTypes.NEXT_LEVEL_GAME,
                 newLevelGame,
             );
