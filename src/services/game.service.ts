@@ -47,6 +47,7 @@ export class GameService {
         let newGameSession = new GameSession();
         newGameSession.level = 1;
         newGameSession.levelInfo = levelInfo;
+        newGameSession.finishAt = 0;
         newGameSession.createdAt = Date.now();
         await newGameSession.save();
         return newGameSession;
@@ -64,6 +65,7 @@ export class GameService {
 
         let newGameSession = new GameSession();
         newGameSession.level = 1;
+        newGameSession.finishAt = 0;
         newGameSession.levelInfo = levelInfo;
         newGameSession.createdAt = Date.now();
         newGameSession.userId = userId;
