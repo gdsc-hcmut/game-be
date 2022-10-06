@@ -72,6 +72,8 @@ class ClientUser {
                 EventTypes.NEXT_LEVEL_GAME,
                 newLevelGame,
             );
+        } else {
+            gameSession.save();
         }
     }
 
