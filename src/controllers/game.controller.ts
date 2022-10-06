@@ -105,15 +105,15 @@ export class GameController extends Controller {
 
     async nextLevel(req: Request, res: Response) {
         try {
-            const { sessionId } = req.params;
+            // const { sessionId } = req.params;
 
-            let user = req.user as UserDocument;
+            // let user = req.user as UserDocument;
 
-            let newSession = await this.gameService.nextLevel(
-                user.id,
-                sessionId,
-            );
-            res.composer.success(newSession);
+            // let newSession = await this.gameService.nextLevel(
+            //     user.id,
+            //     sessionId,
+            // );
+            res.composer.success('');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
