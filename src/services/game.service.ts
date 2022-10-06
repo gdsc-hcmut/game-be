@@ -110,7 +110,6 @@ export class GameService {
         if (gameSession.finishAt) return;
 
         gameSession.chooseFields.push(cellId);
-        gameSession.save();
 
         return gameSession.chooseFields;
     }
