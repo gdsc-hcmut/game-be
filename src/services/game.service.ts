@@ -103,16 +103,16 @@ export class GameService {
         return user.balance;
     }
 
-    async ChooseField(
-        gameSession: GameSessionDocument,
-        cellId: number,
-    ): Promise<Number[]> {
-        if (gameSession.finishAt) return;
+    // async ChooseField(
+    //     gameSession: GameSessionDocument,
+    //     cellId: number,
+    // ): Promise<Number[]> {
+    //     if (gameSession.finishAt) return;
 
-        gameSession.chooseFields.push(cellId);
+    //     gameSession.chooseFields.push(cellId);
 
-        return gameSession.chooseFields;
-    }
+    //     return gameSession.chooseFields;
+    // }
 
     async nextLevel(
         userId: string,

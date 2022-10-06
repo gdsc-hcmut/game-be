@@ -53,12 +53,14 @@ class ClientUser {
             );
         }
 
-        const chooseFields = await this.gameService.ChooseField(
-            gameSession,
-            cellId,
-        );
+        if (_.includes(gameSession.chooseFields, cellId)) return;
 
-        if (chooseFields.length === gameSession.levelInfo.hiddenCells.length) {
+        gameSession.chooseFields.push(cellId);
+
+        if (
+            gameSession.chooseFields.length ===
+            gameSession.levelInfo.hiddenCells.length
+        ) {
             let newLevelGame = await this.gameService.nextLevel(
                 this.userId,
                 gameSession,
