@@ -34,9 +34,11 @@ class ClientUser {
         );
     }
 
-    async onClickCell(socketId: any, cellId: any, sessionId: any) {
-        let gameSession = await this.gameService.getSessionById(sessionId);
-        console.log(gameSession, 'Finish here');
+    async onClickCell(socketId: any, cellId: any) {
+        let gameSession = await this.gameService.getSessionById(
+            this.sockets[socketId].sessionId,
+        );
+
         if (gameSession.finishAt || gameSession.userId != this.userId) return;
 
         let isCorrect = _.includes(gameSession.levelInfo.hiddenCells, cellId);
