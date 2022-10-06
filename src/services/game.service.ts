@@ -117,9 +117,8 @@ export class GameService {
 
     async nextLevel(
         userId: string,
-        sessionId: string,
+        gameSession: GameSessionDocument,
     ): Promise<GameSessionDocument> {
-        let gameSession = await GameSession.findById(sessionId);
         if (gameSession.userId != userId) {
             throw new ErrorUserInvalid('Missing input fields');
         }

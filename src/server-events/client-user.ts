@@ -61,7 +61,7 @@ class ClientUser {
         if (chooseFields.length === gameSession.levelInfo.hiddenCells.length) {
             let newLevelGame = await this.gameService.nextLevel(
                 this.userId,
-                gameSession._id,
+                gameSession,
             );
             this.sockets[socketId].socket.emit(
                 EventTypes.NEXT_LEVEL_GAME,
