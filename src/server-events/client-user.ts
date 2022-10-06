@@ -57,6 +57,9 @@ class ClientUser {
 
         gameSession.chooseFields.push(cellId);
 
+        console.log('Field', gameSession.chooseFields);
+        console.log('Field2', gameSession.levelInfo.hiddenCells);
+
         if (
             gameSession.chooseFields.length ===
             gameSession.levelInfo.hiddenCells.length
