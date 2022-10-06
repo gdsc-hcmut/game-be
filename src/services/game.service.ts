@@ -130,7 +130,7 @@ export class GameService {
             levelInfo.memoryCount,
         );
         levelInfo = { ...levelInfo, field, hiddenCells };
-
+        gameSession.chooseFields = [];
         gameSession.level = gameSession.level + 1;
         gameSession.levelInfo = levelInfo;
         await gameSession.save();
