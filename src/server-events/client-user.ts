@@ -158,6 +158,7 @@ class ClientUser {
     async answerQuiz(socketId: any, answer: any) {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+            this.sockets[socketId].isQuizStart = false;
         }
         if (!this.sockets[socketId].isQuizStart) return;
 
