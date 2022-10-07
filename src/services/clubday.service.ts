@@ -48,6 +48,20 @@ export class ClubDayService {
         return newClubDay;
     }
 
+    async updateClubDay(
+        userId: string,
+        email?: string,
+        name?: string,
+        studentId?: string,
+    ): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+        if (email) clubDay.email = email;
+        if (name) clubDay.name = name;
+        if (studentId) clubDay.studentId = studentId;
+        clubDay.save();
+        return clubDay;
+    }
+
     async getUserClubDay(userId: string): Promise<ClubDayDocument> {
         let clubDay = await ClubDay.findOne({ userId: userId });
         return clubDay;

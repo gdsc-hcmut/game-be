@@ -41,6 +41,7 @@ export class ClubDayController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.get('/private/', this.getClubDay.bind(this));
         this.router.post('/private/', this.createClubDay.bind(this));
+        this.router.patch('/private/', this.updateClubDay.bind(this));
         // this.router.post('/private/verify', this.verifyGame.bind(this));
     }
 
@@ -59,11 +60,41 @@ export class ClubDayController extends Controller {
 
     async createClubDay(req: Request, res: Response) {
         try {
-            let clubDay = await this.clubdayService.createClubDay(
+            let userClubday = await this.clubdayService.getUserClubDay(
+                req.tokenMeta.userId.toString(),
+            );
+            if (!userClubday) {
+                res.composer.badRequest('');
+                return;
+            }
+            var clubDay = await this.clubdayService.createClubDay(
                 req.tokenMeta.userId.toString(),
                 req.body.email,
                 req.body.name,
                 req.body.studentId,
+            );
+
+            res.composer.success(clubDay);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async updateClubDay(req: Request, res: Response) {
+        try {
+            let userClubday = await this.clubdayService.getUserClubDay(
+                req.tokenMeta.userId.toString(),
+            );
+            if (!userClubday) {
+                res.composer.badRequest('');
+                return;
+            }
+            var clubDay = await this.clubdayService.updateClubDay(
+                req.tokenMeta.userId.toString(),
+                req.body?.email,
+                req.body?.name,
+                req.body?.studentId,
             );
 
             res.composer.success(clubDay);
