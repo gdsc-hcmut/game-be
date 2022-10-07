@@ -99,6 +99,7 @@ class ClientUser {
     async startQuiz(socketId: any) {
         this.sockets[socketId].levelQuiz = 1;
         this.sockets[socketId].scoreQuiz = 0;
+        this.sockets[socketId].isQuizStart = true;
         let num1 = this.getRandomInt(1, 10);
         let num2 = this.getRandomInt(1, 10);
         let operation = _.sample([true, false]);
@@ -107,8 +108,7 @@ class ClientUser {
 
         let fakeAnwser = operation ? num1 + num2 : num1 - num2;
         if (fake) {
-            fakeAnwser =
-                this.sockets[socketId].answer + this.getRandomInt(-10, 10);
+            fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
@@ -159,6 +159,7 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         }
+        if (!this.sockets[socketId].isQuizStart) return;
 
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
         this.sockets[socketId].scoreQuiz =
@@ -177,8 +178,7 @@ class ClientUser {
 
         let fakeAnwser = operation ? num1 + num2 : num1 - num2;
         if (fake) {
-            fakeAnwser =
-                this.sockets[socketId].answer + this.getRandomInt(-10, 10);
+            fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
