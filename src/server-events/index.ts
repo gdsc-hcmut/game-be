@@ -90,6 +90,14 @@ export class SocketService {
             this.connectedUser[socket.userId].onClickCell(socket.id, cellId),
         );
 
+        socket.on(EventTypes.START_QUIZ, () =>
+            this.connectedUser[socket.userId].startQuiz(socket.id),
+        );
+
+        socket.on(EventTypes.ANSWER_QUIZ, (answer: any) =>
+            this.connectedUser[socket.userId].answerQuiz(socket.id, answer),
+        );
+
         socket.on(EventTypes.DISCONNECT, () => {
             this.tracking.removeUserConnecting(socket.id);
         });

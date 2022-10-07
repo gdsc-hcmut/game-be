@@ -23,6 +23,7 @@ class ClientUser {
         this.onDisconnect = this.onDisconnect.bind(this);
     }
 
+    //#region game flip
     async createNewSessionGame(socketId: any) {
         let newSession = await this.gameService.createGameSessionWithUserLogin(
             this.userId,
@@ -85,6 +86,111 @@ class ClientUser {
             gameSession.save();
         }
     }
+    //#endregion
+
+    //#region
+
+    getRandomInt(min: number, max: number) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+    }
+
+    async startQuiz(socketId: any) {
+        this.sockets[socketId].levelQuiz = 1;
+        this.sockets[socketId].scoreQuiz = 0;
+        let num1 = this.getRandomInt(1, 10);
+        let num2 = this.getRandomInt(1, 10);
+        let operation = _.sample([true, false]);
+        let fake = _.sample([true, false]);
+        this.sockets[socketId].isQuizTrue = fake;
+
+        let fakeAnwser = operation ? num1 + num2 : num1 - num2;
+        if (fake) {
+            fakeAnwser =
+                this.sockets[socketId].answer + this.getRandomInt(-10, 10);
+        }
+
+        this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
+            level: 1,
+            question: `${num1} ${
+                operation ? '+' : '-'
+            } ${num2} = ${fakeAnwser}`,
+            score: 0,
+        });
+        this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+            type: 'success',
+            message: 'Start quiz success',
+        });
+    }
+
+    calMinRangeWithLevel = (level: number) => {
+        if (level < 10) {
+            return 1;
+        }
+        if (level < 20) {
+            return 10;
+        }
+        if (level < 30) {
+            return 10;
+        }
+        if (level < 40) {
+            return 10;
+        }
+        return 20;
+    };
+    calMaxRangeWithLevel = (level: number) => {
+        if (level < 10) {
+            return 10;
+        }
+        if (level < 20) {
+            return 30;
+        }
+        if (level < 30) {
+            return 50;
+        }
+        if (level < 40) {
+            return 80;
+        }
+        return 100;
+    };
+
+    async answerQuiz(socketId: any, answer: any) {
+        if (answer !== this.sockets[socketId].isQuizTrue) {
+            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+        }
+
+        this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
+        this.sockets[socketId].scoreQuiz =
+            this.sockets[socketId].scoreQuiz + 10;
+        let num1 = this.getRandomInt(
+            this.calMinRangeWithLevel(this.sockets[socketId].levelQuiz),
+            this.calMaxRangeWithLevel(this.sockets[socketId].levelQuiz),
+        );
+        let num2 = this.getRandomInt(
+            this.calMinRangeWithLevel(this.sockets[socketId].levelQuiz),
+            this.calMaxRangeWithLevel(this.sockets[socketId].levelQuiz),
+        );
+        let operation = _.sample([true, false]);
+        let fake = _.sample([true, false]);
+        this.sockets[socketId].isQuizTrue = fake;
+
+        let fakeAnwser = operation ? num1 + num2 : num1 - num2;
+        if (fake) {
+            fakeAnwser =
+                this.sockets[socketId].answer + this.getRandomInt(-10, 10);
+        }
+
+        this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
+            level: this.sockets[socketId].levelQuiz,
+            question: `${num1} ${
+                operation ? '+' : '-'
+            } ${num2} = ${fakeAnwser}`,
+            score: this.sockets[socketId].scoreQuiz,
+        });
+    }
+
+    //#endregion
 
     registerSocket(socket: any) {
         this.sockets[socket.id] = { socket, sessionId: '' };
