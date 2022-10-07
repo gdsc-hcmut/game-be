@@ -63,7 +63,7 @@ export class ClubDayController extends Controller {
             let userClubday = await this.clubdayService.getUserClubDay(
                 req.tokenMeta.userId.toString(),
             );
-            if (!userClubday) {
+            if (userClubday) {
                 res.composer.badRequest('');
                 return;
             }
