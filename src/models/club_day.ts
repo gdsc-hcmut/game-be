@@ -17,6 +17,8 @@ export type ClubDayDocument = Document & {
 const clubDaySchema = new Schema<ClubDayDocument>({
     userId: String,
     email: String,
+    name: String,
+    studentId: String,
     isFinishGame: Boolean,
     isFinishCheckIn: Boolean,
     isFinishKeyMatching: Boolean,
