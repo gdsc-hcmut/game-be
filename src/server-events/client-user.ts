@@ -91,9 +91,7 @@ class ClientUser {
     //#region
 
     getRandomInt(min: number, max: number) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+        return _.random(min, max);
     }
 
     async startQuiz(socketId: any) {
@@ -108,7 +106,8 @@ class ClientUser {
 
         let fakeAnwser = operation ? num1 + num2 : num1 - num2;
         if (fake) {
-            fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
+            while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
+                fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
@@ -179,7 +178,8 @@ class ClientUser {
 
         let fakeAnwser = operation ? num1 + num2 : num1 - num2;
         if (fake) {
-            fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
+            while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
+                fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
