@@ -20,6 +20,7 @@ export const ServiceType = {
     MarketplaceItem: Symbol.for('MarketplaceItemService'),
     Transaction: Symbol.for('TransactionService'),
     Order: Symbol.for('OrderService'),
+    ClubDay: Symbol.for('ClubDayService'),
 };
 
 export enum PrivacyType {

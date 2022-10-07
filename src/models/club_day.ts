@@ -5,6 +5,8 @@ const Schema = mongoose.Schema;
 export type ClubDayDocument = Document & {
     userId: string;
     email: string;
+    name: string;
+    studentId: string;
     isFinishGame: boolean;
     isFinishCheckIn: boolean;
     isFinishKeyMatching: boolean;
@@ -22,6 +24,6 @@ const clubDaySchema = new Schema<ClubDayDocument>({
     gifts: Array<Number>,
 });
 
-const BookFair = mongoose.model<ClubDayDocument>('BookFair', clubDaySchema);
+const ClubDay = mongoose.model<ClubDayDocument>('ClubDay', clubDaySchema);
 
-export default BookFair;
+export default ClubDay;

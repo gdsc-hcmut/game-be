@@ -13,6 +13,7 @@ import {
     ItemService,
     MarketplaceItemService,
     TransactionService,
+    ClubDayService,
 } from './services';
 import {
     AuthController,
@@ -57,6 +58,10 @@ container
 container
     .bind<SocketService>(ServiceType.Socket)
     .to(SocketService)
+    .inSingletonScope();
+container
+    .bind<ClubDayService>(ServiceType.ClubDay)
+    .to(ClubDayService)
     .inSingletonScope();
 // Initialize service first
 Promise.all([

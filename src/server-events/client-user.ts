@@ -32,6 +32,10 @@ class ClientUser {
             EventTypes.RECEIVE_NEW_GAME_SESSION,
             newSession,
         );
+        this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+            type: 'success',
+            message: 'Start game success',
+        });
     }
 
     async onClickCell(socketId: any, cellId: any) {
@@ -72,6 +76,11 @@ class ClientUser {
                 EventTypes.NEXT_LEVEL_GAME,
                 newLevelGame,
             );
+            if (gameSession.level === 10)
+                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+                    type: 'success',
+                    message: 'You have received a new reward',
+                });
         } else {
             gameSession.save();
         }
