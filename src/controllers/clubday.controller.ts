@@ -46,9 +46,9 @@ export class ClubDayController extends Controller {
 
     async getClubDay(req: Request, res: Response) {
         try {
-            let user = req.user as UserDocument;
-
-            let clubDay = await this.clubdayService.getUserClubDay(user.id);
+            let clubDay = await this.clubdayService.getUserClubDay(
+                req.tokenMeta.userId.toString(),
+            );
 
             res.composer.success(clubDay);
         } catch (error) {
@@ -59,10 +59,8 @@ export class ClubDayController extends Controller {
 
     async createClubDay(req: Request, res: Response) {
         try {
-            let user = req.user as UserDocument;
-
             let clubDay = await this.clubdayService.createClubDay(
-                user.id,
+                req.tokenMeta.userId.toString(),
                 req.body.email,
                 req.body.name,
                 req.body.studentId,
