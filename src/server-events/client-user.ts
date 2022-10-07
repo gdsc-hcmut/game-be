@@ -104,7 +104,7 @@ class ClientUser {
         let num2 = this.getRandomInt(1, 10);
         let operation = _.sample([true, false]);
         let fake = _.sample([true, false]);
-        this.sockets[socketId].isQuizTrue = fake;
+        this.sockets[socketId].isQuizTrue = !fake;
 
         let fakeAnwser = operation ? num1 + num2 : num1 - num2;
         if (fake) {
