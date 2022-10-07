@@ -24,9 +24,9 @@ import { generateGameField } from '../game/game-logic';
 import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
 @injectable()
-export class GameController extends Controller {
+export class ClubDayController extends Controller {
     public readonly router = Router();
-    public readonly path = '/game';
+    public readonly path = '/clubday';
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
@@ -41,8 +41,7 @@ export class GameController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.get('/private/', this.getClubDay.bind(this));
         this.router.post('/private/', this.createClubDay.bind(this));
-        this.router.post('/private/verify', this.verifyGame.bind(this));
-
+        // this.router.post('/private/verify', this.verifyGame.bind(this));
     }
 
     async getClubDay(req: Request, res: Response) {
@@ -76,23 +75,21 @@ export class GameController extends Controller {
         }
     }
 
+    // async verifyGame(req: Request, res: Response) {
+    //     try {
+    //         let user = req.user as UserDocument;
 
-    async verifyGame(req: Request, res: Response) {
-        try {
-            let user = req.user as UserDocument;
+    //         let clubDay = await this.clubdayService(
+    //             user.id,
+    //             req.body.email,
+    //             req.body.name,
+    //             req.body.studentId,
+    //         );
 
-            let clubDay = await this.clubdayService.(
-                user.id,
-                req.body.email,
-                req.body.name,
-                req.body.studentId,
-            );
-
-            res.composer.success(clubDay);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
-    
+    //         res.composer.success(clubDay);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 }

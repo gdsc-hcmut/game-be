@@ -76,7 +76,7 @@ class ClientUser {
                 EventTypes.NEXT_LEVEL_GAME,
                 newLevelGame,
             );
-            if (gameSession.level === 10)
+            if (gameSession.level === 11)
                 this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
                     type: 'success',
                     message: 'You have received a new reward',

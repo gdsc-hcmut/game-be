@@ -21,6 +21,7 @@ import {
     GameController,
     ItemController,
     MarketplaceController,
+    ClubDayController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -74,6 +75,7 @@ Promise.all([
             container.resolve<GameController>(GameController),
             container.resolve<ItemController>(ItemController),
             container.resolve<MarketplaceController>(MarketplaceController),
+            container.resolve<ClubDayController>(ClubDayController),
         ],
         SERVICE_PORT,
         [
