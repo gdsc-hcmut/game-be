@@ -168,7 +168,7 @@ export class ClubDayController extends Controller {
             let clubDay = await this.clubdayService.getUserClubDay(
                 req.body.userId,
             );
-            let reward: Array<Reward>;
+            let reward: Array<Array<Reward>>;
             let count = 0;
             if (clubDay.isFinishGame) count++;
             if (clubDay.isFinishMathQuiz) count++;
@@ -176,13 +176,13 @@ export class ClubDayController extends Controller {
             if (clubDay.isFinishCheckIn) count++;
 
             if (count == 0) reward = [];
-            else if (count == 1) reward = [{ type: 'sticker', quantity: 1 }];
-            else if (count == 2) reward = [{ type: 'sticker', quantity: 2 }];
-            else if (count == 3) reward = [{ type: 'sticker', quantity: 3 }];
+            else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
+            else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
+            else if (count == 3) reward = [[{ type: 'sticker', quantity: 3 }]];
             else if (count == 4)
                 reward = [
-                    { type: 'keychain', quantity: 1 },
-                    { type: 'sticker', quantity: 3 },
+                    [{ type: 'keychain', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 3 }],
                 ];
 
             res.composer.success(reward);
@@ -203,7 +203,7 @@ export class ClubDayController extends Controller {
                 req.body.userId,
             );
 
-            let reward: Array<Reward>;
+            let reward: Array<Array<Reward>>;
             let count = 0;
             if (clubDay.isFinishGame) count++;
             if (clubDay.isFinishMathQuiz) count++;
@@ -211,12 +211,19 @@ export class ClubDayController extends Controller {
             if (clubDay.isFinishCheckIn) count++;
 
             if (count == 0) reward = [];
-            else if (count == 1) reward = [{ type: 'sticker', quantity: 1 }];
-            else if (count == 2) reward = [{ type: 'sticker', quantity: 2 }];
-            else if (count == 3) reward = [{ type: 'sticker', quantity: 3 }];
-            else if (count == 4) reward = [{ type: 'keychain', quantity: 1 }];
+            else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
+            else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
+            else if (count == 3) reward = [[{ type: 'sticker', quantity: 3 }]];
+            else if (count == 4)
+                reward = [
+                    [{ type: 'keychain', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 3 }],
+                ];
 
-            clubDay.gifts = reward;
+            if (req.body.option > reward.length) throw Error('Error received');
+
+            clubDay.gifts = reward[req.body.option];
+            clubDay.claimAt = Date.now();
             await clubDay.save();
             res.composer.success(clubDay);
         } catch (error) {
