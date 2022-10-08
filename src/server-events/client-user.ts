@@ -88,9 +88,6 @@ class ClientUser {
 
         gameSession.chooseFields.push(cellId);
 
-        console.log('Field', gameSession.chooseFields);
-        console.log('Field2', gameSession.levelInfo.hiddenCells);
-
         if (
             gameSession.chooseFields.length ===
             gameSession.levelInfo.hiddenCells.length
@@ -248,17 +245,20 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
-        console.log('Level Quiz', this.sockets[socketId].levelQuiz);
 
         if (this.sockets[socketId].levelQuiz === 10)
             try {
+                console.log('Level Quiz', this.sockets[socketId].levelQuiz);
+
                 await this.clubDayService.verifyMathQuiz(this.userId);
                 this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
                     type: 'success',
                     message:
                         'You have pass first 30 level and claim reward from Club Day ',
                 });
-            } catch (err) {}
+            } catch (err) {
+                console.log('MathQuizERRRR', err);
+            }
     }
 
     async endQuizTimeout(socketId: string) {

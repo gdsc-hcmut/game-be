@@ -128,7 +128,7 @@ export class ClubDayService {
         }
 
         clubDay.isFinishMathQuiz = true;
-        clubDay.save();
+        await clubDay.save();
         return clubDay;
     }
 }
