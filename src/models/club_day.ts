@@ -7,6 +7,7 @@ export type ClubDayDocument = Document & {
     name: string;
     studentId: string;
     isFinishGame: boolean;
+    isFinishMathQuiz: boolean;
     isFinishCheckIn: boolean;
     isFinishKeyMatching: boolean;
     claimAt: number;
@@ -17,9 +18,22 @@ const clubDaySchema = new Schema<ClubDayDocument>({
     userId: String,
     name: String,
     studentId: String,
-    isFinishGame: Boolean,
-    isFinishCheckIn: Boolean,
-    isFinishKeyMatching: Boolean,
+    isFinishGame: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishMathQuiz: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishCheckIn: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishKeyMatching: {
+        type: Boolean,
+        default: false,
+    },
     claimAt: Number,
     gifts: Array<Number>,
 });
