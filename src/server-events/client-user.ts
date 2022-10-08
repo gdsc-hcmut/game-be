@@ -246,7 +246,7 @@ class ClientUser {
             ),
         });
 
-        if (this.sockets[socketId].levelQuiz === 10)
+        if (this.sockets[socketId].levelQuiz === 31)
             try {
                 console.log('Level Quiz', this.sockets[socketId].levelQuiz);
 
