@@ -3,6 +3,8 @@ import * as UserService from '../services/user.service';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
 import { GameService } from '../services';
+import { ClubDayService } from '../services';
+
 import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
@@ -13,12 +15,18 @@ class ClientUser {
     private sockets: any;
     private userId: any;
     private gameService: GameService;
+    private clubDayService: ClubDayService;
 
-    constructor(userId: ObjectId, gameService: GameService) {
+    constructor(
+        userId: ObjectId,
+        gameService: GameService,
+        clubDayService: ClubDayService,
+    ) {
         this.sockets = [] as any;
         this.userId = [] as any;
         this.userId = userId;
         this.gameService = gameService;
+        this.clubDayService = clubDayService;
         // UserService.getOne(userId).then((data: any) => (this.userData = data));
         this.onDisconnect = this.onDisconnect.bind(this);
     }
@@ -77,11 +85,15 @@ class ClientUser {
                 EventTypes.NEXT_LEVEL_GAME,
                 newLevelGame,
             );
-            if (gameSession.level === 11)
-                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
-                    type: 'success',
-                    message: 'You have received a new reward',
-                });
+            if (gameSession.level === 21)
+                try {
+                    await this.clubDayService.verifyGame(gameSession.userId);
+                    this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+                        type: 'success',
+                        message:
+                            'You have pass first 20 level and claim reward from Club Day',
+                    });
+                } catch (err) {}
         } else {
             gameSession.save();
         }
@@ -189,6 +201,16 @@ class ClientUser {
             } ${num2} = ${fakeAnwser}`,
             score: this.sockets[socketId].scoreQuiz,
         });
+
+        if (this.sockets[socketId].levelQuiz === 31)
+            try {
+                await this.clubDayService.verifyMathQuiz(this.userId);
+                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+                    type: 'success',
+                    message:
+                        'You have pass first 30 level and claim reward from Club Day ',
+                });
+            } catch (err) {}
     }
 
     //#endregion

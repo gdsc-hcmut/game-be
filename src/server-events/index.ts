@@ -17,6 +17,7 @@ import {
     // DeviceService,
     // DeviceStatusService,
     AuthService,
+    ClubDayService,
     GameService,
     // MQTTService,
 } from '../services';
@@ -44,6 +45,7 @@ export class SocketService {
         // private deviceStatusService: DeviceStatusService,
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.Game) private gameService: GameService,
+        @inject(ServiceType.Game) private clubDayService: ClubDayService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -74,6 +76,7 @@ export class SocketService {
             this.connectedUser[socket.userId] = new ClientUser(
                 socket.userId,
                 this.gameService,
+                this.clubDayService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);

@@ -99,4 +99,36 @@ export class ClubDayService {
         clubDay.save();
         return clubDay;
     }
+
+    async verifyGame(userId: string): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not Existed');
+        }
+
+        if (clubDay.isFinishGame) {
+            throw Error('Already Finish');
+        }
+
+        clubDay.isFinishGame = true;
+        clubDay.save();
+        return clubDay;
+    }
+
+    async verifyMathQuiz(userId: string): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not Existed');
+        }
+
+        if (clubDay.isFinishMathQuiz) {
+            throw Error('Already Finish');
+        }
+
+        clubDay.isFinishMathQuiz = true;
+        clubDay.save();
+        return clubDay;
+    }
 }
