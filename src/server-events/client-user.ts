@@ -21,6 +21,7 @@ export interface SocketInfo {
     scoreQuiz: number;
     isQuizStart: boolean;
     isQuizTrue: boolean;
+    questionTime: number;
 }
 
 type SocketMapType = {
@@ -144,6 +145,9 @@ class ClientUser {
                 operation ? '+' : '-'
             } ${num2} = ${fakeAnwser}`,
             score: 0,
+            questionTime: this.calQuestionTimeWithLevel(
+                this.sockets[socketId].levelQuiz,
+            ),
         });
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
@@ -180,6 +184,22 @@ class ClientUser {
             return 80;
         }
         return 100;
+    };
+
+    calQuestionTimeWithLevel = (level: number) => {
+        if (level < 10) {
+            return 3000;
+        }
+        if (level < 20) {
+            return 2500;
+        }
+        if (level < 30) {
+            return 2000;
+        }
+        if (level < 40) {
+            return 2000;
+        }
+        return 2000;
     };
 
     async answerQuiz(socketId: any, answer: any) {
@@ -220,6 +240,9 @@ class ClientUser {
                 operation ? '+' : '-'
             } ${num2} = ${fakeAnwser}`,
             score: this.sockets[socketId].scoreQuiz,
+            questionTime: this.calQuestionTimeWithLevel(
+                this.sockets[socketId].levelQuiz,
+            ),
         });
 
         if (this.sockets[socketId].levelQuiz === 31)
@@ -244,6 +267,7 @@ class ClientUser {
             scoreQuiz: 0,
             isQuizStart: false,
             isQuizTrue: false,
+            questionTime: 2000,
         };
         this.sockets[socket.id] = { ...defaults };
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
