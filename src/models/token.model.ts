@@ -21,8 +21,8 @@ const tokenSchema = new Schema<TokenDocument>({
 export function parseTokenMeta(tokenMeta: any): TokenDocument {
     return {
         ...tokenMeta,
-        _id: ObjectID.createFromHexString(tokenMeta._id),
-        userId: ObjectID.createFromHexString(tokenMeta.userId),
+        _id: tokenMeta._id,
+        userId: tokenMeta.userId,
     };
 }
 
