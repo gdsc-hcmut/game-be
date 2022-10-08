@@ -9,18 +9,19 @@ import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
+import { CustomSocket } from '.';
 
 const INIT_LEVEL = 0;
 
-export type SocketInfo = {
-    socket: Socket;
+export interface SocketInfo {
+    socket: CustomSocket;
     socketId: string;
     sessionId: string;
     levelQuiz: number;
     scoreQuiz: number;
     isQuizStart: boolean;
     isQuizTrue: boolean;
-};
+}
 
 type SocketMapType = {
     [socketId: string]: SocketInfo;
@@ -234,9 +235,17 @@ class ClientUser {
 
     //#endregion
 
-    registerSocket(socket: Socket) {
-        this.sockets[socket.id].socket = socket;
-        this.sockets[socket.id].sessionId = '';
+    registerSocket(socket: CustomSocket) {
+        const defaults: SocketInfo = {
+            socket: socket,
+            socketId: socket.id,
+            sessionId: 'string',
+            levelQuiz: 0,
+            scoreQuiz: 0,
+            isQuizStart: false,
+            isQuizTrue: false,
+        };
+        this.sockets[socket.id] = { ...defaults };
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
             this.onDisconnect(socket, reason),
         );
