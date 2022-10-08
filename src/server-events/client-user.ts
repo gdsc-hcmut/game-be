@@ -216,7 +216,7 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
-            this.gameService.updateUserBalanceInGame(
+            await this.gameService.updateUserBalanceInGame(
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
@@ -281,7 +281,7 @@ class ClientUser {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
-        this.gameService.updateUserBalanceInGame(
+        await this.gameService.updateUserBalanceInGame(
             this.userId,
             this.sockets[socketId].levelQuiz,
         );
