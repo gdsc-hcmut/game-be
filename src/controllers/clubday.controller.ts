@@ -133,7 +133,7 @@ export class ClubDayController extends Controller {
                 );
             else
                 clubDay = await this.clubdayService.verifyCheckIn(
-                    req.body.userId._bsontype,
+                    req.body.userId,
                 );
             res.composer.success('Success');
         } catch (error) {
