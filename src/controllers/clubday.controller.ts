@@ -24,6 +24,7 @@ import { generateGameField } from '../game/game-logic';
 import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
 import bodyParser from 'body-parser';
+import { Reward } from '../models/club_day';
 @injectable()
 export class ClubDayController extends Controller {
     public readonly router = Router();
@@ -44,6 +45,12 @@ export class ClubDayController extends Controller {
         this.router.post('/private/', this.createClubDay.bind(this));
         this.router.patch('/private/', this.updateClubDay.bind(this));
         this.router.post('/private/verify', this.verifyGame.bind(this));
+        this.router.get(
+            '/private/received/all',
+            this.getAllReceivedClubDay.bind(this),
+        );
+        this.router.get('/private/reward', this.getAvailableReward.bind(this));
+        this.router.post('/private/reward', this.receivedReward.bind(this));
     }
 
     async getClubDay(req: Request, res: Response) {
@@ -122,11 +129,11 @@ export class ClubDayController extends Controller {
             let clubDay;
             if (req.body.type === 'key_matching')
                 clubDay = await this.clubdayService.verifyKeyMatching(
-                    req.tokenMeta.userId.toString(),
+                    req.body.userId,
                 );
             else
                 clubDay = await this.clubdayService.verifyCheckIn(
-                    req.tokenMeta.userId.toString(),
+                    req.body.userId._bsontype,
                 );
             res.composer.success('Success');
         } catch (error) {
@@ -137,6 +144,11 @@ export class ClubDayController extends Controller {
 
     async getAllReceivedClubDay(req: Request, res: Response) {
         try {
+            if (
+                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
             let clubDay = await this.clubdayService.getAllReceivedClubDay();
 
             res.composer.success(clubDay);
@@ -148,12 +160,65 @@ export class ClubDayController extends Controller {
 
     async getAvailableReward(req: Request, res: Response) {
         try {
+            if (
+                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
             let clubDay = await this.clubdayService.getUserClubDay(
-                req.tokenMeta.userId.toString(),
+                req.body.userId,
             );
-            let reward = [];
+            let reward: Array<Reward>;
             let count = 0;
+            if (clubDay.isFinishGame) count++;
+            if (clubDay.isFinishMathQuiz) count++;
+            if (clubDay.isFinishKeyMatching) count++;
             if (clubDay.isFinishCheckIn) count++;
+
+            if (count == 0) reward = [];
+            else if (count == 1) reward = [{ type: 'sticker', quantity: 1 }];
+            else if (count == 2) reward = [{ type: 'sticker', quantity: 2 }];
+            else if (count == 3) reward = [{ type: 'sticker', quantity: 3 }];
+            else if (count == 4)
+                reward = [
+                    { type: 'keychain', quantity: 1 },
+                    { type: 'sticker', quantity: 3 },
+                ];
+
+            res.composer.success(reward);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async receivedReward(req: Request, res: Response) {
+        try {
+            if (
+                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
+            let clubDay = await this.clubdayService.getUserClubDay(
+                req.body.userId,
+            );
+
+            let reward: Array<Reward>;
+            let count = 0;
+            if (clubDay.isFinishGame) count++;
+            if (clubDay.isFinishMathQuiz) count++;
+            if (clubDay.isFinishKeyMatching) count++;
+            if (clubDay.isFinishCheckIn) count++;
+
+            if (count == 0) reward = [];
+            else if (count == 1) reward = [{ type: 'sticker', quantity: 1 }];
+            else if (count == 2) reward = [{ type: 'sticker', quantity: 2 }];
+            else if (count == 3) reward = [{ type: 'sticker', quantity: 3 }];
+            else if (count == 4) reward = [{ type: 'keychain', quantity: 1 }];
+
+            clubDay.gifts = reward;
+            await clubDay.save();
+            res.composer.success(clubDay);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

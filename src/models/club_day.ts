@@ -11,7 +11,12 @@ export type ClubDayDocument = Document & {
     isFinishCheckIn: boolean;
     isFinishKeyMatching: boolean;
     claimAt: number;
-    gifts: number[];
+    gifts: Reward[];
+};
+
+export type Reward = {
+    type: string;
+    quantity: number;
 };
 
 const clubDaySchema = new Schema<ClubDayDocument>({
@@ -35,7 +40,7 @@ const clubDaySchema = new Schema<ClubDayDocument>({
         default: false,
     },
     claimAt: Number,
-    gifts: Array<Number>,
+    gifts: Array<Reward>,
 });
 
 const ClubDay = mongoose.model<ClubDayDocument>('ClubDay', clubDaySchema);
