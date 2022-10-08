@@ -248,6 +248,7 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
+        console.log('Level Quiz', this.sockets[socketId].levelQuiz);
 
         if (this.sockets[socketId].levelQuiz === 10)
             try {
