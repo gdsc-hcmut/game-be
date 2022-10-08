@@ -211,6 +211,10 @@ export class ClubDayController extends Controller {
                 req.body.userId,
             );
 
+            if (clubDay.claimAt) {
+                throw Error('Error user received');
+            }
+
             let reward: Array<Array<Reward>>;
             let count = 0;
             if (clubDay.isFinishGame) count++;
