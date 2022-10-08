@@ -34,6 +34,7 @@ export class AuthController extends Controller {
                     user._id,
                     user.googleId,
                     user.email,
+                    user.roles,
                 );
                 res.redirect(`https://game.gdsc.app/login?token=${token}`);
             },

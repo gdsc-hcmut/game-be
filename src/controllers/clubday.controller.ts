@@ -23,6 +23,7 @@ import BookFair from '../models/book_fair';
 import { generateGameField } from '../game/game-logic';
 import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
+import bodyParser from 'body-parser';
 @injectable()
 export class ClubDayController extends Controller {
     public readonly router = Router();
@@ -109,9 +110,12 @@ export class ClubDayController extends Controller {
 
     async verifyGame(req: Request, res: Response) {
         try {
-            let user = req.user as UserDocument;
-
-            if (!_.includes(user.roles, USER_ROLES.STAFF_CLUBDAY_VERIFY)) {
+            if (
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
+                )
+            ) {
                 throw Error('You are not Staff of Club Day');
             }
 
@@ -125,6 +129,31 @@ export class ClubDayController extends Controller {
                     req.tokenMeta.userId.toString(),
                 );
             res.composer.success('Success');
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getAllReceivedClubDay(req: Request, res: Response) {
+        try {
+            let clubDay = await this.clubdayService.getAllReceivedClubDay();
+
+            res.composer.success(clubDay);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getAvailableReward(req: Request, res: Response) {
+        try {
+            let clubDay = await this.clubdayService.getUserClubDay(
+                req.tokenMeta.userId.toString(),
+            );
+            let reward = [];
+            let count = 0;
+            if (clubDay.isFinishCheckIn) count++;
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

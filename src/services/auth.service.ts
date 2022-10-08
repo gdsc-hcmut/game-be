@@ -74,7 +74,7 @@ export class AuthService {
                         googleId: profile.id,
                         name: profile.displayName,
                         email: profile.emails?.[0].value,
-                        type: USER_ROLES.USER,
+                        roles: USER_ROLES.USER,
                         // we are using optional chaining because profile.emails may be undefined.
                     });
                     if (newUser) {
@@ -140,6 +140,7 @@ export class AuthService {
         userId: string,
         googleId: string,
         userAgent: string,
+        roles: Array<USER_ROLES>,
     ) {
         const result = await Token.create({
             googleId,
@@ -147,6 +148,7 @@ export class AuthService {
             userId,
             createdAt: moment().unix(),
             expiredAt: moment().unix() + TOKEN_TTL,
+            roles,
         });
         const EncodeToken = jwt.encode(
             {
@@ -156,6 +158,7 @@ export class AuthService {
                 userId,
                 createdAt: moment().unix(),
                 expiredAt: moment().unix() + TOKEN_TTL,
+                roles,
             },
             JWT_SECRET,
         );
@@ -168,22 +171,29 @@ export class AuthService {
         userId: string,
         googleId: string,
         email: string,
+        roles: Array<USER_ROLES>,
     ) {
-        return await this.createToken(userId, googleId, email);
+        return await this.createToken(userId, googleId, email, roles);
     }
 
-    async generateTokenGoogle(user: UserDocument) {
+    async generateTokenGoogle(user: UserDocument, roles: Array<USER_ROLES>) {
         if (_.isEmpty(user)) {
             throw new ErrorUserInvalid('User not exist');
         }
 
-        return await this.createToken(user._id, user.googleId, user.email);
+        return await this.createToken(
+            user._id,
+            user.googleId,
+            user.email,
+            roles,
+        );
     }
 
     async generateTokenUsingSocialAccount(
         type: SocialAccountType,
         accessToken: string,
         userAgent: string,
+        roles: Array<USER_ROLES>,
     ) {
         // Verify token
         let queryResponse = null;
@@ -221,7 +231,7 @@ export class AuthService {
             // userId = (await this.userService.createSocial(type, userData))._id;
         }
 
-        return await this.createToken(userId, userId, userAgent);
+        return await this.createToken(userId, userId, userAgent, roles);
     }
 
     async recoverPasswordRequest(email: string) {
