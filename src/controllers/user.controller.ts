@@ -15,7 +15,7 @@ import { ObjectID, ObjectId } from 'mongodb';
 import { EMAIL_SENDER, LIMIT_PAGING } from '../config';
 import { Bundle } from '../models/bundle.model';
 import { LeetCode } from 'leetcode-query';
-import User, { UserDocument } from '../models/user.model';
+import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 
 @injectable()
@@ -242,7 +242,7 @@ export class UserController extends Controller {
             if (!user) {
                 throw new ErrorNotFound('User not found');
             }
-            if (user.type !== 'SYSTEM') {
+            if (_.includes(user.roles, USER_ROLES.SYSTEM)) {
                 throw new ErrorUserInvalid('Permission denied');
             }
 

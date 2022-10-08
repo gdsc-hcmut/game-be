@@ -16,7 +16,7 @@ import moment from 'moment';
 import mongoose from 'mongoose';
 import passportGoogle from 'passport-google-oauth20';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config';
-import User, { UserDocument } from '../models/user.model';
+import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { parseTokenMeta } from '../models/token.model';
 const GoogleStrategy = passportGoogle.Strategy;
 
@@ -74,6 +74,7 @@ export class AuthService {
                         googleId: profile.id,
                         name: profile.displayName,
                         email: profile.emails?.[0].value,
+                        type: USER_ROLES.USER,
                         // we are using optional chaining because profile.emails may be undefined.
                     });
                     if (newUser) {

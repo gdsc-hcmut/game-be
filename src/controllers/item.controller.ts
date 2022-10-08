@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { Request, Response, ServiceType } from '../types';
 import { AuthService, ItemService, UserService } from '../services';
 import { ItemDocument } from '../models/item.model';
-import { USER_TYPES } from '../models/user.model';
+import { USER_ROLES } from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
 
 @injectable()

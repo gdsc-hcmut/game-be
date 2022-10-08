@@ -13,7 +13,7 @@ import {
     UserService,
 } from '../services';
 import passport from 'passport';
-import { UserDocument } from '../models/user.model';
+import { UserDocument, USER_ROLES } from '../models/user.model';
 import { GameService } from '../services';
 import { ErrorInvalidData } from '../lib/errors';
 import { ItemDocument } from '../models/item.model';
@@ -105,10 +105,20 @@ export class ClubDayController extends Controller {
     async verifyGame(req: Request, res: Response) {
         try {
             let user = req.user as UserDocument;
+
+            if (!_.includes(user.roles, USER_ROLES.STAFF_CLUBDAY)) {
+                throw Error('You are not Staff of Club Day');
+            }
+
             let clubDay;
             if (req.body.type === 'key_matching')
-                clubDay = await this.clubdayService.verifyKeyMatching(user.id);
-            else clubDay = await this.clubdayService.verifyCheckIn(user.id);
+                clubDay = await this.clubdayService.verifyKeyMatching(
+                    req.tokenMeta.userId.toString(),
+                );
+            else
+                clubDay = await this.clubdayService.verifyCheckIn(
+                    req.tokenMeta.userId.toString(),
+                );
             res.composer.success('Success');
         } catch (error) {
             console.log(error);
