@@ -22,6 +22,7 @@ export interface SocketInfo {
     isQuizStart: boolean;
     isQuizTrue: boolean;
     questionTime: number;
+    quizTimeout: ReturnType<typeof setTimeout>;
 }
 
 type SocketMapType = {
@@ -149,6 +150,15 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
+        this.sockets[socketId].quizTimeout = setTimeout(() => {
+            clearTimeout(this.sockets[socketId].quizTimeout);
+            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+            this.sockets[socketId].isQuizStart = false;
+            this.gameService.updateUserBalanceInGame(
+                this.userId,
+                this.sockets[socketId].levelQuiz,
+            );
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz));
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
             message: 'Start quiz success',
@@ -212,6 +222,7 @@ class ClientUser {
             );
         }
         if (!this.sockets[socketId].isQuizStart) return;
+        clearTimeout(this.sockets[socketId].quizTimeout);
 
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
         this.sockets[socketId].scoreQuiz =
@@ -244,6 +255,15 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
+        this.sockets[socketId].quizTimeout = setTimeout(() => {
+            clearTimeout(this.sockets[socketId].quizTimeout);
+            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+            this.sockets[socketId].isQuizStart = false;
+            this.gameService.updateUserBalanceInGame(
+                this.userId,
+                this.sockets[socketId].levelQuiz,
+            );
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz));
 
         if (this.sockets[socketId].levelQuiz === 31)
             try {
@@ -268,6 +288,7 @@ class ClientUser {
             isQuizStart: false,
             isQuizTrue: false,
             questionTime: 2000,
+            quizTimeout: null,
         };
         this.sockets[socket.id] = { ...defaults };
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
