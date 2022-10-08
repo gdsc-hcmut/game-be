@@ -35,13 +35,11 @@ export class ClubDayService {
 
     async createClubDay(
         userId: string,
-        email: string,
         name: string,
         studentId: string,
     ): Promise<ClubDayDocument> {
         let newClubDay = new ClubDay();
         newClubDay.userId = userId;
-        newClubDay.email = email;
         newClubDay.name = name;
         newClubDay.studentId = studentId;
         newClubDay.save();
@@ -50,12 +48,10 @@ export class ClubDayService {
 
     async updateClubDay(
         userId: string,
-        email?: string,
         name?: string,
         studentId?: string,
     ): Promise<ClubDayDocument> {
         let clubDay = await ClubDay.findOne({ userId: userId });
-        if (email) clubDay.email = email;
         if (name) clubDay.name = name;
         if (studentId) clubDay.studentId = studentId;
         clubDay.save();
@@ -64,6 +60,38 @@ export class ClubDayService {
 
     async getUserClubDay(userId: string): Promise<ClubDayDocument> {
         let clubDay = await ClubDay.findOne({ userId: userId });
+        return clubDay;
+    }
+
+    async verifyCheckIn(userId: string): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not Existed');
+        }
+
+        if (clubDay.isFinishCheckIn) {
+            throw Error('Already Finish');
+        }
+
+        clubDay.isFinishCheckIn = true;
+        clubDay.save();
+        return clubDay;
+    }
+
+    async verifyKeyMatching(userId: string): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not Existed');
+        }
+
+        if (clubDay.isFinishKeyMatching) {
+            throw Error('Already Finish');
+        }
+
+        clubDay.isFinishKeyMatching = true;
+        clubDay.save();
         return clubDay;
     }
 }

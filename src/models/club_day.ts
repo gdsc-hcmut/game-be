@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 export type ClubDayDocument = Document & {
     userId: string;
-    email: string;
     name: string;
     studentId: string;
     isFinishGame: boolean;
@@ -16,7 +15,6 @@ export type ClubDayDocument = Document & {
 
 const clubDaySchema = new Schema<ClubDayDocument>({
     userId: String,
-    email: String,
     name: String,
     studentId: String,
     isFinishGame: Boolean,

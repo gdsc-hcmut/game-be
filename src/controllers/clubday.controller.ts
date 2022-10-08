@@ -42,7 +42,7 @@ export class ClubDayController extends Controller {
         this.router.get('/private/', this.getClubDay.bind(this));
         this.router.post('/private/', this.createClubDay.bind(this));
         this.router.patch('/private/', this.updateClubDay.bind(this));
-        // this.router.post('/private/verify', this.verifyGame.bind(this));
+        this.router.post('/private/verify', this.verifyGame.bind(this));
     }
 
     async getClubDay(req: Request, res: Response) {
@@ -69,7 +69,6 @@ export class ClubDayController extends Controller {
             }
             var clubDay = await this.clubdayService.createClubDay(
                 req.tokenMeta.userId.toString(),
-                req.body.email,
                 req.body.name,
                 req.body.studentId,
             );
@@ -92,7 +91,6 @@ export class ClubDayController extends Controller {
             }
             var clubDay = await this.clubdayService.updateClubDay(
                 req.tokenMeta.userId.toString(),
-                req.body?.email,
                 req.body?.name,
                 req.body?.studentId,
             );
@@ -104,21 +102,17 @@ export class ClubDayController extends Controller {
         }
     }
 
-    // async verifyGame(req: Request, res: Response) {
-    //     try {
-    //         let user = req.user as UserDocument;
-
-    //         let clubDay = await this.clubdayService(
-    //             user.id,
-    //             req.body.email,
-    //             req.body.name,
-    //             req.body.studentId,
-    //         );
-
-    //         res.composer.success(clubDay);
-    //     } catch (error) {
-    //         console.log(error);
-    //         res.composer.badRequest(error.message);
-    //     }
-    // }
+    async verifyGame(req: Request, res: Response) {
+        try {
+            let user = req.user as UserDocument;
+            let clubDay;
+            if (req.body.type === 'key_matching')
+                clubDay = await this.clubdayService.verifyKeyMatching(user.id);
+            else clubDay = await this.clubdayService.verifyCheckIn(user.id);
+            res.composer.success('Success');
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
 }
