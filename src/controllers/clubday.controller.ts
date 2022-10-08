@@ -117,6 +117,14 @@ export class ClubDayController extends Controller {
 
     async verifyGame(req: Request, res: Response) {
         try {
+            console.log('Staff CLub day', req.tokenMeta);
+            console.log(
+                'Staff CLub day',
+                _.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
+                ),
+            );
             if (
                 !_.includes(
                     req.tokenMeta.roles,
