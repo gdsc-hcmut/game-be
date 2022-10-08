@@ -150,15 +150,15 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
-        this.sockets[socketId].quizTimeout = setTimeout(() => {
-            clearTimeout(this.sockets[socketId].quizTimeout);
-            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
-            this.sockets[socketId].isQuizStart = false;
-            this.gameService.updateUserBalanceInGame(
-                this.userId,
-                this.sockets[socketId].levelQuiz,
-            );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
+        // this.sockets[socketId].quizTimeout = setTimeout(() => {
+        //     clearTimeout(this.sockets[socketId].quizTimeout);
+        //     this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+        //     this.sockets[socketId].isQuizStart = false;
+        //     this.gameService.updateUserBalanceInGame(
+        //         this.userId,
+        //         this.sockets[socketId].levelQuiz,
+        //     );
+        // }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
             message: 'Start quiz success',
@@ -220,10 +220,10 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
-            clearTimeout(this.sockets[socketId].quizTimeout);
+            // clearTimeout(this.sockets[socketId].quizTimeout);
         }
         if (!this.sockets[socketId].isQuizStart) return;
-        clearTimeout(this.sockets[socketId].quizTimeout);
+        // clearTimeout(this.sockets[socketId].quizTimeout);
 
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
         this.sockets[socketId].scoreQuiz =
@@ -256,15 +256,15 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
-        this.sockets[socketId].quizTimeout = setTimeout(() => {
-            clearTimeout(this.sockets[socketId].quizTimeout);
-            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
-            this.sockets[socketId].isQuizStart = false;
-            this.gameService.updateUserBalanceInGame(
-                this.userId,
-                this.sockets[socketId].levelQuiz,
-            );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
+        // this.sockets[socketId].quizTimeout = setTimeout(() => {
+        //     // clearTimeout(this.sockets[socketId].quizTimeout);
+        //     this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+        //     this.sockets[socketId].isQuizStart = false;
+        //     this.gameService.updateUserBalanceInGame(
+        //         this.userId,
+        //         this.sockets[socketId].levelQuiz,
+        //     );
+        // }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
 
         if (this.sockets[socketId].levelQuiz === 31)
             try {
