@@ -98,8 +98,21 @@ export class GameService {
             gameSession.save();
             return;
         }
-        user.balance = user.balance + levels[gameSession.level - 1].score;
+        user.balance = user.balance + gameSession.level;
         gameSession.save();
+        user.save();
+
+        return user.balance;
+    }
+
+    async updateUserBalanceInGame(
+        userId: string,
+        balance: number,
+    ): Promise<Number> {
+        let user = await User.findById(userId);
+
+        user.balance = user.balance + balance;
+        user.save();
 
         return user.balance;
     }

@@ -185,6 +185,10 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
+            this.gameService.updateUserBalanceInGame(
+                this.userId,
+                this.sockets[socketId].levelQuiz,
+            );
         }
         if (!this.sockets[socketId].isQuizStart) return;
 
