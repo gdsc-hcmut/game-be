@@ -176,6 +176,9 @@ export class ClubDayController extends Controller {
             let clubDay = await this.clubdayService.getUserClubDay(
                 req.body.userId,
             );
+
+            if (!clubDay) throw Error('User Clubday not existed');
+
             let reward: Array<Array<Reward>>;
             let count = 0;
             if (clubDay.isFinishGame) count++;
