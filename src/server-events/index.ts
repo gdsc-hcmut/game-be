@@ -51,7 +51,7 @@ export class SocketService {
         // private deviceStatusService: DeviceStatusService,
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.Game) private gameService: GameService,
-        @inject(ServiceType.Game) private clubDayService: ClubDayService,
+        @inject(ServiceType.ClubDay) private clubDayService: ClubDayService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
