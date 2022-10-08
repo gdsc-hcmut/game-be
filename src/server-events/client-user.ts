@@ -158,7 +158,7 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 960);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 2000);
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
             message: 'Start quiz success',
@@ -198,7 +198,7 @@ class ClientUser {
 
     calQuestionTimeWithLevel = (level: number) => {
         if (level < 10) {
-            return 2000;
+            return 3000;
         }
         if (level < 20) {
             return 2500;
@@ -263,7 +263,7 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 960);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 2000);
 
         if (this.sockets[socketId].levelQuiz === 31)
             try {

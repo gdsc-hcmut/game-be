@@ -173,6 +173,7 @@ export class ClubDayController extends Controller {
             ) {
                 throw Error('You are not Staff of Club Day');
             }
+            console.log(req.body.userId);
             let clubDay = await this.clubdayService.getUserClubDay(
                 req.body.userId,
             );
