@@ -198,7 +198,7 @@ class ClientUser {
 
     calQuestionTimeWithLevel = (level: number) => {
         if (level < 10) {
-            return 3000;
+            return 2000;
         }
         if (level < 20) {
             return 2500;
