@@ -63,8 +63,8 @@ export class ClubDayService {
         return clubDay;
     }
 
-    async getAllReceivedClubDay(): Promise<ClubDayDocument> {
-        let clubDay = await ClubDay.findOne({ claimAt: { $gte: 1 } });
+    async getAllReceivedClubDay(): Promise<Array<ClubDayDocument>> {
+        let clubDay = await ClubDay.find({ claimAt: { $gte: 1 } });
         return clubDay;
     }
 
