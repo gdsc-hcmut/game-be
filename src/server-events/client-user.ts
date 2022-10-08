@@ -158,7 +158,7 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 2000);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
             message: 'Start quiz success',
@@ -220,6 +220,7 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
+            clearTimeout(this.sockets[socketId].quizTimeout);
         }
         if (!this.sockets[socketId].isQuizStart) return;
         clearTimeout(this.sockets[socketId].quizTimeout);
@@ -263,7 +264,7 @@ class ClientUser {
                 this.userId,
                 this.sockets[socketId].levelQuiz,
             );
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 2000);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
 
         if (this.sockets[socketId].levelQuiz === 31)
             try {
@@ -274,6 +275,16 @@ class ClientUser {
                         'You have pass first 30 level and claim reward from Club Day ',
                 });
             } catch (err) {}
+    }
+
+    async endQuizTimeout(socketId: string) {
+        clearTimeout(this.sockets[socketId].quizTimeout);
+        this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+        this.sockets[socketId].isQuizStart = false;
+        this.gameService.updateUserBalanceInGame(
+            this.userId,
+            this.sockets[socketId].levelQuiz,
+        );
     }
 
     //#endregion

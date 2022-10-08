@@ -107,6 +107,10 @@ export class SocketService {
             this.connectedUser[socket.userId].answerQuiz(socket.id, answer),
         );
 
+        socket.on(EventTypes.QUIZ_TIMEOUT, () =>
+            this.connectedUser[socket.userId].endQuizTimeout(socket.id),
+        );
+
         socket.on(EventTypes.DISCONNECT, () => {
             this.tracking.removeUserConnecting(socket.id);
         });
