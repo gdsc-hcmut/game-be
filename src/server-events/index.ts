@@ -23,12 +23,18 @@ import {
 } from '../services';
 import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
+import { Socket } from 'socket.io';
+import { TokenDocument } from '../models/token.model';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
 // let tracking = new TrackingUser();
 
 // let clientSockets: any = [];
+
+export interface CustomSocket extends Socket {
+    userId: string;
+}
 
 @injectable()
 export class SocketService {
@@ -68,7 +74,7 @@ export class SocketService {
         // }
     };
 
-    onConnection = (socket: any) => {
+    onConnection = (socket: CustomSocket) => {
         console.log('New user connected');
         console.log('Has a new connection', socket.id);
         console.log('Connected User', socket.userId);
@@ -115,7 +121,7 @@ export class SocketService {
         });
     };
 
-    initialize = (socketServer: any) => {
+    initialize = (socketServer: Socket) => {
         this.socketIOServer = socketServer;
         const wrapMiddlewareForSocketIo =
             (middleware: any) => (socket: any, next: any) =>
@@ -124,12 +130,15 @@ export class SocketService {
             wrapMiddlewareForSocketIo(passport.initialize()),
         );
         this.socketIOServer.use((socket: any, next: any) => {
-            passport.authenticate('jwt', (err, tokenMeta, info, x, y) => {
-                if (err || !tokenMeta)
-                    return next(new Error('Authentication error'));
-                socket.userId = tokenMeta.userId;
-                next();
-            })(socket.request, {}, next);
+            passport.authenticate(
+                'jwt',
+                (err, tokenMeta: TokenDocument, info, x, y) => {
+                    if (err || !tokenMeta)
+                        return next(new Error('Authentication error'));
+                    socket.userId = tokenMeta.userId;
+                    next();
+                },
+            )(socket.request, {}, next);
         });
         this.socketIOServer.on('connection', this.onConnection);
     };

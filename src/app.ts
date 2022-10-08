@@ -9,11 +9,12 @@ import { SERVICE_NAME, STATIC_DIR } from './config';
 import { COOKIE_KEY } from './config';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
+import { Socket } from 'socket.io';
 class App {
     public app: any;
     public server: any;
     public port: number;
-    public io: any;
+    public io: Socket;
 
     constructor(controllers: Controller[], port: number, middlewares: any[]) {
         this.app = express();

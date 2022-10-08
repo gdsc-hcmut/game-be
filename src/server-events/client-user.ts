@@ -8,17 +8,32 @@ import { ClubDayService } from '../services';
 import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
+import { Socket } from 'socket.io';
 
 const INIT_LEVEL = 0;
 
+export type SocketInfo = {
+    socket: Socket;
+    socketId: string;
+    sessionId: string;
+    levelQuiz: number;
+    scoreQuiz: number;
+    isQuizStart: boolean;
+    isQuizTrue: boolean;
+};
+
+type SocketMapType = {
+    [socketId: string]: SocketInfo;
+};
+
 class ClientUser {
-    private sockets: any;
+    private sockets: SocketMapType;
     private userId: any;
     private gameService: GameService;
     private clubDayService: ClubDayService;
 
     constructor(
-        userId: ObjectId,
+        userId: string,
         gameService: GameService,
         clubDayService: ClubDayService,
     ) {
@@ -215,8 +230,9 @@ class ClientUser {
 
     //#endregion
 
-    registerSocket(socket: any) {
-        this.sockets[socket.id] = { socket, sessionId: '' };
+    registerSocket(socket: Socket) {
+        this.sockets[socket.id].socket = socket;
+        this.sockets[socket.id].sessionId = '';
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
             this.onDisconnect(socket, reason),
         );
@@ -224,9 +240,9 @@ class ClientUser {
 
     notifyClient(data: any) {
         console.log('Notify', data);
-        Object.keys(this.sockets).map((key: any, index: any) => {
-            this.sockets[key].emit(EventTypes.NOTIFY, data);
-        });
+        // Object.keys(this.sockets).map((key: any, index: any) => {
+        //     this.sockets[key].emit(EventTypes.NOTIFY, data);
+        // });
     }
 
     async onDisconnect(socket: any, reason: any) {

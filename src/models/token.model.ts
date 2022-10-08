@@ -5,14 +5,14 @@ import { USER_ROLES } from './user.model';
 const Schema = mongoose.Schema;
 
 export type TokenDocument = Document & {
-    userId: ObjectID;
+    userId: string;
     createdAt: number;
     expiredAt: number;
     roles: USER_ROLES[];
 };
 
 const tokenSchema = new Schema<TokenDocument>({
-    userId: ObjectID,
+    userId: String,
     createdAt: Number,
     expiredAt: Number,
     roles: Array<USER_ROLES>,
