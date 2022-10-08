@@ -67,6 +67,11 @@ export class ClubDayController extends Controller {
                 res.composer.badRequest('');
                 return;
             }
+
+            if (!req.body.name || !req.body.studentId) {
+                throw Error('Miss Field');
+            }
+
             var clubDay = await this.clubdayService.createClubDay(
                 req.tokenMeta.userId.toString(),
                 req.body.name,
@@ -106,7 +111,7 @@ export class ClubDayController extends Controller {
         try {
             let user = req.user as UserDocument;
 
-            if (!_.includes(user.roles, USER_ROLES.STAFF_CLUBDAY)) {
+            if (!_.includes(user.roles, USER_ROLES.STAFF_CLUBDAY_VERIFY)) {
                 throw Error('You are not Staff of Club Day');
             }
 
