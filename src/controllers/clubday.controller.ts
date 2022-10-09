@@ -189,7 +189,12 @@ export class ClubDayController extends Controller {
             if (count == 0) reward = [];
             else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
             else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
-            else if (count == 3) reward = [[{ type: 'sticker', quantity: 3 }]];
+            else if (count == 3)
+                reward = [
+                    [{ type: 'keychain', quantity: 1 }],
+                    [{ type: 'notebook', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 5 }],
+                ];
             else if (count == 4)
                 reward = [
                     [{ type: 'keychain', quantity: 1 }],
@@ -229,7 +234,12 @@ export class ClubDayController extends Controller {
             if (count == 0) reward = [];
             else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
             else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
-            else if (count == 3) reward = [[{ type: 'sticker', quantity: 3 }]];
+            else if (count == 3)
+                reward = [
+                    [{ type: 'keychain', quantity: 1 }],
+                    [{ type: 'notebook', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 5 }],
+                ];
             else if (count == 4)
                 reward = [
                     [{ type: 'keychain', quantity: 1 }],
