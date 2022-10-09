@@ -193,7 +193,8 @@ export class ClubDayController extends Controller {
             else if (count == 4)
                 reward = [
                     [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 3 }],
+                    [{ type: 'notebook', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 5 }],
                 ];
 
             res.composer.success(reward);
@@ -232,7 +233,8 @@ export class ClubDayController extends Controller {
             else if (count == 4)
                 reward = [
                     [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 3 }],
+                    [{ type: 'notebook', quantity: 1 }],
+                    [{ type: 'sticker', quantity: 5 }],
                 ];
 
             if (req.body.option > reward.length) throw Error('Error received');
