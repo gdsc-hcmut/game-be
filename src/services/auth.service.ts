@@ -67,7 +67,7 @@ export class AuthService {
             },
             async (accessToken, refreshToken, profile, done) => {
                 const user = await User.findOne({ googleId: profile.id });
-
+                console.log('Profile', profile);
                 // If user doesn't exist creates a new user. (similar to sign up)
                 if (!user) {
                     const newUser = await User.create({
