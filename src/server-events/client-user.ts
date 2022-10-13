@@ -57,14 +57,14 @@ class ClientUser {
         this.onDisconnect = this.onDisconnect.bind(this);
     }
 
-    async SyncMathQuizRanking(socketId: any) {
+    async SyncMathQuizRanking(
+        socket: CustomSocket,
+        mathQuizRanking: UserDocument[],
+    ) {
         const MathQuizRanking = await this.gameService.findTopRanking();
-        if (MathQuizRanking === this.MathQuizRanking) return;
+        if (MathQuizRanking === mathQuizRanking) return;
         this.MathQuizRanking = MathQuizRanking;
-        this.sockets[socketId].socket.emit(
-            EventTypes.MATH_QUIZ_RANKING,
-            MathQuizRanking,
-        );
+        socket.emit(EventTypes.MATH_QUIZ_RANKING, MathQuizRanking);
     }
 
     //#region game flip
@@ -238,7 +238,8 @@ class ClientUser {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
                             this.SyncMathQuizRanking(
-                                connectedUser[userKey].sockets[key].socketId,
+                                connectedUser[userKey].sockets[key].socket,
+                                connectedUser[userKey].MathQuizRanking,
                             );
                         },
                     );
@@ -299,7 +300,8 @@ class ClientUser {
                 Object.keys(connectedUser[userKey].sockets).map(
                     (key: any, index: any) => {
                         this.SyncMathQuizRanking(
-                            connectedUser[userKey].sockets[key].socketId,
+                            connectedUser[userKey].sockets[key].socket,
+                            connectedUser[userKey].MathQuizRanking,
                         );
                     },
                 );
