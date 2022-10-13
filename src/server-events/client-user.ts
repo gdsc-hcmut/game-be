@@ -223,28 +223,35 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
-            await this.gameService.updateUserBalanceInGame(
-                this.userId,
-                this.sockets[socketId].scoreQuiz,
-            );
-            this.sockets[socketId].scoreQuiz = 0;
-            Object.keys(connectedUser).map((userKey: any, index: any) => {
-                if (
-                    _.includes(
-                        connectedUser[userKey].userData.roles,
-                        USER_ROLES.SYSTEM,
-                    )
-                ) {
-                    Object.keys(connectedUser[userKey].sockets).map(
-                        (key: any, index: any) => {
-                            this.SyncMathQuizRanking(
-                                connectedUser[userKey].sockets[key].socket,
-                                connectedUser[userKey].MathQuizRanking,
-                            );
+            await this.gameService
+                .updateUserBalanceInGame(
+                    this.userId,
+                    this.sockets[socketId].scoreQuiz,
+                )
+                .then(() => {
+                    Object.keys(connectedUser).map(
+                        (userKey: any, index: any) => {
+                            if (
+                                _.includes(
+                                    connectedUser[userKey].userData.roles,
+                                    USER_ROLES.SYSTEM,
+                                )
+                            ) {
+                                Object.keys(connectedUser[userKey].sockets).map(
+                                    (key: any, index: any) => {
+                                        this.SyncMathQuizRanking(
+                                            connectedUser[userKey].sockets[key]
+                                                .socket,
+                                            connectedUser[userKey]
+                                                .MathQuizRanking,
+                                        );
+                                    },
+                                );
+                            }
                         },
                     );
-                }
-            });
+                });
+            this.sockets[socketId].scoreQuiz = 0;
         }
         if (!this.sockets[socketId].isQuizStart) return;
 
@@ -285,28 +292,31 @@ class ClientUser {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
-        await this.gameService.updateUserBalanceInGame(
-            this.userId,
-            this.sockets[socketId].scoreQuiz,
-        );
-        this.sockets[socketId].scoreQuiz = 0;
-        Object.keys(connectedUser).map((userKey: any, index: any) => {
-            if (
-                _.includes(
-                    connectedUser[userKey].userData.roles,
-                    USER_ROLES.SYSTEM,
-                )
-            ) {
-                Object.keys(connectedUser[userKey].sockets).map(
-                    (key: any, index: any) => {
-                        this.SyncMathQuizRanking(
-                            connectedUser[userKey].sockets[key].socket,
-                            connectedUser[userKey].MathQuizRanking,
+        await this.gameService
+            .updateUserBalanceInGame(
+                this.userId,
+                this.sockets[socketId].scoreQuiz,
+            )
+            .then(() => {
+                Object.keys(connectedUser).map((userKey: any, index: any) => {
+                    if (
+                        _.includes(
+                            connectedUser[userKey].userData.roles,
+                            USER_ROLES.SYSTEM,
+                        )
+                    ) {
+                        Object.keys(connectedUser[userKey].sockets).map(
+                            (key: any, index: any) => {
+                                this.SyncMathQuizRanking(
+                                    connectedUser[userKey].sockets[key].socket,
+                                    connectedUser[userKey].MathQuizRanking,
+                                );
+                            },
                         );
-                    },
-                );
-            }
-        });
+                    }
+                });
+            });
+        this.sockets[socketId].scoreQuiz = 0;
     }
 
     //#endregion
