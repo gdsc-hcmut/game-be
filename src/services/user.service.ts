@@ -281,9 +281,7 @@ export class UserService {
         const user = await User.findById(userId);
 
         if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
-        return keepAll
-            ? user
-            : (_.omit(user, USER_FORBIDDEN_FIELDS) as UserDocument);
+        return user;
     }
 
     async findOne(query: any = {}, keepAll = false): Promise<UserDocument> {
