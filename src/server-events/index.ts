@@ -19,6 +19,7 @@ import {
     AuthService,
     ClubDayService,
     GameService,
+    UserService,
     // MQTTService,
 } from '../services';
 import { JWT_SECRET } from '../config';
@@ -52,6 +53,7 @@ export class SocketService {
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.Game) private gameService: GameService,
         @inject(ServiceType.ClubDay) private clubDayService: ClubDayService,
+        @inject(ServiceType.User) private userService: UserService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -83,11 +85,14 @@ export class SocketService {
                 socket.userId,
                 this.gameService,
                 this.clubDayService,
+                this.userService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
 
         this.tracking.addUserConnecting(socket.id, socket.userId);
+
+        this.connectedUser[socket.userId].SyncMathQuizRanking(socket.id);
 
         socket.emit(EventTypes.AUTHENTICATE, { success: true });
 

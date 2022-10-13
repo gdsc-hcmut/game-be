@@ -24,6 +24,7 @@ export type UserDocument = Document & {
     email: string;
     googleId: string;
     balance: number;
+    highestScoreMathQuiz: number;
     roles: USER_ROLES[];
 };
 
@@ -32,6 +33,7 @@ const userSchema = new Schema<UserDocument>({
     email: String,
     googleId: String,
     balance: { type: Number, default: 0 },
+    highestScoreMathQuiz: { type: Number, default: 0 },
     roles: Array<USER_ROLES>,
 });
 

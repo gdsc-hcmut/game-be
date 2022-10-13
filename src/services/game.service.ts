@@ -107,14 +107,25 @@ export class GameService {
 
     async updateUserBalanceInGame(
         userId: string,
-        balance: number,
+        score: number,
     ): Promise<Number> {
         let user = await User.findById(userId);
-
-        user.balance = user.balance + balance;
+        if (user.highestScoreMathQuiz < score) {
+            user.highestScoreMathQuiz = score;
+        }
+        user.balance = user.balance + score / 10;
         user.save();
 
         return user.balance;
+    }
+
+    async findTopRanking(): Promise<UserDocument[]> {
+        let users = await User.find()
+            .sort({ highestScoreMathQuiz: -1 })
+            .limit(15)
+            .select(['highestScoreMathQuiz', 'email', 'balance']);
+
+        return users;
     }
 
     // async ChooseField(

@@ -1,16 +1,15 @@
 import _ from 'lodash';
-import * as UserService from '../services/user.service';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
 import { GameService } from '../services';
-import { ClubDayService } from '../services';
+import { ClubDayService, UserService } from '../services';
 
 import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
 import { CustomSocket } from '.';
-
+import { UserDocument, USER_ROLES } from '../models/user.model';
 const INIT_LEVEL = 0;
 
 export interface SocketInfo {
@@ -34,19 +33,38 @@ class ClientUser {
     private userId: any;
     private gameService: GameService;
     private clubDayService: ClubDayService;
+    private MathQuizRanking: UserDocument[];
+    private userService: UserService;
+    private userData: UserDocument;
 
     constructor(
         userId: string,
         gameService: GameService,
         clubDayService: ClubDayService,
+        userService: UserService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
         this.userId = userId;
         this.gameService = gameService;
         this.clubDayService = clubDayService;
-        // UserService.getOne(userId).then((data: any) => (this.userData = data));
+        this.MathQuizRanking = [];
+        this.userService = userService;
+        this.userService
+            .findById(userId)
+            .then((user) => (this.userData = user));
+        // thisUserService(userId).then((data: any) => (this.userData = data));
         this.onDisconnect = this.onDisconnect.bind(this);
+    }
+
+    async SyncMathQuizRanking(socketId: any) {
+        const MathQuizRanking = await this.gameService.findTopRanking();
+        if (MathQuizRanking === this.MathQuizRanking) return;
+        this.MathQuizRanking = MathQuizRanking;
+        this.sockets[socketId].socket.emit(
+            EventTypes.MATH_QUIZ_RANKING,
+            MathQuizRanking,
+        );
     }
 
     //#region game flip
@@ -205,14 +223,16 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
+            this.sockets[socketId].scoreQuiz = 0;
+            if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
+                await this.SyncMathQuizRanking(socketId);
+            }
             await this.gameService.updateUserBalanceInGame(
                 this.userId,
-                this.sockets[socketId].levelQuiz,
+                this.sockets[socketId].scoreQuiz,
             );
-            // clearTimeout(this.sockets[socketId].quizTimeout);
         }
         if (!this.sockets[socketId].isQuizStart) return;
-        // clearTimeout(this.sockets[socketId].quizTimeout);
 
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
         this.sockets[socketId].scoreQuiz =
@@ -245,29 +265,19 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
-
-        if (this.sockets[socketId].levelQuiz === 31)
-            try {
-                console.log('Level Quiz', this.sockets[socketId].levelQuiz);
-
-                await this.clubDayService.verifyMathQuiz(this.userId);
-                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
-                    type: 'success',
-                    message:
-                        'You have pass first 30 level and claim reward from Club Day ',
-                });
-            } catch (err) {
-                console.log('MathQuizERRRR', err);
-            }
     }
 
-    async endQuizTimeout(socketId: string) {
+    async endQuizTimeout(socketId: any) {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
+        this.sockets[socketId].scoreQuiz = 0;
+        if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
+            await this.SyncMathQuizRanking(socketId);
+        }
         await this.gameService.updateUserBalanceInGame(
             this.userId,
-            this.sockets[socketId].levelQuiz,
+            this.sockets[socketId].scoreQuiz,
         );
     }
 
