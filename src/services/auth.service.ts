@@ -67,13 +67,13 @@ export class AuthService {
             },
             async (accessToken, refreshToken, profile, done) => {
                 const user = await User.findOne({ googleId: profile.id });
-                console.log('Profile', profile);
                 // If user doesn't exist creates a new user. (similar to sign up)
                 if (!user) {
                     const newUser = await User.create({
                         googleId: profile.id,
                         name: profile.displayName,
                         email: profile.emails?.[0].value,
+                        picture: profile._json.picture,
                         roles: USER_ROLES.USER,
                         // we are using optional chaining because profile.emails may be undefined.
                     });
@@ -81,6 +81,12 @@ export class AuthService {
                         done(null, newUser);
                     }
                 } else {
+                    if (user.picture !== profile._json.picture) {
+                        User.updateOne(
+                            { email: user.email },
+                            { picture: profile._json.picture },
+                        );
+                    }
                     done(null, user);
                 }
                 // console.log('Profile', profile);
