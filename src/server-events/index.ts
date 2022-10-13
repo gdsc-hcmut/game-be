@@ -37,10 +37,14 @@ export interface CustomSocket extends Socket {
     userId: string;
 }
 
+export type ConnectedUser = {
+    [userId: string]: ClientUser;
+};
+
 @injectable()
 export class SocketService {
     private socketIOServer: any;
-    private connectedUser = [] as any;
+    private connectedUser: ConnectedUser;
     private tracking: TrackingUser;
     private clientSockets: any;
     private trackingDevice: TrackingDevice;
@@ -58,23 +62,22 @@ export class SocketService {
         console.log('[SOCKET IO Service] Construct');
 
         this.socketIOServer = null;
-        this.connectedUser = [] as ClientUser[];
         this.tracking = new TrackingUser();
         this.trackingDevice = new TrackingDevice();
         this.clientSockets = [];
     }
 
-    notifyUser = (receiveUserId: any, data: any) => {
-        console.log('Noti');
-        this.connectedUser.map((e: any) => {
-            e.notifyClient('Hello World');
-        });
+    // notifyUser = (receiveUserId: any, data: any) => {
+    //     console.log('Noti');
+    //     this.connectedUser.map((e: any) => {
+    //         e.notifyClient('Hello World');
+    //     });
 
-        // if (_.has(connectedUser, receiveUserId)) {
-        //     console.log('User receive nofti: ', receiveUserId);
-        //     connectedUser[receiveUserId].notifyClient(data);
-        // }
-    };
+    //     // if (_.has(connectedUser, receiveUserId)) {
+    //     //     console.log('User receive nofti: ', receiveUserId);
+    //     //     connectedUser[receiveUserId].notifyClient(data);
+    //     // }
+    // };
 
     onConnection = (socket: CustomSocket) => {
         console.log('New user connected');
@@ -109,11 +112,18 @@ export class SocketService {
         );
 
         socket.on(EventTypes.ANSWER_QUIZ, (answer: any) =>
-            this.connectedUser[socket.userId].answerQuiz(socket.id, answer),
+            this.connectedUser[socket.userId].answerQuiz(
+                socket.id,
+                answer,
+                this.connectedUser,
+            ),
         );
 
         socket.on(EventTypes.QUIZ_TIMEOUT, () =>
-            this.connectedUser[socket.userId].endQuizTimeout(socket.id),
+            this.connectedUser[socket.userId].endQuizTimeout(
+                socket.id,
+                this.connectedUser,
+            ),
         );
 
         socket.on(EventTypes.DISCONNECT, () => {

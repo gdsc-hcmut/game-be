@@ -8,7 +8,7 @@ import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
-import { CustomSocket } from '.';
+import { ConnectedUser, CustomSocket } from '.';
 import { UserDocument, USER_ROLES } from '../models/user.model';
 const INIT_LEVEL = 0;
 
@@ -219,7 +219,7 @@ class ClientUser {
         return 2000;
     };
 
-    async answerQuiz(socketId: any, answer: any, connectedUser: any) {
+    async answerQuiz(socketId: any, answer: any, connectedUser: ConnectedUser) {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
@@ -230,9 +230,13 @@ class ClientUser {
             this.sockets[socketId].scoreQuiz = 0;
             if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
                 Object.keys(connectedUser).map((key: any, index: any) => {
-                    connectedUser[key].sockets.map((e: any) => {
-                        this.SyncMathQuizRanking(e.socketId);
-                    });
+                    Object.keys(connectedUser[key].sockets).map(
+                        (key: any, index: any) => {
+                            this.SyncMathQuizRanking(
+                                connectedUser[key].sockets[key].socketId,
+                            );
+                        },
+                    );
                 });
             }
         }
@@ -271,7 +275,7 @@ class ClientUser {
         });
     }
 
-    async endQuizTimeout(socketId: any, connectedUser: any) {
+    async endQuizTimeout(socketId: any, connectedUser: ConnectedUser) {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
@@ -282,9 +286,13 @@ class ClientUser {
         this.sockets[socketId].scoreQuiz = 0;
         if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
             Object.keys(connectedUser).map((key: any, index: any) => {
-                connectedUser[key].sockets.map((e: any) => {
-                    this.SyncMathQuizRanking(e.socketId);
-                });
+                Object.keys(connectedUser[key].sockets).map(
+                    (key: any, index: any) => {
+                        this.SyncMathQuizRanking(
+                            connectedUser[key].sockets[key].socketId,
+                        );
+                    },
+                );
             });
         }
     }
