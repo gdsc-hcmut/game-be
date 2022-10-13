@@ -219,7 +219,7 @@ class ClientUser {
         return 2000;
     };
 
-    async answerQuiz(socketId: any, answer: any) {
+    async answerQuiz(socketId: any, answer: any, connectedUser: any) {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
@@ -229,7 +229,11 @@ class ClientUser {
             );
             this.sockets[socketId].scoreQuiz = 0;
             if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-                await this.SyncMathQuizRanking(socketId);
+                Object.keys(connectedUser).map((key: any, index: any) => {
+                    connectedUser[key].sockets.map((e: any) => {
+                        this.SyncMathQuizRanking(e.socketId);
+                    });
+                });
             }
         }
         if (!this.sockets[socketId].isQuizStart) return;
@@ -267,7 +271,7 @@ class ClientUser {
         });
     }
 
-    async endQuizTimeout(socketId: any) {
+    async endQuizTimeout(socketId: any, connectedUser: any) {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
@@ -277,7 +281,11 @@ class ClientUser {
         );
         this.sockets[socketId].scoreQuiz = 0;
         if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-            await this.SyncMathQuizRanking(socketId);
+            Object.keys(connectedUser).map((key: any, index: any) => {
+                connectedUser[key].sockets.map((e: any) => {
+                    this.SyncMathQuizRanking(e.socketId);
+                });
+            });
         }
     }
 
