@@ -81,11 +81,10 @@ export class AuthService {
                         done(null, newUser);
                     }
                 } else {
+                    console.log(profile._json.picture);
                     if (user.picture !== profile._json.picture) {
-                        User.updateOne(
-                            { email: user.email },
-                            { picture: profile._json.picture },
-                        );
+                        user.picture = profile._json.picture;
+                        user.save();
                     }
                     done(null, user);
                 }
