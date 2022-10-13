@@ -26,6 +26,7 @@ export type UserDocument = Document & {
     balance: number;
     highestScoreMathQuiz: number;
     picture: string;
+    name: string;
     roles: USER_ROLES[];
 };
 
@@ -36,6 +37,7 @@ const userSchema = new Schema<UserDocument>({
     balance: { type: Number, default: 0 },
     highestScoreMathQuiz: { type: Number, default: 0 },
     picture: String,
+    name: String,
     roles: Array<USER_ROLES>,
 });
 

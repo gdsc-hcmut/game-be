@@ -123,7 +123,7 @@ export class GameService {
         let users = await User.find()
             .sort({ highestScoreMathQuiz: -1 })
             .limit(15)
-            .select(['highestScoreMathQuiz', 'email', 'picture']);
+            .select(['highestScoreMathQuiz', 'email', 'picture', 'name']);
 
         return users;
     }
