@@ -229,11 +229,11 @@ class ClientUser {
             );
             this.sockets[socketId].scoreQuiz = 0;
             if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-                Object.keys(connectedUser).map((key: any, index: any) => {
-                    Object.keys(connectedUser[key].sockets).map(
+                Object.keys(connectedUser).map((userKey: any, index: any) => {
+                    Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
                             this.SyncMathQuizRanking(
-                                connectedUser[key].sockets[key].socketId,
+                                connectedUser[userKey].sockets[key].socketId,
                             );
                         },
                     );
@@ -285,11 +285,11 @@ class ClientUser {
         );
         this.sockets[socketId].scoreQuiz = 0;
         if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-            Object.keys(connectedUser).map((key: any, index: any) => {
-                Object.keys(connectedUser[key].sockets).map(
+            Object.keys(connectedUser).map((userKey: any, index: any) => {
+                Object.keys(connectedUser[userKey].sockets).map(
                     (key: any, index: any) => {
                         this.SyncMathQuizRanking(
-                            connectedUser[key].sockets[key].socketId,
+                            connectedUser[userKey].sockets[key].socketId,
                         );
                     },
                 );
