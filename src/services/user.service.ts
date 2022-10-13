@@ -280,7 +280,7 @@ export class UserService {
     async findById(userId: string, keepAll = false): Promise<UserDocument> {
         const user = await User.findById(userId);
 
-        if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
+        // if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
         return user;
     }
 
