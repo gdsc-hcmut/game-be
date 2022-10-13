@@ -65,6 +65,7 @@ export class SocketService {
         this.tracking = new TrackingUser();
         this.trackingDevice = new TrackingDevice();
         this.clientSockets = [];
+        this.connectedUser = [] as any;
     }
 
     // notifyUser = (receiveUserId: any, data: any) => {
