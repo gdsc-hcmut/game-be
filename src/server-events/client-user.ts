@@ -223,14 +223,14 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
-            this.sockets[socketId].scoreQuiz = 0;
-            if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-                await this.SyncMathQuizRanking(socketId);
-            }
             await this.gameService.updateUserBalanceInGame(
                 this.userId,
                 this.sockets[socketId].scoreQuiz,
             );
+            this.sockets[socketId].scoreQuiz = 0;
+            if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
+                await this.SyncMathQuizRanking(socketId);
+            }
         }
         if (!this.sockets[socketId].isQuizStart) return;
 
@@ -271,14 +271,14 @@ class ClientUser {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
-        this.sockets[socketId].scoreQuiz = 0;
-        if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-            await this.SyncMathQuizRanking(socketId);
-        }
         await this.gameService.updateUserBalanceInGame(
             this.userId,
             this.sockets[socketId].scoreQuiz,
         );
+        this.sockets[socketId].scoreQuiz = 0;
+        if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
+            await this.SyncMathQuizRanking(socketId);
+        }
     }
 
     //#endregion
