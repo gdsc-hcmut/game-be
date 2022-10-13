@@ -225,7 +225,7 @@ export class UserController extends Controller {
 
     async getMe(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const user = await this.userService.findById(userId);
 
             res.composer.success(user);
