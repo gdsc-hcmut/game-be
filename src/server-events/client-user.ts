@@ -228,8 +228,13 @@ class ClientUser {
                 this.sockets[socketId].scoreQuiz,
             );
             this.sockets[socketId].scoreQuiz = 0;
-            if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-                Object.keys(connectedUser).map((userKey: any, index: any) => {
+            Object.keys(connectedUser).map((userKey: any, index: any) => {
+                if (
+                    _.includes(
+                        connectedUser[userKey].userData.roles,
+                        USER_ROLES.SYSTEM,
+                    )
+                ) {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
                             this.SyncMathQuizRanking(
@@ -237,8 +242,8 @@ class ClientUser {
                             );
                         },
                     );
-                });
-            }
+                }
+            });
         }
         if (!this.sockets[socketId].isQuizStart) return;
 
@@ -284,8 +289,13 @@ class ClientUser {
             this.sockets[socketId].scoreQuiz,
         );
         this.sockets[socketId].scoreQuiz = 0;
-        if (_.includes(this.userData.roles, USER_ROLES.SYSTEM)) {
-            Object.keys(connectedUser).map((userKey: any, index: any) => {
+        Object.keys(connectedUser).map((userKey: any, index: any) => {
+            if (
+                _.includes(
+                    connectedUser[userKey].userData.roles,
+                    USER_ROLES.SYSTEM,
+                )
+            ) {
                 Object.keys(connectedUser[userKey].sockets).map(
                     (key: any, index: any) => {
                         this.SyncMathQuizRanking(
@@ -293,8 +303,8 @@ class ClientUser {
                         );
                     },
                 );
-            });
-        }
+            }
+        });
     }
 
     //#endregion
