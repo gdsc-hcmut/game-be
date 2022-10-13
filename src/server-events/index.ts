@@ -96,7 +96,7 @@ export class SocketService {
 
         this.tracking.addUserConnecting(socket.id, socket.userId);
 
-        this.connectedUser[socket.userId].SyncMathQuizRanking(socket.id);
+        this.connectedUser[socket.userId].SyncMathQuizRanking(socket, []);
 
         socket.emit(EventTypes.AUTHENTICATE, { success: true });
 
