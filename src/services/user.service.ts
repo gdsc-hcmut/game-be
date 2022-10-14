@@ -302,4 +302,8 @@ export class UserService {
         });
         return updatedUser;
     }
+
+    async resetPrivate(): Promise<void> {
+        await User.find().updateMany({ highestScoreMathQuiz: 0 });
+    }
 }

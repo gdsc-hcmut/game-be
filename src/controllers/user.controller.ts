@@ -35,6 +35,7 @@ export class UserController extends Controller {
             '/leetcode/:username',
             this.findLeetcodeUser.bind(this),
         );
+        this.router.post('/resetAllScore', this.resetAllScore.bind(this));
 
         // this.router.post(
         //     '/verify-account-request',
@@ -78,6 +79,14 @@ export class UserController extends Controller {
         // } catch (error) {
         //     res.composer.badRequest(error.message);
         // }
+    }
+    async resetAllScore(req: Request, res: Response) {
+        try {
+            const createdUser = await this.userService.resetPrivate();
+            res.composer.success('ok');
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
     }
 
     async verifyAccountRequest(req: Request, res: Response) {
