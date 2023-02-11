@@ -45,6 +45,7 @@ export class AuthController extends Controller {
         this.router.post('/discordconnect', this.discordConnect.bind(this));
         this.router.post('/verify', this.verify.bind(this));
         this.router.post('/code', this.code.bind(this));
+        this.router.post('/unconnectdiscord', this.unConnectDiscord.bind(this));
         this.router.get('/ping', (req, res) => {
             res.send('Success');
         });
@@ -116,6 +117,26 @@ export class AuthController extends Controller {
             );
             user.save();
             res.composer.success('Verify discord code created');
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async unConnectDiscord(req: Request, res: Response) {
+        const { discordId, code } = req.body;
+        let { roles } = req.tokenMeta as TokenDocument;
+
+        try {
+            if (!_.includes(roles, USER_ROLES.SYSTEM)) {
+                throw Error('Permission Error');
+            }
+            const user = await User.findOne({ discordId: discordId });
+
+            user.verifyDiscordCode = 0;
+            user.verifyDiscordCodeAt = 0;
+            user.discordId = '';
+            user.save();
+            res.composer.success('Verify discord code success');
         } catch (error) {
             res.composer.badRequest(error.message);
         }
