@@ -42,7 +42,7 @@ const userSchema = new Schema<UserDocument>({
     picture: String,
     name: String,
     discordId: String,
-    verifyDiscordCode: String,
+    verifyDiscordCode: Number,
     verifyDiscordCodeAt: Number,
     roles: Array<USER_ROLES>,
 });
