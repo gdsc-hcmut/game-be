@@ -46,6 +46,7 @@ export class AuthController extends Controller {
         this.router.post('/verify', this.verify.bind(this));
         this.router.post('/code', this.code.bind(this));
         this.router.post('/unconnectdiscord', this.unConnectDiscord.bind(this));
+        this.router.post('/transgcoin', this.transGcoinFromDiscord.bind(this));
         this.router.get('/ping', (req, res) => {
             res.send('Success');
         });
@@ -137,6 +138,21 @@ export class AuthController extends Controller {
             user.discordId = '';
             user.save();
             res.composer.success('Verify discord code success');
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async transGcoinFromDiscord(req: Request, res: Response) {
+        const { discordId, code } = req.body;
+        let { roles } = req.tokenMeta as TokenDocument;
+
+        try {
+            if (!_.includes(roles, USER_ROLES.SYSTEM)) {
+                throw Error('Permission Error');
+            }
+
+            res.composer.success('Update Success all user');
         } catch (error) {
             res.composer.badRequest(error.message);
         }
