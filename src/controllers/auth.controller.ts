@@ -7,6 +7,7 @@ import { Controller } from './controller';
 import { AuthService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
+import { TokenDocument } from '../models/token.model';
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
@@ -85,10 +86,10 @@ export class AuthController extends Controller {
 
     async discordConnect(req: Request, res: Response) {
         const { discordId, email } = req.body;
-        let client = req.user as UserDocument;
+        let { roles } = req.tokenMeta as TokenDocument;
 
         try {
-            if (!_.includes(client.roles, USER_ROLES.SYSTEM)) {
+            if (!_.includes(roles, USER_ROLES.SYSTEM)) {
                 throw Error('Permission Error');
             }
             const user = await User.findOne({ email: email });
@@ -122,10 +123,10 @@ export class AuthController extends Controller {
 
     async verify(req: Request, res: Response) {
         const { discordId, code } = req.body;
-        let client = req.user as UserDocument;
+        let { roles } = req.tokenMeta as TokenDocument;
 
         try {
-            if (!_.includes(client.roles, USER_ROLES.SYSTEM)) {
+            if (!_.includes(roles, USER_ROLES.SYSTEM)) {
                 throw Error('Permission Error');
             }
             const user = await User.findOne({ discordId: discordId });
@@ -158,9 +159,10 @@ export class AuthController extends Controller {
 
     async code(req: Request, res: Response) {
         const { discordId, code } = req.body;
-        let user = req.user as UserDocument;
+        let { roles, userId } = req.tokenMeta as TokenDocument;
 
         try {
+            const user = await User.findById(userId);
             if (!user) {
                 throw Error(
                     'Please first sign up in https://game.gdsc.app/, user not exist',
