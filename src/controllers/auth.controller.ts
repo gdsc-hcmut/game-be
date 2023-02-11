@@ -158,7 +158,7 @@ export class AuthController extends Controller {
     }
 
     async code(req: Request, res: Response) {
-        const { discordId, code } = req.body;
+        const { discordId } = req.body;
         let { roles, userId } = req.tokenMeta as TokenDocument;
 
         try {
@@ -177,10 +177,6 @@ export class AuthController extends Controller {
 
             if (user.verifyDiscordCodeAt) {
                 throw Error('Email already linked to GDSC Game');
-            }
-
-            if (code != user.verifyDiscordCode) {
-                throw Error('Verify code not match');
             }
 
             res.composer.success({ verifyCode: user.verifyDiscordCode });
