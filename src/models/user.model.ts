@@ -27,6 +27,9 @@ export type UserDocument = Document & {
     highestScoreMathQuiz: number;
     picture: string;
     name: string;
+    discordId: string;
+    verifyDiscordCode: number;
+    verifyDiscordCodeAt: number;
     roles: USER_ROLES[];
 };
 
@@ -38,6 +41,9 @@ const userSchema = new Schema<UserDocument>({
     highestScoreMathQuiz: { type: Number, default: 0 },
     picture: String,
     name: String,
+    discordId: String,
+    verifyDiscordCode: String,
+    verifyDiscordCodeAt: Number,
     roles: Array<USER_ROLES>,
 });
 
