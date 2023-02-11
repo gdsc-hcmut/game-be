@@ -145,7 +145,7 @@ export class AuthController extends Controller {
             }
 
             if (code != user.verifyDiscordCode) {
-                throw Error('Verify code not match');
+                throw Error('Verify code not match!');
             }
 
             user.verifyDiscordCodeAt = Date.now();
