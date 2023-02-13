@@ -111,7 +111,7 @@ export class GameService {
     ): Promise<Number> {
         let user = await User.findById(userId);
         if (user.highestScoreMathQuiz < score) {
-            user.highestScoreMathQuiz = score;
+            user.highestScoreMathQuiz = score / 10;
         }
         user.balance = user.balance + score / 10;
         user.save();
