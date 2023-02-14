@@ -300,6 +300,7 @@ export class UserService {
         const updatedUser = await User.findByIdAndUpdate(userId, update, {
             new: true,
         });
+        //trigger
         return updatedUser;
     }
 
