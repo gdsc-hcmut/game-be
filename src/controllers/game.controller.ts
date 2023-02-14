@@ -164,7 +164,7 @@ export class GameController extends Controller {
 
             const idx = getRandomIndex(0, randomPool.itemIds.length);
             const item = await this.itemService.getItemById(
-                new mongoose.Schema.Types.ObjectId(randomPool.itemIds[idx]),
+                new mongoose.Types.ObjectId(randomPool.itemIds[idx]),
             );
             item.ownerId = userId;
             await item.save();
