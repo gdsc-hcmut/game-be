@@ -172,6 +172,7 @@ export class GameController extends Controller {
                     userId,
                     SYSTEM_ACCOUNT_ID,
                     BOX_PRICE,
+                    'Buy mystery box',
                 );
             res.composer.success(item);
         } catch (error) {

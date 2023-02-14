@@ -92,17 +92,17 @@ export class GameService {
         if (gameSession.finishAt) return;
 
         gameSession.finishAt = Date.now();
-        let user = await User.findById(gameSession.userId);
+        // let user = await User.findById(gameSession.userId);
 
         if (gameSession.level === 1) {
             gameSession.save();
             return;
         }
-        user.balance = user.balance + gameSession.level;
+        // user.balance = user.balance + gameSession.level;
         gameSession.save();
-        user.save();
+        // user.save();
 
-        return user.balance;
+        return 100;
     }
 
     async updateUserBalanceInGame(

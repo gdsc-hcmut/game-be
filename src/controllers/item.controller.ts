@@ -4,7 +4,12 @@ import { Controller } from './controller';
 import _ from 'lodash';
 
 import { Request, Response, ServiceType } from '../types';
-import { AuthService, ItemService, UserService } from '../services';
+import {
+    AuthService,
+    ItemService,
+    MarketplaceItemService,
+    UserService,
+} from '../services';
 import { ItemDocument } from '../models/item.model';
 import { USER_ROLES } from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
@@ -17,6 +22,9 @@ export class ItemController extends Controller {
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.Item) private itemService: ItemService,
+        @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.MarketplaceItem)
+        private marketplaceItemService: MarketplaceItemService,
     ) {
         super();
 
@@ -39,27 +47,40 @@ export class ItemController extends Controller {
                 'name',
                 'imgUrl',
                 'description',
-                'value',
-                'quantity',
-                'isAutoSendToRandomPool',
+                'currentPrice',
+                'collectionName',
             ]) as any;
             const ownerId = req.tokenMeta.userId.toString();
+            // TODO
+            const user = await this.userService.findById(ownerId);
+            if (!_.includes(user.roles, USER_ROLES.SUPER_ADMIN)) {
+                throw new ErrorUserInvalid('User not allow to create new item');
+            }
             item.ownerId = ownerId;
 
-            if (item.quantity) {
-                await this.itemService.createMany(
+            if (req.body.quantity) {
+                const items = await this.itemService.createMany(
                     item,
-                    item.quantity,
-                    item.isAutoSendToRandomPool,
+                    req.body.quantity,
                 );
-                res.composer.success(`Created ${item.quantity} new items`);
+                if (req.body.isMoveToMarketplace) {
+                    const itemIds: string[] = items.map((item) =>
+                        item._id.toString(),
+                    );
+                    itemIds.map(async (itemId) => {
+                        await this.marketplaceItemService.auctionNewItem(
+                            ownerId,
+                            itemId,
+                            req.body.minPrice,
+                            req.body.maxPrice,
+                            req.body.expiredAt,
+                            req.body.collectionName,
+                        );
+                    });
+                }
+                res.composer.success(`Created ${req.body.quantity} new items`);
                 return;
             }
-            // TODO
-            // const user = await this.userService.findById(ownerId);
-            // if (user.type !== USER_TYPES.SYSTEM) {
-            //     throw new ErrorUserInvalid('User not allow to create new item');
-            // }
 
             const newItem = await this.itemService.createNewItem(item);
             res.composer.success(newItem);

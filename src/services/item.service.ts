@@ -7,30 +7,38 @@ export class ItemService {
     async createMany(
         item: ItemDocument,
         quantity: number,
-        isAutoSendToRandomPool: boolean = false,
-    ): Promise<boolean> {
+        // isAutoSendToMarketplace: boolean = false,
+    ): Promise<ItemDocument[]> {
         let items = [];
         for (let i = 0; i < quantity; i++) {
             items.push({ ...item });
         }
         items = await Item.insertMany(items);
-        if (isAutoSendToRandomPool) {
-            const itemIds: string[] = items.map((item) => item._id.toString());
-            const pool = await RandomPool.findOne();
-            pool.itemIds = [...itemIds, ...pool?.itemIds];
-            await pool.save();
-        }
-        return true;
+        // if (isAutoSendToMarketplace) {
+        //     const itemIds: string[] = items.map((item) => item._id.toString());
+        //     const pool = await RandomPool.findOne();
+        //     pool.itemIds = [...itemIds, ...pool?.itemIds];
+        //     await pool.save();
+        // }
+        return items;
     }
 
     async createNewItem(item: ItemDocument): Promise<ItemDocument> {
         let newItem = new Item();
-        const { ownerId, name, imgUrl, description, value } = item;
+        const {
+            ownerId,
+            name,
+            imgUrl,
+            description,
+            currentPrice,
+            collectionName,
+        } = item;
         newItem.ownerId = ownerId;
         newItem.name = name;
         newItem.imgUrl = imgUrl;
         newItem.description = description;
-        newItem.value = value;
+        newItem.currentPrice = currentPrice;
+        newItem.collectionName = collectionName;
         await newItem.save();
         return newItem;
     }

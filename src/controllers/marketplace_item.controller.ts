@@ -93,7 +93,8 @@ export class MarketplaceController extends Controller {
     async aunctionNewItem(req: Request, res: Response) {
         try {
             const userId = req.tokenMeta.userId.toString();
-            const { itemId, minPrice, maxPrice, expiredAt } = req.body;
+            const { itemId, minPrice, maxPrice, expiredAt, collectionName } =
+                req.body;
 
             if (minPrice >= maxPrice) {
                 throw new ErrorInvalidData(
@@ -113,6 +114,7 @@ export class MarketplaceController extends Controller {
                     minPrice,
                     maxPrice,
                     expiredAt,
+                    collectionName,
                 );
             res.composer.success(auctionedItem);
         } catch (error) {

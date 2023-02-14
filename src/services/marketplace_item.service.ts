@@ -34,6 +34,7 @@ export class MarketplaceItemService {
         minPrice: number,
         maxPrice: number,
         expiredAt: number,
+        collectionName: string,
     ): Promise<MarketplaceItemDocument> {
         const item = await Item.findById(itemId);
         if (!item) {
@@ -52,6 +53,7 @@ export class MarketplaceItemService {
             currentPrice: minPrice,
             createdAt: Date.now(),
             expiredAt: expiredAt,
+            collectionName: collectionName,
             ownerName: owner.email, // TODO: change to owner.username when available
         });
 
@@ -132,6 +134,7 @@ export class MarketplaceItemService {
                     fromUser,
                     toUser,
                     bidPrice,
+                    `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
                 );
 
             // Refund user currently bidding
@@ -144,14 +147,16 @@ export class MarketplaceItemService {
                         toUser,
                         prevBidder._id.toString(),
                         priceHistory[0].price,
+                        `Bidding system refund ${priceHistory[0].price} for you because someone bid higher than you`,
                     );
             }
             newOrder.transactionId = newTransaction._id.toString();
             await newOrder.save();
             // Write priceHistory of marketplaceItem
-            const { email } = await User.findById(fromUser, { email: 1 });
+            const { email, name } = await User.findById(fromUser, { email: 1 });
             priceHistory.unshift({
                 email,
+                name,
                 createdAt: Date.now(),
                 price: bidPrice,
             });
@@ -167,7 +172,8 @@ export class MarketplaceItemService {
         if (bidPrice >= maxPrice) {
             // If item is bought, write to priceHistory of item
             const newOrder = new Order();
-            newOrder.description = `Buy item ${itemId} of ${ownerName}`;
+            const item = await this.itemService.getItemById(itemId);
+            newOrder.description = `Successfully purchased ${item.name} in ${item.collectionName} from Bidding System`;
             newOrder.status = 'success';
             newOrder.marketplaceItemId = itemId;
             // Transfer money from bidder to system account
@@ -176,15 +182,17 @@ export class MarketplaceItemService {
                     fromUser,
                     toUser,
                     bidPrice,
+                    `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
                 );
 
+            // THIS MAY NEED IMPLEMENT IN FUTURE FOR OTHER USER PLACE A BIDDING //
             // Transer money from system account to item's owner
-            const item = await this.itemService.getItemById(itemId);
-            const newTrans = await this.transactionService.createNewTransaction(
-                toUser,
-                item.ownerId,
-                bidPrice,
-            );
+            // const item = await this.itemService.getItemById(itemId);
+            // const newTrans = await this.transactionService.createNewTransaction(
+            //     toUser,
+            //     item.ownerId,
+            //     bidPrice,
+            // );
 
             // Refund user currently bidding
             if (priceHistory.length > 0) {
@@ -196,14 +204,16 @@ export class MarketplaceItemService {
                         toUser,
                         prevBidder._id.toString(),
                         priceHistory[0].price,
+                        `Bidding system refund ${priceHistory[0].price} for you because someone bid the highest price`,
                     );
             }
             newOrder.transactionId = newTransaction._id.toString();
             await newOrder.save();
             // Write priceHistory of marketplaceItem
-            const { email } = await User.findById(fromUser, { email: 1 });
+            const { email, name } = await User.findById(fromUser, { email: 1 });
             priceHistory.unshift({
                 email,
+                name,
                 createdAt: Date.now(),
                 price: bidPrice,
             });
@@ -219,6 +229,7 @@ export class MarketplaceItemService {
             item.ownerId = fromUser;
             item.priceHistory.unshift({
                 email,
+                name,
                 createdAt: Date.now(),
                 price: bidPrice,
             });
@@ -281,18 +292,19 @@ export class MarketplaceItemService {
             );
         }
 
-        // Find previous owner
-        const prevOwner = await this.userService.findOne({
-            email: bid.ownerName,
-        });
+        // FUTURE FEATURESSSSSSS ///
+        // // Find previous owner
+        // const prevOwner = await this.userService.findOne({
+        //     email: bid.ownerName,
+        // });
 
-        // Transfer money from system account to previous owner
-        const newTransaction =
-            await this.transactionService.createNewTransaction(
-                SYSTEM_ACCOUNT_ID,
-                prevOwner._id.toString(),
-                bid.currentPrice,
-            );
+        // // Transfer money from system account to previous owner
+        // const newTransaction =
+        //     await this.transactionService.createNewTransaction(
+        //         SYSTEM_ACCOUNT_ID,
+        //         prevOwner._id.toString(),
+        //         bid.currentPrice,
+        //     );
 
         // Update owner of item
         const item = await this.itemService.getItemById(bid.itemId);
@@ -300,6 +312,7 @@ export class MarketplaceItemService {
         const user = await this.userService.findById(userId);
         item.priceHistory.push({
             email: user.email,
+            name: user.name,
             createdAt: Date.now(),
             price: bid.currentPrice,
         });

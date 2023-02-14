@@ -11,6 +11,7 @@ export class TransactionService {
         fromUser: string,
         toUser: string,
         amount: number,
+        message: string,
     ): Promise<TransactionDocument> {
         // TODO: apply mongoose transaction
         await this.userService.transferBalance(fromUser, toUser, amount);
@@ -18,6 +19,7 @@ export class TransactionService {
             fromUser,
             toUser,
             amount,
+            message,
             createdAt: Date.now(),
         });
 

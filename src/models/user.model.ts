@@ -15,6 +15,8 @@ export enum USER_ROLES {
     STAFF_CLUBDAY_VERIFY = 'STAFF_CLUBDAY_VERIFY',
     STAFF_CLUBDAY_GIFT = 'STAFF_CLUBDAY_GIFT',
     USER = 'USER',
+    GAME_BOT = 'GAME_BOT',
+    SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
 const Schema = mongoose.Schema;
