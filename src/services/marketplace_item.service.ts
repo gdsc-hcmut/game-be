@@ -43,7 +43,7 @@ export class MarketplaceItemService {
         }
         console.log('Owner: ', item.ownerId);
         console.log('UserId: ', userId);
-        if (item.ownerId.equals(userId)) {
+        if (!item.ownerId.equals(userId)) {
             throw new ErrorUserInvalid('User not authorized');
         }
         const owner = await User.findById(userId);
