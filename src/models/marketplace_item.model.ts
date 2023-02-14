@@ -1,4 +1,4 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 import { Collection } from './item.model';
 
 const Schema = mongoose.Schema;
@@ -11,11 +11,11 @@ export type PriceHistory = {
 };
 
 export type MarketplaceItemDocument = Document & {
-    itemId: ObjectId;
+    itemId: Types.ObjectId;
     collectionName: Collection;
     currentPrice: number;
-    currentBidUserId?: ObjectId;
-    followedUsers?: ObjectId[];
+    currentBidUserId?: Types.ObjectId;
+    followedUsers?: Types.ObjectId[];
     minPrice: number;
     maxPrice: number;
     title: string;

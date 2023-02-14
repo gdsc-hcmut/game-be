@@ -168,7 +168,7 @@ export const LIMIT_PAGING = 24;
 
 export const BOX_PRICE = 10000;
 
-export const SYSTEM_ACCOUNT_ID = new mongoose.Schema.Types.ObjectId(
+export const SYSTEM_ACCOUNT_ID = new mongoose.Types.ObjectId(
     '63eaf4cc449bb96b67524d66',
 );
 

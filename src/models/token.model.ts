@@ -1,11 +1,11 @@
 import { ObjectID } from 'mongodb';
 import _ from 'lodash';
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose, { Document, ObjectId, Types } from 'mongoose';
 import { USER_ROLES } from './user.model';
 const Schema = mongoose.Schema;
 
 export type TokenDocument = Document & {
-    userId: ObjectId;
+    userId: Types.ObjectId;
     createdAt: number;
     expiredAt: number;
     roles: USER_ROLES[];

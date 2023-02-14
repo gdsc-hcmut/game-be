@@ -4,7 +4,7 @@ import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import moment from 'moment';
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId, Types } from 'mongoose';
 import { DatabaseService } from './database.service';
 import { USER_FORBIDDEN_FIELDS } from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
@@ -258,8 +258,8 @@ export class UserService {
     }
 
     async transferBalance(
-        fromUser: ObjectId,
-        toUser: ObjectId,
+        fromUser: Types.ObjectId,
+        toUser: Types.ObjectId,
         amount: number,
     ): Promise<boolean> {
         await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
@@ -267,7 +267,7 @@ export class UserService {
         return true;
     }
 
-    async getUserBalance(userId: ObjectId): Promise<number> {
+    async getUserBalance(userId: Types.ObjectId): Promise<number> {
         const { balance } = await User.findById(userId, { balance: 1 });
         return balance;
     }
@@ -277,7 +277,10 @@ export class UserService {
         return users;
     }
 
-    async findById(userId: ObjectId, keepAll = false): Promise<UserDocument> {
+    async findById(
+        userId: Types.ObjectId,
+        keepAll = false,
+    ): Promise<UserDocument> {
         const user = await User.findById(userId);
 
         // if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
@@ -294,7 +297,7 @@ export class UserService {
     }
 
     async updatePrivate(
-        userId: ObjectId,
+        userId: Types.ObjectId,
         update: { balance?: number; type?: string },
     ): Promise<UserDocument> {
         const updatedUser = await User.findByIdAndUpdate(userId, update, {

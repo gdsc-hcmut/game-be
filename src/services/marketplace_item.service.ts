@@ -18,7 +18,7 @@ import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
 import { ItemService } from './item.service';
 import { SYSTEM_ACCOUNT_ID } from '../config';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 
 @injectable()
 export class MarketplaceItemService {
@@ -30,14 +30,14 @@ export class MarketplaceItemService {
     ) {}
 
     async auctionNewItem(
-        userId: ObjectId,
+        userId: Types.ObjectId,
         itemId: ObjectId,
         minPrice: number,
         maxPrice: number,
         expiredAt: number,
         collectionName: string,
     ): Promise<MarketplaceItemDocument> {
-        const item = await Item.findById(itemId);
+        const item: ItemDocument = await Item.findById(itemId);
         if (!item) {
             throw new ErrorItemInvalid('Invalid item');
         }
@@ -81,8 +81,8 @@ export class MarketplaceItemService {
     async bidForItem(
         marketplaceId: string,
         bidPrice: number,
-        fromUser: ObjectId,
-        toUser: ObjectId,
+        fromUser: Types.ObjectId,
+        toUser: Types.ObjectId,
     ): Promise<OrderDocument> {
         const marketplaceItem = await MarketplaceItem.findById({
             _id: marketplaceId,
@@ -258,7 +258,7 @@ export class MarketplaceItemService {
         return auctionedItems;
     }
 
-    async getBids(userId: ObjectId): Promise<MarketplaceItemDocument[]> {
+    async getBids(userId: Types.ObjectId): Promise<MarketplaceItemDocument[]> {
         // user get bid that they have involved
         // if user own bid of bids, that bid will be showed until claimed
         let bids = await MarketplaceItem.find({
@@ -283,10 +283,10 @@ export class MarketplaceItemService {
         return marketplaceItem;
     }
 
-    async claimBid(userId: ObjectId, bidId: ObjectId) {
+    async claimBid(userId: Types.ObjectId, bidId: Types.ObjectId) {
         // Check if user is the current bid user
         const bid = await MarketplaceItem.findById(bidId);
-        if (bid.currentBidUserId !== userId) {
+        if (bid.currentBidUserId.equals(userId)) {
             throw new ErrorInvalidData('You not own this bid');
         }
 

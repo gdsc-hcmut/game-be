@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import Item, { ItemDocument } from '../models/item.model';
 import RandomPool, { RandomPoolDocument } from '../models/random_pool.model';
 
@@ -44,7 +44,7 @@ export class ItemService {
         return newItem;
     }
 
-    async getItemById(itemId: ObjectId): Promise<ItemDocument> {
+    async getItemById(itemId: Types.ObjectId): Promise<ItemDocument> {
         const item = await Item.findById(itemId);
         return item;
     }

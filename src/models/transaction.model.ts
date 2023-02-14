@@ -1,10 +1,10 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
 export type TransactionDocument = Document & {
-    fromUser: ObjectId;
-    toUser: ObjectId;
+    fromUser: Types.ObjectId;
+    toUser: Types.ObjectId;
     amount: number;
     message: string;
     createdAt: number;

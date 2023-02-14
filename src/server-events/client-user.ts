@@ -51,7 +51,7 @@ class ClientUser {
         this.clubDayService = clubDayService;
         this.MathQuizRanking = [];
         this.userService = userService;
-        const userIdCast = new mongoose.Schema.Types.ObjectId(userId);
+        const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
             .then((user) => (this.userData = user));

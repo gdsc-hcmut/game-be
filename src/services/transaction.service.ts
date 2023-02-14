@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import Transaction, { TransactionDocument } from '../models/transaction.model';
 import { ServiceType } from '../types';
 import { UserService } from './user.service';
@@ -9,8 +9,8 @@ export class TransactionService {
     constructor(@inject(ServiceType.User) private userService: UserService) {}
 
     async createNewTransaction(
-        fromUser: ObjectId,
-        toUser: ObjectId,
+        fromUser: Types.ObjectId,
+        toUser: Types.ObjectId,
         amount: number,
         message: string,
     ): Promise<TransactionDocument> {

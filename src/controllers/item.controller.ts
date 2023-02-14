@@ -94,7 +94,7 @@ export class ItemController extends Controller {
             const { itemId } = req.params;
 
             const item = await this.itemService.getItemById(
-                new mongoose.Schema.Types.ObjectId(itemId),
+                new mongoose.Types.ObjectId(itemId),
             );
             res.composer.success(item);
         } catch (error) {
