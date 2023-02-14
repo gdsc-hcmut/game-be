@@ -16,7 +16,7 @@ export type ItemDocument = Document & {
     name: string;
     imgUrl: string;
     description: string;
-    currentPrice: string;
+    currentPrice: number;
     collectionName: Collection;
     priceHistory?: PriceHistory[];
 };
@@ -26,7 +26,7 @@ const itemSchema = new Schema<ItemDocument>({
     name: String,
     imgUrl: String,
     description: String,
-    currentPrice: String,
+    currentPrice: Number,
     collectionName: String,
     priceHistory: [
         { email: String, name: String, createdAt: Number, price: Number },
