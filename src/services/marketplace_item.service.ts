@@ -10,7 +10,7 @@ import MarketplaceItem, {
     MarketplaceItemDocument,
 } from '../models/marketplace_item.model';
 import Item, { ItemDocument } from '../models/item.model';
-import User from '../models/user.model';
+import User, { UserDocument } from '../models/user.model';
 import Order, { OrderDocument } from '../models/order.model';
 import Transaction from '../models/transaction.model';
 import { ServiceType } from '../types';
@@ -42,7 +42,7 @@ export class MarketplaceItemService {
             throw new ErrorItemInvalid('Invalid item');
         }
 
-        if (item.ownerId !== userId) {
+        if (item.ownerId.equals(userId)) {
             throw new ErrorUserInvalid('User not authorized');
         }
         const owner = await User.findById(userId);
@@ -103,9 +103,11 @@ export class MarketplaceItemService {
             throw new ErrorInvalidData('Expired, cannot make bid');
         }
 
-        const owner = await this.userService.findOne({ email: ownerName });
+        const owner: UserDocument = await this.userService.findOne({
+            email: ownerName,
+        });
 
-        if (fromUser === owner._id.toString()) {
+        if (fromUser.equals(owner._id)) {
             throw new ErrorInvalidData('You cannot buy your item.');
         }
 
