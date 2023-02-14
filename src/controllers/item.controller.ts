@@ -13,7 +13,7 @@ import {
 import { ItemDocument } from '../models/item.model';
 import { USER_ROLES } from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 
 @injectable()
 export class ItemController extends Controller {
@@ -65,9 +65,7 @@ export class ItemController extends Controller {
                     req.body.quantity,
                 );
                 if (req.body.isMoveToMarketplace) {
-                    const itemIds: string[] = items.map((item) =>
-                        item._id.toString(),
-                    );
+                    const itemIds: ObjectId[] = items.map((item) => item._id);
                     itemIds.map(async (itemId) => {
                         await this.marketplaceItemService.auctionNewItem(
                             ownerId,

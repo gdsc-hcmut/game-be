@@ -31,7 +31,7 @@ export class MarketplaceItemService {
 
     async auctionNewItem(
         userId: ObjectId,
-        itemId: string,
+        itemId: ObjectId,
         minPrice: number,
         maxPrice: number,
         expiredAt: number,
