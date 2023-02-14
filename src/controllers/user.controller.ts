@@ -17,6 +17,7 @@ import { Bundle } from '../models/bundle.model';
 import { LeetCode } from 'leetcode-query';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
+import { Types } from 'mongoose';
 
 @injectable()
 export class UserController extends Controller {
@@ -223,7 +224,7 @@ export class UserController extends Controller {
 
     async getUserBalance(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const balance = await this.userService.getUserBalance(userId);
 
             res.composer.success({ balance });
@@ -234,7 +235,7 @@ export class UserController extends Controller {
 
     async getMe(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const user = await this.userService.findById(userId);
 
             res.composer.success(user);
@@ -246,7 +247,7 @@ export class UserController extends Controller {
 
     async updatePrivate(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const user = await this.userService.findById(userId);
             if (!user) {
                 throw new ErrorNotFound('User not found');
