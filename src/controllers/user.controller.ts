@@ -223,7 +223,7 @@ export class UserController extends Controller {
 
     async getUserBalance(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const balance = await this.userService.getUserBalance(userId);
 
             res.composer.success({ balance });
@@ -246,7 +246,7 @@ export class UserController extends Controller {
 
     async updatePrivate(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const user = await this.userService.findById(userId);
             if (!user) {
                 throw new ErrorNotFound('User not found');

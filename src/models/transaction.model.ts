@@ -1,18 +1,18 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
 export type TransactionDocument = Document & {
-    fromUser: string;
-    toUser: string;
+    fromUser: ObjectId;
+    toUser: ObjectId;
     amount: number;
     message: string;
     createdAt: number;
 };
 
 const transactionSchema = new Schema<TransactionDocument>({
-    fromUser: String,
-    toUser: String,
+    fromUser: { type: Schema.Types.ObjectId, ref: 'User' },
+    toUser: { type: Schema.Types.ObjectId, ref: 'User' },
     amount: Number,
     message: String,
     createdAt: Number,

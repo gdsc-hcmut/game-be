@@ -10,6 +10,7 @@ import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
 import { ConnectedUser, CustomSocket } from '.';
 import { UserDocument, USER_ROLES } from '../models/user.model';
+import mongoose from 'mongoose';
 const INIT_LEVEL = 0;
 
 export interface SocketInfo {
@@ -50,8 +51,9 @@ class ClientUser {
         this.clubDayService = clubDayService;
         this.MathQuizRanking = [];
         this.userService = userService;
+        const userIdCast = new mongoose.Schema.Types.ObjectId(userId);
         this.userService
-            .findById(userId)
+            .findById(userIdCast)
             .then((user) => (this.userData = user));
         // thisUserService(userId).then((data: any) => (this.userData = data));
         this.onDisconnect = this.onDisconnect.bind(this);

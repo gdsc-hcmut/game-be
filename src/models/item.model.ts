@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -12,7 +12,7 @@ export type PriceHistory = {
 };
 
 export type ItemDocument = Document & {
-    ownerId: string;
+    ownerId: ObjectId;
     name: string;
     imgUrl: string;
     description: string;
@@ -22,7 +22,7 @@ export type ItemDocument = Document & {
 };
 
 const itemSchema = new Schema<ItemDocument>({
-    ownerId: String,
+    ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
     name: String,
     imgUrl: String,
     description: String,

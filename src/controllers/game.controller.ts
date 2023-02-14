@@ -22,6 +22,7 @@ import BookFair from '../models/book_fair';
 import { generateGameField } from '../game/game-logic';
 import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
+import mongoose from 'mongoose';
 @injectable()
 export class GameController extends Controller {
     public readonly router = Router();
@@ -149,7 +150,7 @@ export class GameController extends Controller {
     // TODO: EXTRACT TO SERVICES
     async openMysteryBox(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const balance = await this.userService.getUserBalance(userId);
             if (balance < BOX_PRICE) {
                 throw new ErrorInvalidData('Not enough balance');
@@ -163,7 +164,7 @@ export class GameController extends Controller {
 
             const idx = getRandomIndex(0, randomPool.itemIds.length);
             const item = await this.itemService.getItemById(
-                randomPool.itemIds[idx],
+                new mongoose.Schema.Types.ObjectId(randomPool.itemIds[idx]),
             );
             item.ownerId = userId;
             await item.save();

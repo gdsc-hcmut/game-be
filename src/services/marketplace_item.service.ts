@@ -18,6 +18,7 @@ import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
 import { ItemService } from './item.service';
 import { SYSTEM_ACCOUNT_ID } from '../config';
+import { ObjectId } from 'mongoose';
 
 @injectable()
 export class MarketplaceItemService {
@@ -29,7 +30,7 @@ export class MarketplaceItemService {
     ) {}
 
     async auctionNewItem(
-        userId: string,
+        userId: ObjectId,
         itemId: string,
         minPrice: number,
         maxPrice: number,
@@ -78,13 +79,13 @@ export class MarketplaceItemService {
     }
 
     async bidForItem(
-        _itemId: string,
+        marketplaceId: string,
         bidPrice: number,
-        fromUser: string,
-        toUser: string,
+        fromUser: ObjectId,
+        toUser: ObjectId,
     ): Promise<OrderDocument> {
-        const marketplaceItem = await MarketplaceItem.findOne({
-            itemId: _itemId,
+        const marketplaceItem = await MarketplaceItem.findById({
+            _id: marketplaceId,
         });
 
         const {
@@ -240,8 +241,12 @@ export class MarketplaceItemService {
 
     async getAllMarketplaceItems() {
         const marketplaceItems = await MarketplaceItem.find({
-            expiredAt: { $gt: Date.now() },
-        }).sort({ createdAt: -1 });
+            claimed: false,
+        })
+            .sort({
+                createdAt: -1,
+            })
+            .populate('itemId');
         return marketplaceItems;
     }
 
@@ -253,7 +258,7 @@ export class MarketplaceItemService {
         return auctionedItems;
     }
 
-    async getBids(userId: string): Promise<MarketplaceItemDocument[]> {
+    async getBids(userId: ObjectId): Promise<MarketplaceItemDocument[]> {
         // user get bid that they have involved
         // if user own bid of bids, that bid will be showed until claimed
         let bids = await MarketplaceItem.find({
@@ -266,19 +271,19 @@ export class MarketplaceItemService {
         return bids;
     }
 
-    async findByItemId(itemId: string) {
+    async findByItemId(itemId: ObjectId) {
         const item = await MarketplaceItem.findOne({ itemId });
         return item;
     }
 
-    async findById(marketplaceItemId: string) {
+    async findById(marketplaceItemId: ObjectId) {
         const marketplaceItem = await MarketplaceItem.findById(
             marketplaceItemId,
         );
         return marketplaceItem;
     }
 
-    async claimBid(userId: string, bidId: string) {
+    async claimBid(userId: ObjectId, bidId: ObjectId) {
         // Check if user is the current bid user
         const bid = await MarketplaceItem.findById(bidId);
         if (bid.currentBidUserId !== userId) {

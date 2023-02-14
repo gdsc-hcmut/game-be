@@ -13,6 +13,7 @@ import {
 import { ItemDocument } from '../models/item.model';
 import { USER_ROLES } from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
+import mongoose from 'mongoose';
 
 @injectable()
 export class ItemController extends Controller {
@@ -50,7 +51,7 @@ export class ItemController extends Controller {
                 'currentPrice',
                 'collectionName',
             ]) as any;
-            const ownerId = req.tokenMeta.userId.toString();
+            const ownerId = req.tokenMeta.userId;
             // TODO
             const user = await this.userService.findById(ownerId);
             if (!_.includes(user.roles, USER_ROLES.SUPER_ADMIN)) {
@@ -94,7 +95,9 @@ export class ItemController extends Controller {
         try {
             const { itemId } = req.params;
 
-            const item = await this.itemService.getItemById(itemId);
+            const item = await this.itemService.getItemById(
+                new mongoose.Schema.Types.ObjectId(itemId),
+            );
             res.composer.success(item);
         } catch (error) {
             console.log(error);

@@ -3,6 +3,7 @@ import { Device } from './models/device.model';
 
 import dotenv from 'dotenv';
 import fs from 'fs';
+import mongoose from 'mongoose';
 
 // checking if .env file is available
 if (fs.existsSync('.env')) {
@@ -167,6 +168,8 @@ export const LIMIT_PAGING = 24;
 
 export const BOX_PRICE = 10000;
 
-export const SYSTEM_ACCOUNT_ID = '633015d8913376839c72e7f0';
+export const SYSTEM_ACCOUNT_ID = new mongoose.Schema.Types.ObjectId(
+    '63eaf4cc449bb96b67524d66',
+);
 
 export const GIFT_THRESHOLD = 20;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { inject, injectable } from 'inversify';
 import _ from 'lodash';
+import mongoose from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 
 import { ErrorInvalidData } from '../lib/errors';
@@ -67,7 +68,7 @@ export class MarketplaceController extends Controller {
         try {
             const { marketplaceItemId } = req.params;
             const item = await this.marketplaceItemService.findById(
-                marketplaceItemId,
+                new mongoose.Schema.Types.ObjectId(marketplaceItemId),
             );
             res.composer.success(item);
         } catch (error) {
@@ -78,7 +79,7 @@ export class MarketplaceController extends Controller {
 
     async getAunctionedItems(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const user = await this.userService.findById(userId);
 
             const auctionedItems =
@@ -92,7 +93,7 @@ export class MarketplaceController extends Controller {
 
     async aunctionNewItem(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const { itemId, minPrice, maxPrice, expiredAt, collectionName } =
                 req.body;
 
@@ -135,7 +136,7 @@ export class MarketplaceController extends Controller {
             // TODO: check min max price when update
 
             const marketplaceItem = await this.marketplaceItemService.findById(
-                marketplaceItemId,
+                new mongoose.Schema.Types.ObjectId(marketplaceItemId),
             );
             if (!marketplaceItem) {
                 throw new ErrorInvalidData('Marketplace item not exists');
@@ -155,15 +156,15 @@ export class MarketplaceController extends Controller {
 
     async bidForItem(req: Request, res: Response) {
         try {
-            const { itemId, bidPrice } = req.body;
-            const userId = req.tokenMeta.userId.toString();
+            const { marketplaceId, bidPrice } = req.body;
+            const userId = req.tokenMeta.userId;
             const balance = await this.userService.getUserBalance(userId);
             if (bidPrice > balance) {
                 res.composer.badRequest('Not enough balance');
                 return;
             }
             const order = await this.marketplaceItemService.bidForItem(
-                itemId,
+                marketplaceId,
                 bidPrice,
                 userId,
                 SYSTEM_ACCOUNT_ID,
@@ -177,7 +178,7 @@ export class MarketplaceController extends Controller {
 
     async getBids(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const bids = await this.marketplaceItemService.getBids(userId);
             res.composer.success(bids);
         } catch (error) {
@@ -188,7 +189,7 @@ export class MarketplaceController extends Controller {
 
     async claimBid(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId.toString();
+            const userId = req.tokenMeta.userId;
             const { bidId } = req.body;
             const item = await this.marketplaceItemService.claimBid(
                 userId,
