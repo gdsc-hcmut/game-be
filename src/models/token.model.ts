@@ -5,7 +5,7 @@ import { USER_ROLES } from './user.model';
 const Schema = mongoose.Schema;
 
 export type TokenDocument = Document & {
-    userId: Types.ObjectId;
+    userId: string;
     createdAt: number;
     expiredAt: number;
     roles: USER_ROLES[];

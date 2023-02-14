@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { inject, injectable } from 'inversify';
 import _ from 'lodash';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 
 import { ErrorInvalidData } from '../lib/errors';
@@ -79,7 +79,7 @@ export class MarketplaceController extends Controller {
 
     async getAunctionedItems(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const user = await this.userService.findById(userId);
 
             const auctionedItems =
@@ -93,7 +93,7 @@ export class MarketplaceController extends Controller {
 
     async aunctionNewItem(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const { itemId, minPrice, maxPrice, expiredAt, collectionName } =
                 req.body;
 
@@ -157,7 +157,7 @@ export class MarketplaceController extends Controller {
     async bidForItem(req: Request, res: Response) {
         try {
             const { marketplaceId, bidPrice } = req.body;
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const balance = await this.userService.getUserBalance(userId);
             if (bidPrice > balance) {
                 res.composer.badRequest('Not enough balance');
@@ -178,7 +178,7 @@ export class MarketplaceController extends Controller {
 
     async getBids(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const bids = await this.marketplaceItemService.getBids(userId);
             res.composer.success(bids);
         } catch (error) {
@@ -189,7 +189,7 @@ export class MarketplaceController extends Controller {
 
     async claimBid(req: Request, res: Response) {
         try {
-            const userId = req.tokenMeta.userId;
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             const { bidId } = req.body;
             const item = await this.marketplaceItemService.claimBid(
                 userId,
