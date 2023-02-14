@@ -43,7 +43,7 @@ const marketplaceItemSchema = new Schema<MarketplaceItemDocument>({
     createdAt: Number,
     expiredAt: Number,
     ownerName: String,
-    claimed: Boolean,
+    claimed: { type: Boolean, default: false },
 });
 
 const MarketplaceItem = mongoose.model<MarketplaceItemDocument>(
