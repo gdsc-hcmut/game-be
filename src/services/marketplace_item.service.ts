@@ -41,7 +41,8 @@ export class MarketplaceItemService {
         if (!item) {
             throw new ErrorItemInvalid('Invalid item');
         }
-
+        console.log('Owner: ', item.ownerId);
+        console.log('UserId: ', userId);
         if (item.ownerId.equals(userId)) {
             throw new ErrorUserInvalid('User not authorized');
         }
