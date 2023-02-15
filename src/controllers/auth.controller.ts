@@ -109,14 +109,14 @@ export class AuthController extends Controller {
                 );
             }
 
+            if (user.verifyDiscordCodeAt) {
+                throw Error('Email already linked to GDSC Game');
+            }
+
             if (user.verifyDiscordCode) {
                 throw Error(
                     'Verify code already created, please go to https://game.gdsc.app/connect to get your code, then back to discord type /verify <code> to link your account',
                 );
-            }
-
-            if (user.verifyDiscordCodeAt) {
-                throw Error('Email already linked to GDSC Game');
             }
 
             user.discordId = discordId;
