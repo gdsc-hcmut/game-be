@@ -280,7 +280,7 @@ export class MarketplaceItemService {
         let bids = await MarketplaceItem.find({
             followedUsers: { $elemMatch: { $eq: userId } },
             claimed: false,
-        });
+        }).populate('itemId');
 
         // TODO: FE check if user owns bid, and if user has claim bid or not (userId ===currentBidUserId, claimed===true)
 
