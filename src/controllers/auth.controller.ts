@@ -95,16 +95,23 @@ export class AuthController extends Controller {
                 throw Error('Permission Error');
             }
             const user = await User.findOne({ email: email });
+            const discord = await User.findOne({ discordId: discordId });
+
+            if (discord) {
+                throw Error(
+                    `Your account discord already link to ${discord.email}`,
+                );
+            }
 
             if (!user) {
                 throw Error(
-                    'Please first sign up in https://game.gdsc.app/, user not exist',
+                    'Please sign up first with your email at https://game.gdsc.app/, then back to discord type /connect <email> again',
                 );
             }
 
             if (user.verifyDiscordCode) {
                 throw Error(
-                    'Verify code already created, please go to https://game.gdsc.app/connect to connect',
+                    'Verify code already created, please go to https://game.gdsc.app/connect to get your code, then back to discord type /verify <code> to link your account',
                 );
             }
 
@@ -117,7 +124,9 @@ export class AuthController extends Controller {
                 100000 + Math.random() * 900000,
             );
             user.save();
-            res.composer.success('Verify discord code created');
+            res.composer.success(
+                'A verify code has been created. Please check https://game.gdsc.app/connect to get the code, then back type /verify <code> to link your account',
+            );
         } catch (error) {
             res.composer.badRequest(error.message);
         }
@@ -175,11 +184,13 @@ export class AuthController extends Controller {
             }
 
             if (!user.verifyDiscordCode) {
-                throw Error('Verify code not existed, please type /connect');
+                throw Error(
+                    'Verify code not existed, please type /connect <email> to connect to GDSC Game',
+                );
             }
 
             if (user.verifyDiscordCodeAt) {
-                throw Error('Email already linked to GDSC Game');
+                throw Error('Your account has been linked.');
             }
 
             if (code != user.verifyDiscordCode) {
@@ -188,7 +199,9 @@ export class AuthController extends Controller {
 
             user.verifyDiscordCodeAt = Date.now();
             user.save();
-            res.composer.success('Verify discord code success');
+            res.composer.success(
+                'Verification successful!, welcome to GDSC Game',
+            );
         } catch (error) {
             res.composer.badRequest(error.message);
         }
