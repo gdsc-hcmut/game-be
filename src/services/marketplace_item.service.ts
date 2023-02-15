@@ -251,7 +251,6 @@ export class MarketplaceItemService {
     async getAllMarketplaceItems(collectionName?: any) {
         let query: any = {
             claimed: false,
-            expiredAt: { $gt: Date.now() },
         };
         if (collectionName) {
             query = {
@@ -261,7 +260,7 @@ export class MarketplaceItemService {
         }
         const marketplaceItems = await MarketplaceItem.find(query)
             .sort({
-                createdAt: -1,
+                expiredAt: -1,
             })
             .populate('itemId');
         return marketplaceItems;
