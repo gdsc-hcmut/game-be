@@ -55,9 +55,10 @@ export class MarketplaceController extends Controller {
 
     async getAllMarketplaceItems(req: Request, res: Response) {
         try {
+            const { collectionName } = req.query;
             const marketplaceItems =
                 await this.marketplaceItemService.getAllMarketplaceItems(
-                    req.params.collectionName,
+                    collectionName,
                 );
             res.composer.success(marketplaceItems);
         } catch (error) {

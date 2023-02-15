@@ -18,7 +18,7 @@ import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
 import { ItemService } from './item.service';
 import { SYSTEM_ACCOUNT_ID } from '../config';
-import { ObjectId, Types } from 'mongoose';
+import { ObjectId, Query, Types } from 'mongoose';
 
 @injectable()
 export class MarketplaceItemService {
@@ -242,7 +242,7 @@ export class MarketplaceItemService {
         }
     }
 
-    async getAllMarketplaceItems(collectionName: string) {
+    async getAllMarketplaceItems(collectionName?: any) {
         let query: any = {
             claimed: false,
         };
