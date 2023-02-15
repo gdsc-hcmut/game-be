@@ -251,6 +251,7 @@ export class MarketplaceItemService {
     async getAllMarketplaceItems(collectionName?: any) {
         let query: any = {
             claimed: false,
+            expiredAt: { $gt: Date.now() },
         };
         if (collectionName) {
             query = {
