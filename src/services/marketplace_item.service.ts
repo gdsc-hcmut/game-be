@@ -101,7 +101,7 @@ export class MarketplaceItemService {
         } = marketplaceItem;
 
         if (expiredAt < Date.now()) {
-            throw new ErrorInvalidData('Expired, cannot make bid');
+            throw new ErrorInvalidData('Expired, cannot make a bid');
         }
 
         const owner: UserDocument = await this.userService.findOne({
@@ -118,12 +118,18 @@ export class MarketplaceItemService {
             );
         }
 
+        if (bidPrice > maxPrice) {
+            throw new ErrorInvalidData(
+                'Bid price must be less than or equal to max price',
+            );
+        }
+
         // Between min and max price
-        if (minPrice <= bidPrice && bidPrice < maxPrice) {
+        if (minPrice <= bidPrice && bidPrice <= maxPrice) {
             // Compare with currentPrice
-            if (bidPrice <= currentPrice) {
+            if (bidPrice < currentPrice * 1.1) {
                 throw new ErrorInvalidData(
-                    'Bid price must be greater than current price',
+                    'Bid price must be greater than current price 10%',
                 );
             }
 
@@ -173,73 +179,73 @@ export class MarketplaceItemService {
             return newOrder;
         }
 
-        if (bidPrice >= maxPrice) {
-            // If item is bought, write to priceHistory of item
-            const newOrder = new Order();
-            const item = await this.itemService.getItemById(itemId);
-            newOrder.description = `Successfully purchased ${item.name} in ${item.collectionName} from Bidding System`;
-            newOrder.status = 'success';
-            newOrder.marketplaceItemId = itemId;
-            // Transfer money from bidder to system account
-            const newTransaction =
-                await this.transactionService.createNewTransaction(
-                    fromUser,
-                    toUser,
-                    bidPrice,
-                    `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
-                );
+        // if (bidPrice >= maxPrice) {
+        //     // If item is bought, write to priceHistory of item
+        //     const newOrder = new Order();
+        //     const item = await this.itemService.getItemById(itemId);
+        //     newOrder.description = `Successfully purchased ${item.name} in ${item.collectionName} from Bidding System`;
+        //     newOrder.status = 'success';
+        //     newOrder.marketplaceItemId = itemId;
+        //     // Transfer money from bidder to system account
+        //     const newTransaction =
+        //         await this.transactionService.createNewTransaction(
+        //             fromUser,
+        //             toUser,
+        //             bidPrice,
+        //             `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
+        //         );
 
-            // THIS MAY NEED IMPLEMENT IN FUTURE FOR OTHER USER PLACE A BIDDING //
-            // Transer money from system account to item's owner
-            // const item = await this.itemService.getItemById(itemId);
-            // const newTrans = await this.transactionService.createNewTransaction(
-            //     toUser,
-            //     item.ownerId,
-            //     bidPrice,
-            // );
+        //     // THIS MAY NEED IMPLEMENT IN FUTURE FOR OTHER USER PLACE A BIDDING //
+        //     // Transer money from system account to item's owner
+        //     // const item = await this.itemService.getItemById(itemId);
+        //     // const newTrans = await this.transactionService.createNewTransaction(
+        //     //     toUser,
+        //     //     item.ownerId,
+        //     //     bidPrice,
+        //     // );
 
-            // Refund user currently bidding
-            if (priceHistory.length > 0) {
-                const prevBidder = await this.userService.findOne({
-                    email: priceHistory[0].email,
-                });
-                const refundTransaction =
-                    await this.transactionService.createNewTransaction(
-                        toUser,
-                        prevBidder._id.toString(),
-                        priceHistory[0].price,
-                        `Bidding system refund ${priceHistory[0].price} for you because someone bid the highest price`,
-                    );
-            }
-            newOrder.transactionId = newTransaction._id.toString();
-            await newOrder.save();
-            // Write priceHistory of marketplaceItem
-            const { email, name } = await User.findById(fromUser, { email: 1 });
-            priceHistory.unshift({
-                email,
-                name,
-                createdAt: Date.now(),
-                price: bidPrice,
-            });
-            // Remove marketplace item
-            // TODO: claimed = true
-            marketplaceItem.expiredAt = Date.now();
-            if (!marketplaceItem.followedUsers.includes(fromUser)) {
-                marketplaceItem.followedUsers.push(fromUser);
-            }
-            await marketplaceItem.save();
+        //     // Refund user currently bidding
+        //     if (priceHistory.length > 0) {
+        //         const prevBidder = await this.userService.findOne({
+        //             email: priceHistory[0].email,
+        //         });
+        //         const refundTransaction =
+        //             await this.transactionService.createNewTransaction(
+        //                 toUser,
+        //                 prevBidder._id.toString(),
+        //                 priceHistory[0].price,
+        //                 `Bidding system refund ${priceHistory[0].price} for you because someone bid the highest price`,
+        //             );
+        //     }
+        //     newOrder.transactionId = newTransaction._id.toString();
+        //     await newOrder.save();
+        //     // Write priceHistory of marketplaceItem
+        //     const { email, name } = await User.findById(fromUser, { email: 1 });
+        //     priceHistory.unshift({
+        //         email,
+        //         name,
+        //         createdAt: Date.now(),
+        //         price: bidPrice,
+        //     });
+        //     // Remove marketplace item
+        //     // TODO: claimed = true
+        //     marketplaceItem.expiredAt = Date.now();
+        //     if (!marketplaceItem.followedUsers.includes(fromUser)) {
+        //         marketplaceItem.followedUsers.push(fromUser);
+        //     }
+        //     await marketplaceItem.save();
 
-            // Change owner of item, write priceHistory of item
-            item.ownerId = fromUser;
-            item.priceHistory.unshift({
-                email,
-                name,
-                createdAt: Date.now(),
-                price: bidPrice,
-            });
-            await item.save();
-            return newOrder;
-        }
+        //     // Change owner of item, write priceHistory of item
+        //     item.ownerId = fromUser;
+        //     item.priceHistory.unshift({
+        //         email,
+        //         name,
+        //         createdAt: Date.now(),
+        //         price: bidPrice,
+        //     });
+        //     await item.save();
+        //     return newOrder;
+        // }
     }
 
     async getAllMarketplaceItems(collectionName?: any) {
