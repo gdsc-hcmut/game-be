@@ -295,7 +295,7 @@ export class MarketplaceItemService {
     async findById(marketplaceItemId: Types.ObjectId) {
         const marketplaceItem = await MarketplaceItem.findById(
             marketplaceItemId,
-        );
+        ).populate('itemId');
         return marketplaceItem;
     }
 
