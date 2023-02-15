@@ -68,7 +68,7 @@ export class MarketplaceController extends Controller {
         try {
             const { marketplaceItemId } = req.params;
             const item = await this.marketplaceItemService.findById(
-                new mongoose.Schema.Types.ObjectId(marketplaceItemId),
+                new Types.ObjectId(marketplaceItemId),
             );
             res.composer.success(item);
         } catch (error) {
@@ -136,7 +136,7 @@ export class MarketplaceController extends Controller {
             // TODO: check min max price when update
 
             const marketplaceItem = await this.marketplaceItemService.findById(
-                new mongoose.Schema.Types.ObjectId(marketplaceItemId),
+                new mongoose.Types.ObjectId(marketplaceItemId),
             );
             if (!marketplaceItem) {
                 throw new ErrorInvalidData('Marketplace item not exists');

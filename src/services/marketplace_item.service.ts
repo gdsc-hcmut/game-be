@@ -274,12 +274,12 @@ export class MarketplaceItemService {
         return bids;
     }
 
-    async findByItemId(itemId: ObjectId) {
+    async findByItemId(itemId: Types.ObjectId) {
         const item = await MarketplaceItem.findOne({ itemId });
         return item;
     }
 
-    async findById(marketplaceItemId: ObjectId) {
+    async findById(marketplaceItemId: Types.ObjectId) {
         const marketplaceItem = await MarketplaceItem.findById(
             marketplaceItemId,
         );
