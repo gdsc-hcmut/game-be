@@ -242,10 +242,17 @@ export class MarketplaceItemService {
         }
     }
 
-    async getAllMarketplaceItems() {
-        const marketplaceItems = await MarketplaceItem.find({
+    async getAllMarketplaceItems(collectionName: string) {
+        let query: any = {
             claimed: false,
-        })
+        };
+        if (collectionName) {
+            query = {
+                ...query,
+                collectionName: collectionName,
+            };
+        }
+        const marketplaceItems = await MarketplaceItem.find(query)
             .sort({
                 createdAt: -1,
             })
