@@ -46,9 +46,16 @@ export class TransactionService {
         toUser: Types.ObjectId,
         amount: number,
         message: string,
-    ): Promise<TransactionDocument> {
+    ): Promise<TransactionDocument | boolean> {
         // TODO: apply mongoose transaction
-        await this.userService.transferBalanceGame(fromUser, toUser, amount);
+        const isTransfer = await this.userService.transferBalanceGame(
+            fromUser,
+            toUser,
+            amount,
+        );
+        if (!isTransfer) {
+            return true;
+        }
         const newTransaction = new Transaction({
             fromUser,
             toUser,

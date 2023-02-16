@@ -274,14 +274,16 @@ export class UserService {
         amount: number,
     ): Promise<boolean> {
         const targetUser = await User.findById(toUser);
-        if (targetUser.availableReceiving === 0) {
-            return true;
-        }
-        targetUser.balance = amount + targetUser.balance;
-        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
         if (targetUser.highestScoreMathQuiz < amount) {
             targetUser.highestScoreMathQuiz = amount;
         }
+        if (targetUser.availableReceiving <= 0) {
+            targetUser.save();
+            return false;
+        }
+        targetUser.balance = amount + targetUser.balance;
+        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+
         targetUser.availableReceiving = targetUser.availableReceiving - amount;
         targetUser.markModified('balance');
         targetUser.markModified('availableReceiving');
