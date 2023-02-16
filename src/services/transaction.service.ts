@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { ObjectId, Types } from 'mongoose';
 import Transaction, { TransactionDocument } from '../models/transaction.model';
+import { UserDocument } from '../models/user.model';
 import { ServiceType } from '../types';
 import { UserService } from './user.service';
 
@@ -19,6 +20,29 @@ export class TransactionService {
         const newTransaction = new Transaction({
             fromUser,
             toUser,
+            amount,
+            message,
+            createdAt: Date.now(),
+        });
+
+        return newTransaction;
+    }
+
+    async createNewTransactionByDiscordId(
+        fromUser: Types.ObjectId,
+        toUserDiscordId: string,
+        amount: number,
+        message: string,
+    ): Promise<TransactionDocument> {
+        // TODO: apply mongoose transaction
+        const userId = await this.userService.transferBalanceByDiscordId(
+            fromUser,
+            toUserDiscordId,
+            amount,
+        );
+        const newTransaction = new Transaction({
+            fromUser,
+            toUser: userId,
             amount,
             message,
             createdAt: Date.now(),

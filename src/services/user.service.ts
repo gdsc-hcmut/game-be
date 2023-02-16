@@ -20,6 +20,7 @@ import { ServiceType } from '../types';
 import { randomPassword, encodeObjectId } from '../lib/helper';
 // import { MailService } from '.';
 import User, { UserDocument } from '../models/user.model';
+import { TransactionService } from './transaction.service';
 
 const USER_CREATE_ALLOW_FIELDS = [
     'password',
@@ -33,7 +34,10 @@ const USER_CREATE_ALLOW_FIELDS = [
 export class UserService {
     private userCollection: Collection;
 
-    constructor() {
+    constructor(
+        @inject(ServiceType.Transaction)
+        private transactionService: TransactionService,
+    ) {
         // @inject(ServiceType.Mail) private mailService: MailService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Database) private dbService: DatabaseService,
         // this.userCollection = this.dbService.db.collection('users');
         // this.setupIndexes();
@@ -265,6 +269,19 @@ export class UserService {
         await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
         await User.findByIdAndUpdate(toUser, { $inc: { balance: amount } });
         return true;
+    }
+
+    async transferBalanceByDiscordId(
+        fromUser: Types.ObjectId,
+        toUserDiscordId: string,
+        amount: number,
+    ): Promise<Types.ObjectId> {
+        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+        const toUser = await User.findOneAndUpdate(
+            { discordId: toUserDiscordId },
+            { $inc: { balance: amount } },
+        );
+        return toUser._id;
     }
 
     async getUserBalance(userId: Types.ObjectId): Promise<number> {

@@ -4,16 +4,21 @@ import _ from 'lodash';
 import User, { USER_ROLES } from '../models/user.model';
 import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
-import { AuthService } from '../services';
+import { AuthService, TransactionService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
     public readonly path = '/auth';
 
-    constructor(@inject(ServiceType.Auth) private authService: AuthService) {
+    constructor(
+        @inject(ServiceType.Auth) private authService: AuthService,
+        @inject(ServiceType.Transaction)
+        private transactionService: TransactionService,
+    ) {
         super();
 
         // Confing child routes
@@ -153,14 +158,25 @@ export class AuthController extends Controller {
     }
 
     async transGcoinFromDiscord(req: Request, res: Response) {
-        const { discordId, code } = req.body;
+        type DiscordReceive = {
+            discordId: string;
+            point: number;
+        };
+        const data: DiscordReceive[] = req.body.data;
         let { roles } = req.tokenMeta as TokenDocument;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
                 throw Error('Permission Error');
             }
-
+            data.map(async (e) => {
+                await this.transactionService.createNewTransactionByDiscordId(
+                    SYSTEM_ACCOUNT_ID,
+                    e.discordId,
+                    e.point,
+                    `You have received ${e.point} from Discord Bot because you play the Weekly Minigame`,
+                );
+            });
             res.composer.success('Update Success all user');
         } catch (error) {
             res.composer.badRequest(error.message);
