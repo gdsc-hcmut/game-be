@@ -35,7 +35,7 @@ export class TransactionService {
         message: string,
     ): Promise<TransactionDocument> {
         // TODO: apply mongoose transaction
-        await this.userService.transferBalance(fromUser, toUser, amount);
+        await this.userService.transferBalanceGame(fromUser, toUser, amount);
         const newTransaction = new Transaction({
             fromUser,
             toUser,
