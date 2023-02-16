@@ -291,6 +291,9 @@ class ClientUser {
     }
 
     async endQuizTimeout(socketId: any, connectedUser: ConnectedUser) {
+        if (!this.sockets[socketId].isQuizStart) {
+            return;
+        }
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
