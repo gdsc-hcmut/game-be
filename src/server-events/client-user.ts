@@ -241,23 +241,15 @@ class ClientUser {
                 .then(() => {
                     Object.keys(connectedUser).map(
                         (userKey: any, index: any) => {
-                            if (
-                                _.includes(
-                                    connectedUser[userKey].userData.roles,
-                                    USER_ROLES.SYSTEM,
-                                )
-                            ) {
-                                Object.keys(connectedUser[userKey].sockets).map(
-                                    (key: any, index: any) => {
-                                        this.SyncMathQuizRanking(
-                                            connectedUser[userKey].sockets[key]
-                                                .socket,
-                                            connectedUser[userKey]
-                                                .MathQuizRanking,
-                                        );
-                                    },
-                                );
-                            }
+                            Object.keys(connectedUser[userKey].sockets).map(
+                                (key: any, index: any) => {
+                                    this.SyncMathQuizRanking(
+                                        connectedUser[userKey].sockets[key]
+                                            .socket,
+                                        connectedUser[userKey].MathQuizRanking,
+                                    );
+                                },
+                            );
                         },
                     );
                 });
@@ -313,21 +305,14 @@ class ClientUser {
             )
             .then(() => {
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
-                    if (
-                        _.includes(
-                            connectedUser[userKey].userData.roles,
-                            USER_ROLES.SYSTEM,
-                        )
-                    ) {
-                        Object.keys(connectedUser[userKey].sockets).map(
-                            (key: any, index: any) => {
-                                this.SyncMathQuizRanking(
-                                    connectedUser[userKey].sockets[key].socket,
-                                    connectedUser[userKey].MathQuizRanking,
-                                );
-                            },
-                        );
-                    }
+                    Object.keys(connectedUser[userKey].sockets).map(
+                        (key: any, index: any) => {
+                            this.SyncMathQuizRanking(
+                                connectedUser[userKey].sockets[key].socket,
+                                connectedUser[userKey].MathQuizRanking,
+                            );
+                        },
+                    );
                 });
             });
         this.sockets[socketId].scoreQuiz = 0;

@@ -277,6 +277,9 @@ export class UserService {
         const targetUser = await User.findByIdAndUpdate(toUser, {
             $inc: { balance: amount },
         });
+        if (targetUser.highestScoreMathQuiz < amount) {
+            targetUser.highestScoreMathQuiz = amount;
+        }
         targetUser.availableReceiving = targetUser.availableReceiving - amount;
         targetUser.save();
         return true;
