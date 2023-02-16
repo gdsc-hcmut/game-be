@@ -28,6 +28,19 @@ export class TransactionService {
         return newTransaction;
     }
 
+    async getUserTransaction(
+        userId: Types.ObjectId,
+    ): Promise<TransactionDocument[]> {
+        // TODO: apply mongoose transaction
+        const trans = Transaction.find({
+            $or: [{ toUser: userId }, { fromUser: userId }],
+        })
+            .populate('toUser')
+            .populate('fromUser');
+
+        return trans;
+    }
+
     async createNewTransactionGame(
         fromUser: Types.ObjectId,
         toUser: Types.ObjectId,

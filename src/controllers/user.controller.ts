@@ -10,6 +10,7 @@ import {
     // BundleService,
     // MailService,
     AuthService,
+    TransactionService,
 } from '../services';
 import { ObjectID, ObjectId } from 'mongodb';
 import { EMAIL_SENDER, LIMIT_PAGING } from '../config';
@@ -27,6 +28,8 @@ export class UserController extends Controller {
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.Transaction)
+        private transactionService: TransactionService,
     ) {
         super();
 
@@ -46,6 +49,7 @@ export class UserController extends Controller {
 
         this.router.all('*', this.authService.authenticate(false));
         this.router.post('/triggerreset', this.triggerResetDaily.bind(this));
+        this.router.get('/transaction', this.getUserTransaction.bind(this));
         this.router.get('/', this.getUsers.bind(this));
         this.router.get('/me', this.getMe.bind(this));
         this.router.patch('/me', this.updatePrivate.bind(this));
@@ -81,6 +85,18 @@ export class UserController extends Controller {
         //     res.composer.badRequest(error.message);
         // }
     }
+
+    async getUserTransaction(req: Request, res: Response) {
+        try {
+            const trans = await this.transactionService.getUserTransaction(
+                new Types.ObjectId(req.tokenMeta.userId),
+            );
+            res.composer.success(trans);
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
     async resetAllScore(req: Request, res: Response) {
         try {
             const createdUser = await this.userService.resetPrivate();
