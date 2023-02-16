@@ -28,6 +28,25 @@ export class TransactionService {
         return newTransaction;
     }
 
+    async createNewTransactionGame(
+        fromUser: Types.ObjectId,
+        toUser: Types.ObjectId,
+        amount: number,
+        message: string,
+    ): Promise<TransactionDocument> {
+        // TODO: apply mongoose transaction
+        await this.userService.transferBalance(fromUser, toUser, amount);
+        const newTransaction = new Transaction({
+            fromUser,
+            toUser,
+            amount,
+            message,
+            createdAt: Date.now(),
+        });
+
+        return newTransaction;
+    }
+
     async createNewTransactionByDiscordId(
         fromUser: Types.ObjectId,
         toUserDiscordId: string,

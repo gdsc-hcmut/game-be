@@ -19,6 +19,7 @@ import {
     AuthService,
     ClubDayService,
     GameService,
+    TransactionService,
     UserService,
     // MQTTService,
 } from '../services';
@@ -58,6 +59,8 @@ export class SocketService {
         @inject(ServiceType.Game) private gameService: GameService,
         @inject(ServiceType.ClubDay) private clubDayService: ClubDayService,
         @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.Transaction)
+        private transactionService: TransactionService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -90,6 +93,7 @@ export class SocketService {
                 this.gameService,
                 this.clubDayService,
                 this.userService,
+                this.transactionService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);

@@ -268,6 +268,20 @@ export class UserService {
         return true;
     }
 
+    async transferBalanceGame(
+        fromUser: Types.ObjectId,
+        toUser: Types.ObjectId,
+        amount: number,
+    ): Promise<boolean> {
+        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+        const targetUser = await User.findByIdAndUpdate(toUser, {
+            $inc: { balance: amount },
+        });
+        targetUser.availableReceiving = targetUser.availableReceiving - amount;
+        targetUser.save();
+        return true;
+    }
+
     async transferBalanceByDiscordId(
         fromUser: Types.ObjectId,
         toUserDiscordId: string,

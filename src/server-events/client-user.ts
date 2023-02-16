@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
-import { GameService } from '../services';
+import { GameService, TransactionService } from '../services';
 import { ClubDayService, UserService } from '../services';
 
 import levels from '../game/levels.json';
@@ -10,7 +10,8 @@ import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
 import { ConnectedUser, CustomSocket } from '.';
 import { UserDocument, USER_ROLES } from '../models/user.model';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 const INIT_LEVEL = 0;
 
 export interface SocketInfo {
@@ -37,12 +38,14 @@ class ClientUser {
     private MathQuizRanking: UserDocument[];
     private userService: UserService;
     private userData: UserDocument;
+    private transactionService: TransactionService;
 
     constructor(
         userId: string,
         gameService: GameService,
         clubDayService: ClubDayService,
         userService: UserService,
+        transactionService: TransactionService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -51,6 +54,7 @@ class ClientUser {
         this.clubDayService = clubDayService;
         this.MathQuizRanking = [];
         this.userService = userService;
+        this.transactionService = transactionService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -225,10 +229,14 @@ class ClientUser {
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
             this.sockets[socketId].isQuizStart = false;
-            await this.gameService
-                .updateUserBalanceInGame(
-                    this.userId,
-                    this.sockets[socketId].scoreQuiz,
+            await this.transactionService
+                .createNewTransactionGame(
+                    SYSTEM_ACCOUNT_ID,
+                    new Types.ObjectId(this.userId),
+                    this.sockets[socketId].scoreQuiz / 10,
+                    `You got ${
+                        this.sockets[socketId].scoreQuiz / 10
+                    }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
                     Object.keys(connectedUser).map(
@@ -294,10 +302,14 @@ class ClientUser {
         clearTimeout(this.sockets[socketId].quizTimeout);
         this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
         this.sockets[socketId].isQuizStart = false;
-        await this.gameService
-            .updateUserBalanceInGame(
-                this.userId,
-                this.sockets[socketId].scoreQuiz,
+        await this.transactionService
+            .createNewTransactionGame(
+                SYSTEM_ACCOUNT_ID,
+                new Types.ObjectId(this.userId),
+                this.sockets[socketId].scoreQuiz / 10,
+                `You got ${
+                    this.sockets[socketId].scoreQuiz / 10
+                }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
