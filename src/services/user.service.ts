@@ -324,4 +324,7 @@ export class UserService {
     async resetPrivate(): Promise<void> {
         await User.find().updateMany({ highestScoreMathQuiz: 0 });
     }
+    async resetAvailableCoin(): Promise<void> {
+        await User.find().updateMany({ availableReceiving: 300 });
+    }
 }

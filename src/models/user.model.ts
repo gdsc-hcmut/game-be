@@ -32,6 +32,7 @@ export type UserDocument = Document & {
     discordId: string;
     verifyDiscordCode: number;
     verifyDiscordCodeAt: number;
+    availableReceiving: number;
     roles: USER_ROLES[];
 };
 
@@ -46,6 +47,7 @@ const userSchema = new Schema<UserDocument>({
     discordId: String,
     verifyDiscordCode: Number,
     verifyDiscordCodeAt: Number,
+    availableReceiving: { type: Number, default: 300 },
     roles: Array<USER_ROLES>,
 });
 

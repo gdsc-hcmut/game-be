@@ -45,7 +45,7 @@ export class UserController extends Controller {
         // this.router.post('/verify-account', this.verifyAccount.bind(this));
 
         this.router.all('*', this.authService.authenticate(false));
-
+        this.router.post('/triggerreset', this.triggerResetDaily.bind(this));
         this.router.get('/', this.getUsers.bind(this));
         this.router.get('/me', this.getMe.bind(this));
         this.router.patch('/me', this.updatePrivate.bind(this));
@@ -84,6 +84,19 @@ export class UserController extends Controller {
     async resetAllScore(req: Request, res: Response) {
         try {
             const createdUser = await this.userService.resetPrivate();
+            res.composer.success('ok');
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async triggerResetDaily(req: Request, res: Response) {
+        try {
+            const { roles } = req.tokenMeta;
+            if (!_.includes(roles, USER_ROLES.SUPER_ADMIN)) {
+                throw new ErrorUserInvalid('Permission Error');
+            }
+            await this.userService.resetAvailableCoin();
             res.composer.success('ok');
         } catch (error) {
             res.composer.badRequest(error.message);
