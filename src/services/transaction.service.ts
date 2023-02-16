@@ -47,6 +47,7 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
+        newTransaction.save();
 
         return newTransaction;
     }
