@@ -216,7 +216,7 @@ export class AuthController extends Controller {
             user.verifyDiscordCodeAt = Date.now();
             user.save();
             res.composer.success(
-                'Verification successful!, welcome to GDSC Game',
+                'Verification successful! Welcome to GDSC Game',
             );
         } catch (error) {
             res.composer.badRequest(error.message);

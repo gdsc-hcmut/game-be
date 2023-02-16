@@ -34,10 +34,7 @@ const USER_CREATE_ALLOW_FIELDS = [
 export class UserService {
     private userCollection: Collection;
 
-    constructor(
-        @inject(ServiceType.Transaction)
-        private transactionService: TransactionService,
-    ) {
+    constructor() {
         // @inject(ServiceType.Mail) private mailService: MailService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Database) private dbService: DatabaseService,
         // this.userCollection = this.dbService.db.collection('users');
         // this.setupIndexes();
