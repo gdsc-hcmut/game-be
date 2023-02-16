@@ -342,4 +342,9 @@ export class UserService {
     async resetAvailableCoin(): Promise<void> {
         await User.find().updateMany({ availableReceiving: 300 });
     }
+
+    async triggerLeaderboard(): Promise<UserDocument[]> {
+        const users = await User.find().sort({ highestScoreMathQuiz: -1 });
+        return users;
+    }
 }
