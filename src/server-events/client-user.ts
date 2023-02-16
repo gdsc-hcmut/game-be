@@ -315,6 +315,7 @@ class ClientUser {
                     );
                 });
             });
+        // trigger
         this.sockets[socketId].scoreQuiz = 0;
     }
 
