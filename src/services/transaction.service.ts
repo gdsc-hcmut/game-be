@@ -24,7 +24,7 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-
+        newTransaction.save();
         return newTransaction;
     }
 
@@ -56,7 +56,7 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-
+        newTransaction.save();
         return newTransaction;
     }
 
