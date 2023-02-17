@@ -36,10 +36,10 @@ export class ItemController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.post('/private/items', this.createNewItem.bind(this));
         this.router.get('/private/items', this.getUserItems.bind(this));
-        this.router.patch(
-            '/private/items/:itemId',
-            this.updateItemById.bind(this),
-        );
+        // this.router.patch(
+        //     '/private/items/:itemId',
+        //     this.updateItemById.bind(this),
+        // );
     }
 
     async createNewItem(req: Request, res: Response) {
