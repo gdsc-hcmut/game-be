@@ -349,7 +349,7 @@ export class UserService {
     }
 
     async resetAvailableCoin(): Promise<void> {
-        await User.find().updateMany({ availableReceiving: 300 });
+        await User.find().updateMany({ availableReceiving: 1000 });
     }
 
     async triggerLeaderboard(): Promise<UserDocument[]> {

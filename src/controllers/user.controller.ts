@@ -138,71 +138,71 @@ export class UserController extends Controller {
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[0]._id,
-                    500,
-                    `Receive 500Gcoin for 1st place in Math Quiz Leaderboard Daily`,
+                    700,
+                    `Receive 700Gcoin for 1st place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 1)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[1]._id,
-                    300,
-                    `Receive 300Gcoin for 2nd place in Math Quiz Leaderboard Daily`,
+                    500,
+                    `Receive 500Gcoin for 2nd place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 2)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[2]._id,
-                    200,
-                    `Receive 200Gcoin for 3rd place in Math Quiz Leaderboard Daily`,
+                    300,
+                    `Receive 300Gcoin for 3rd place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 3)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[3]._id,
-                    100,
+                    200,
                     `Receive 100Gcoin for 4th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 4)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[4]._id,
-                    100,
-                    `Receive 100Gcoin for 5th place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 5th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 5)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[5]._id,
-                    100,
-                    `Receive 100Gcoin for 6th place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 6th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 6)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[6]._id,
-                    100,
-                    `Receive 100Gcoin for 7th place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 7th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 7)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[7]._id,
-                    100,
-                    `Receive 100Gcoin for 8th place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 8th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 8)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[8]._id,
-                    100,
-                    `Receive 100Gcoin for 9th place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 9th place in Math Quiz Leaderboard Daily`,
                 );
             if (users.length > 9)
                 await this.transactionService.createNewTransaction(
                     SYSTEM_ACCOUNT_ID,
                     users[9]._id,
-                    100,
-                    `Receive 100Gcoin for 10st place in Math Quiz Leaderboard Daily`,
+                    200,
+                    `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
 
             res.composer.success('ok');
