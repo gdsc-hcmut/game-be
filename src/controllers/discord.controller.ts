@@ -96,7 +96,7 @@ export class DiscordController extends Controller {
             );
             dis.isDaily = true;
             dis.streak = dis.streak + 1;
-
+            dis.save();
             res.composer.success(dis);
         } catch (error) {
             console.log(error);
@@ -118,20 +118,23 @@ export class DiscordController extends Controller {
                     'DiscordId not existed, user may need to connect to GDSC Game by /connect <email>',
                 );
             }
-            if (dis.isDaily) {
-                throw Error('You have already get the daily coin today');
+            if (Date.now() - dis.lastWorkAt < 3600000) {
+                throw Error(
+                    `Please work after ${
+                        (Date.now() - dis.lastWorkAt) / 1000
+                    } seconds`,
+                );
             }
             let coin = 0;
-            coin = randomIntFromInterval(dis.streak * 5, dis.streak * 10);
+            coin = randomIntFromInterval(100, 250);
             await this.transactionService.createNewTransactionByDiscordId(
                 SYSTEM_ACCOUNT_ID,
                 discordId,
                 coin,
-                `You receive ${coin} from discord daily`,
+                `You receive ${coin} from discord work`,
             );
-            dis.isDaily = true;
-            dis.streak = dis.streak + 1;
-
+            dis.lastWorkAt = Date.now();
+            dis.save();
             res.composer.success(dis);
         } catch (error) {
             console.log(error);
