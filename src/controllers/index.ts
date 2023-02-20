@@ -6,6 +6,7 @@ import { MarketplaceController } from './marketplace_item.controller';
 import { ClubDayController } from './clubday.controller';
 
 import { Controller } from './controller';
+import { DiscordController } from './discord.controller';
 
 export {
     Controller,
@@ -15,4 +16,5 @@ export {
     ItemController,
     MarketplaceController,
     ClubDayController,
+    DiscordController,
 };

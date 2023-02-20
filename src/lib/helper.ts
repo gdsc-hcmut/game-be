@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import crypto from 'crypto';
 import { PASSWORD_SCERET_KEY } from '../config';
-const CHARACTERS = '01234defghijkl56789NOPQRSTUVWXYZabcmnoABCDEFGHIJKLMpqrstuvwxyz';
+const CHARACTERS =
+    '01234defghijkl56789NOPQRSTUVWXYZabcmnoABCDEFGHIJKLMpqrstuvwxyz';
 
 export type EncodeCompressionLevel = 0 | 1 | 2;
 
@@ -10,7 +11,14 @@ export function castToBoolean(value: string) {
 }
 
 export function randomPassword(length: number) {
-    return [...new Array(length)].map(() => CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]).join('');
+    return [...new Array(length)]
+        .map(() => CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)])
+        .join('');
+}
+
+export function randomIntFromInterval(min: number, max: number) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export function generateRandomStringNumber(length: number) {
@@ -21,10 +29,16 @@ export function generateRandomStringNumber(length: number) {
     return numberString;
 }
 
-export function encodeObjectId(objectId: string, compressLevel: EncodeCompressionLevel = 0) {
+export function encodeObjectId(
+    objectId: string,
+    compressLevel: EncodeCompressionLevel = 0,
+) {
     let blocks = [];
     if (compressLevel == 1) {
-        blocks = [parseInt(objectId.slice(8, 16), 16), parseInt(objectId.slice(16), 16)];
+        blocks = [
+            parseInt(objectId.slice(8, 16), 16),
+            parseInt(objectId.slice(16), 16),
+        ];
     } else if (compressLevel == 2) {
         blocks = [parseInt(objectId.slice(18), 16)];
         if (Math.random() > 0.5) {
@@ -33,11 +47,14 @@ export function encodeObjectId(objectId: string, compressLevel: EncodeCompressio
             blocks = [Math.floor(Math.random() * 128), ...blocks];
         }
     } else {
-        blocks = [parseInt(objectId.slice(0, 12), 16), parseInt(objectId.slice(12), 16)];
+        blocks = [
+            parseInt(objectId.slice(0, 12), 16),
+            parseInt(objectId.slice(12), 16),
+        ];
     }
 
     return blocks
-        .map(n => {
+        .map((n) => {
             let bundleSlug = '';
             while (n > 0) {
                 bundleSlug += CHARACTERS[n % 62];
@@ -50,7 +67,5 @@ export function encodeObjectId(objectId: string, compressLevel: EncodeCompressio
 
 export function hashingPassword(password: string) {
     let hashedPassword = PASSWORD_SCERET_KEY + password;
-    return crypto.createHash('sha256')
-        .update(hashedPassword)
-        .digest('hex');
+    return crypto.createHash('sha256').update(hashedPassword).digest('hex');
 }

@@ -14,6 +14,7 @@ import {
     MarketplaceItemService,
     TransactionService,
     ClubDayService,
+    DiscordService,
 } from './services';
 import {
     AuthController,
@@ -22,6 +23,7 @@ import {
     ItemController,
     MarketplaceController,
     ClubDayController,
+    DiscordController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -64,6 +66,10 @@ container
     .bind<ClubDayService>(ServiceType.ClubDay)
     .to(ClubDayService)
     .inSingletonScope();
+container
+    .bind<DiscordService>(ServiceType.Discord)
+    .to(DiscordService)
+    .inSingletonScope();
 // Initialize service first
 Promise.all([
     container.get<DatabaseService>(ServiceType.Database).initialize(),
@@ -76,6 +82,7 @@ Promise.all([
             container.resolve<ItemController>(ItemController),
             container.resolve<MarketplaceController>(MarketplaceController),
             container.resolve<ClubDayController>(ClubDayController),
+            container.resolve<DiscordController>(DiscordController),
         ],
         SERVICE_PORT,
         [
