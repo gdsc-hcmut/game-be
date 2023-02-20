@@ -83,7 +83,11 @@ export class DiscordController extends Controller {
                 );
             }
             if (dis.isDaily) {
-                throw Error('You have already get the daily coin today');
+                res.composer.success({
+                    isSuccess: false,
+                    isDaily: true,
+                });
+                return;
             }
             const { streak } = dis;
             let coin = 0;
@@ -97,7 +101,10 @@ export class DiscordController extends Controller {
             dis.isDaily = true;
             dis.streak = dis.streak + 1;
             dis.save();
-            res.composer.success(dis);
+            res.composer.success({
+                isSuccess: true,
+                isDaily: true,
+            });
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
@@ -119,11 +126,24 @@ export class DiscordController extends Controller {
                 );
             }
             if (Date.now() - dis.lastWorkAt < 3600000) {
-                throw Error(
-                    `Please work after ${
-                        (Date.now() - dis.lastWorkAt) / 1000
-                    } seconds`,
-                );
+                var diff = 3600000 - Date.now() - dis.lastWorkAt;
+
+                var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                diff -= days * (1000 * 60 * 60 * 24);
+
+                var hours = Math.floor(diff / (1000 * 60 * 60));
+                diff -= hours * (1000 * 60 * 60);
+
+                var mins = Math.floor(diff / (1000 * 60));
+                diff -= mins * (1000 * 60);
+
+                var seconds = Math.floor(diff / 1000);
+                diff -= seconds * 1000;
+                res.composer.success({
+                    isSuccess: false,
+                    lastWorkat: dis.lastWorkAt,
+                });
+                return;
             }
             let coin = 0;
             coin = randomIntFromInterval(100, 250);
@@ -135,7 +155,10 @@ export class DiscordController extends Controller {
             );
             dis.lastWorkAt = Date.now();
             dis.save();
-            res.composer.success(dis);
+            res.composer.success({
+                isSuccess: true,
+                lastWorkat: dis.lastWorkAt,
+            });
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
