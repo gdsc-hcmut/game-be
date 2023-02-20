@@ -157,6 +157,7 @@ export class DiscordController extends Controller {
             dis.save();
             res.composer.success({
                 isSuccess: true,
+                coin: coin,
                 lastWorkat: dis.lastWorkAt,
             });
         } catch (error) {
