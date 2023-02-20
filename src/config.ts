@@ -33,6 +33,18 @@ const DB_PORT = IS_PRODUCTION ? 27017 : 27071;
 const DB_USERNAME = 'dbBugs';
 const DB_PASSWORD = '2W8F5Ewr';
 
+export const USER_WHITE_LIST: Array<{ email: string }> = [
+    { email: 'lygioian@gmail.com' },
+    { email: 'phuc.daoanh@hcmut.edu.vn' },
+    { email: 'bao.le108101@hcmut.edu.vn' },
+    { email: 'truongquochung312@gmail.com' },
+    { email: 'minhduytranct2017@gmail.com' },
+    { email: 'tndangkhoa218@gmail.com' },
+    { email: 'jamesklein218@gmail.com' },
+    { email: 'duc.nv291@gmail.com' },
+    { email: 'nguyenthithanhbinh1012004@gmail.com' },
+];
+
 export const DB_NAME = 'bugs';
 export const DB_CONN_STRING = process.env.DB_URI;
 // export const DB_CONN_STRING = `mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=${DB_NAME}`;

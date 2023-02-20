@@ -47,7 +47,7 @@ const userSchema = new Schema<UserDocument>({
     discordId: String,
     verifyDiscordCode: Number,
     verifyDiscordCodeAt: Number,
-    availableReceiving: { type: Number, default: 300 },
+    availableReceiving: { type: Number, default: 1000 },
     roles: Array<USER_ROLES>,
 });
 

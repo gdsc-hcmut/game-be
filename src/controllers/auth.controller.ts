@@ -8,7 +8,7 @@ import { AuthService, TransactionService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
-import { SYSTEM_ACCOUNT_ID } from '../config';
+import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
@@ -42,7 +42,16 @@ export class AuthController extends Controller {
                     user.email,
                     user.roles,
                 );
-                res.redirect(`https://game.gdsc.app/login?token=${token}`);
+                if (
+                    _.includes(
+                        USER_WHITE_LIST.map((e) => e.email),
+                        user.email,
+                    )
+                ) {
+                    res.redirect(
+                        `https://dev.game.gdsc.app/login?token=${token}`,
+                    );
+                } else res.redirect(`https://fessior.com/notpermission`);
             },
         );
         // Force authenticate all routes
