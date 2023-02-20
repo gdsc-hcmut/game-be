@@ -75,7 +75,7 @@ export class DiscordController extends Controller {
                 throw Error('Miss Discord ID');
             }
             let dis = await this.discordService.getDiscordActivity(
-                req.params.discordId,
+                req.body.discordId,
             );
             if (!dis) {
                 throw Error(
@@ -111,7 +111,7 @@ export class DiscordController extends Controller {
                 throw Error('Miss Discord ID');
             }
             let dis = await this.discordService.getDiscordActivity(
-                req.params.discordId,
+                req.body.discordId,
             );
             if (!dis) {
                 throw Error(

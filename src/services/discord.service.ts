@@ -26,4 +26,8 @@ export class DiscordService {
     ): Promise<DiscordActivityDocument> {
         return await DiscordActivity.findOne({ discordId: discordId });
     }
+
+    async createBattle(discordId: string): Promise<DiscordActivityDocument> {
+        return await DiscordActivity.findOne({ discordId: discordId });
+    }
 }
