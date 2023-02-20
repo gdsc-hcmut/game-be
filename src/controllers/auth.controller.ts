@@ -42,12 +42,14 @@ export class AuthController extends Controller {
                     user.email,
                     user.roles,
                 );
+                if (process.env.ENV != 'dev') {
+                    res.redirect(`https://game.gdsc.app/login?token=${token}`);
+                }
                 if (
                     _.includes(
                         USER_WHITE_LIST.map((e) => e.email),
                         user.email,
-                    ) ||
-                    process.env.ENV != 'dev'
+                    )
                 ) {
                     res.redirect(
                         `https://dev.game.gdsc.app/login?token=${token}`,
