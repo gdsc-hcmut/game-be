@@ -2,7 +2,7 @@ import mongoose, { Document, Types } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-export type DiscordActivityDocument = Document & {
+export type DiscordBattleDocument = Document & {
     player1DiscordId: string;
     player2DiscordId: string;
     point: number;
@@ -11,7 +11,7 @@ export type DiscordActivityDocument = Document & {
     createdAt: number;
 };
 
-const discordActivitySchema = new Schema<DiscordActivityDocument>({
+const discordBattleSchema = new Schema<DiscordBattleDocument>({
     player1DiscordId: String,
     player2DiscordId: String,
     point: Number,
@@ -20,9 +20,9 @@ const discordActivitySchema = new Schema<DiscordActivityDocument>({
     createdAt: String,
 });
 
-const BookFair = mongoose.model<DiscordActivityDocument>(
-    'DiscordActivity',
-    discordActivitySchema,
+const DiscordBattle = mongoose.model<DiscordBattleDocument>(
+    'DiscordBattle',
+    discordBattleSchema,
 );
 
-export default BookFair;
+export default DiscordBattle;

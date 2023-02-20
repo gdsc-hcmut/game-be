@@ -18,9 +18,9 @@ const discordActivitySchema = new Schema<DiscordActivityDocument>({
     lastWorkAt: { type: Number, default: 0 },
 });
 
-const BookFair = mongoose.model<DiscordActivityDocument>(
+const DiscordActivity = mongoose.model<DiscordActivityDocument>(
     'DiscordActivity',
     discordActivitySchema,
 );
 
-export default BookFair;
+export default DiscordActivity;

@@ -9,6 +9,8 @@ import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
 import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
+import DiscordBattle from '../models/discord_battle';
+import DiscordActivity from '../models/discord_activity';
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
@@ -227,6 +229,11 @@ export class AuthController extends Controller {
 
             user.verifyDiscordCodeAt = Date.now();
             user.save();
+            const discord = new DiscordActivity({
+                userId: user._id,
+                discordId: discordId,
+            });
+            discord.save();
             res.composer.success(
                 'Verification successful! Welcome to GDSC Game',
             );
