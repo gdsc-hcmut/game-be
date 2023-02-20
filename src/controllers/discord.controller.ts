@@ -85,8 +85,9 @@ export class DiscordController extends Controller {
             if (dis.isDaily) {
                 throw Error('You have already get the daily coin today');
             }
+            const { streak } = dis;
             let coin = 0;
-            coin = randomIntFromInterval(dis.streak * 5, dis.streak * 10);
+            coin = randomIntFromInterval(streak * 5, streak * 10);
             await this.transactionService.createNewTransactionByDiscordId(
                 SYSTEM_ACCOUNT_ID,
                 discordId,
@@ -105,7 +106,7 @@ export class DiscordController extends Controller {
 
     async discordWork(req: Request, res: Response) {
         try {
-            const { discordId } = req.params;
+            const { discordId } = req.body;
             if (!discordId) {
                 throw Error('Miss Discord ID');
             }
@@ -117,6 +118,19 @@ export class DiscordController extends Controller {
                     'DiscordId not existed, user may need to connect to GDSC Game by /connect <email>',
                 );
             }
+            if (dis.isDaily) {
+                throw Error('You have already get the daily coin today');
+            }
+            let coin = 0;
+            coin = randomIntFromInterval(dis.streak * 5, dis.streak * 10);
+            await this.transactionService.createNewTransactionByDiscordId(
+                SYSTEM_ACCOUNT_ID,
+                discordId,
+                coin,
+                `You receive ${coin} from discord daily`,
+            );
+            dis.isDaily = true;
+            dis.streak = dis.streak + 1;
 
             res.composer.success(dis);
         } catch (error) {

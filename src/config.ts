@@ -181,7 +181,9 @@ export const LIMIT_PAGING = 24;
 export const BOX_PRICE = 10000;
 
 export const SYSTEM_ACCOUNT_ID = new mongoose.Types.ObjectId(
-    '63ee1f5514690baf606a88d4',
+    process.env.ENV == 'dev'
+        ? '63f32487419633ae2a19cd4b'
+        : '63ee1f5514690baf606a88d4',
 );
 
 export const GIFT_THRESHOLD = 20;
