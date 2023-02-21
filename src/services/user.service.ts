@@ -375,4 +375,9 @@ export class UserService {
         const users = await User.find().sort({ highestScoreMathQuiz: -1 });
         return users;
     }
+
+    async getUserInfoByDiscordId(discordId: string): Promise<UserDocument> {
+        const user = await User.findOne({ discordId: discordId });
+        return user;
+    }
 }

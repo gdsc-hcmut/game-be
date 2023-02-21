@@ -47,6 +47,7 @@ export class DiscordController extends Controller {
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
         this.router.post('/private/battle/end', this.endBattle.bind(this));
+        this.router.get('/private/users/userId', this.getUserInfo.bind(this));
     }
 
     async getDiscordActivityInformation(req: Request, res: Response) {
@@ -204,6 +205,26 @@ export class DiscordController extends Controller {
                 isSuccess: true,
                 battle,
             });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getUserInfo(req: Request, res: Response) {
+        try {
+            const { discordId } = req.params;
+            if (!discordId) {
+                throw Error('Miss Discord ID');
+            }
+            let dis = await this.userService.getUserInfoByDiscordId(discordId);
+            if (!dis) {
+                throw Error(
+                    'DiscordId not existed, user may need to connect to GDSC Game by /connect <email>',
+                );
+            }
+
+            res.composer.success(dis);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
