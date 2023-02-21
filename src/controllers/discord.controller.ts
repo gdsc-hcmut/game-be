@@ -19,6 +19,7 @@ import { GameService } from '../services';
 import { Reward } from '../models/club_day';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
+import { Types } from 'mongoose';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
@@ -44,6 +45,8 @@ export class DiscordController extends Controller {
         );
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
+        this.router.post('/private/battle/start', this.startBattle.bind(this));
+        this.router.post('/private/battle/end', this.endBattle.bind(this));
     }
 
     async getDiscordActivityInformation(req: Request, res: Response) {
@@ -159,6 +162,47 @@ export class DiscordController extends Controller {
                 isSuccess: true,
                 coin: coin,
                 lastWorkat: dis.lastWorkAt,
+            });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async startBattle(req: Request, res: Response) {
+        try {
+            const { player1DiscordId, player2DiscordId, point } = req.body;
+            if (!player1DiscordId || !player2DiscordId || !point) {
+                throw Error('Miss field');
+            }
+            let battle = await this.discordService.createBattle(
+                player1DiscordId,
+                player2DiscordId,
+                point,
+            );
+            res.composer.success({
+                isSuccess: true,
+                battle,
+            });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async endBattle(req: Request, res: Response) {
+        try {
+            const { winnerDiscordID, battleId } = req.body;
+            if (!winnerDiscordID || !battleId) {
+                throw Error('Miss field');
+            }
+            let battle = await this.discordService.endBattle(
+                new Types.ObjectId(battleId),
+                winnerDiscordID,
+            );
+            res.composer.success({
+                isSuccess: true,
+                battle,
             });
         } catch (error) {
             console.log(error);

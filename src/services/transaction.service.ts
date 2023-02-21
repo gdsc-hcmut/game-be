@@ -90,4 +90,32 @@ export class TransactionService {
 
         return newTransaction;
     }
+
+    async createNewTransactionByDiscordIdP2PBattle(
+        fromUserDiscordId: string,
+        toUserDiscordId: string,
+        amount: number,
+    ): Promise<TransactionDocument> {
+        // TODO: apply mongoose transaction
+        const {
+            fromUser,
+            toUser,
+        }: { fromUser: UserDocument; toUser: UserDocument } =
+            await this.userService.transferBalanceByDiscordIdP2P(
+                fromUserDiscordId,
+                toUserDiscordId,
+                amount,
+            );
+        let message = `End Battle ${fromUser.name} transfer to ${toUser.name} ${amount}Gcoin`;
+        const newTransaction = new Transaction({
+            fromUser: fromUser._id,
+            toUser: toUser._id,
+            amount,
+            message,
+            createdAt: Date.now(),
+        });
+        newTransaction.save();
+
+        return newTransaction;
+    }
 }

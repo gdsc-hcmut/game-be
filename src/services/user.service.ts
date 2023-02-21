@@ -304,6 +304,25 @@ export class UserService {
         return toUser._id;
     }
 
+    async transferBalanceByDiscordIdP2P(
+        fromUserDiscordId: string,
+        toUserDiscordId: string,
+        amount: number,
+    ): Promise<{ toUser: UserDocument; fromUser: UserDocument }> {
+        const fromUser = await User.findOneAndUpdate(
+            { discordId: fromUserDiscordId },
+            { $inc: { balance: -amount } },
+        );
+        const toUser = await User.findOneAndUpdate(
+            { discordId: toUserDiscordId },
+            { $inc: { balance: amount } },
+        );
+        if (!fromUser || !toUser) {
+            throw Error('Some Error');
+        }
+        return { toUser: toUser, fromUser: fromUser };
+    }
+
     async getUserBalance(userId: Types.ObjectId): Promise<number> {
         const { balance } = await User.findById(userId, { balance: 1 });
         return balance;
