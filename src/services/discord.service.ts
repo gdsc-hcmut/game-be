@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { ObjectId, Types } from 'mongoose';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 import DiscordActivity, {
     DiscordActivityDocument,
 } from '../models/discord_activity';
@@ -58,6 +59,24 @@ export class DiscordService {
         const user2 = await this.userService.findOne({
             discordId: player2DiscordId,
         });
+        if (user1.balance < point) {
+            throw Error('Player 1 doesnt have enough coin to battle');
+        }
+        if (user2.balance < point) {
+            throw Error('Player 2 doesnt have enough coin to battle');
+        }
+        await this.transactionService.createNewTransaction(
+            user1._id,
+            SYSTEM_ACCOUNT_ID,
+            point,
+            `Transfer ${point}coin to join the battle with ${user2.name}`,
+        );
+        await this.transactionService.createNewTransaction(
+            user2._id,
+            SYSTEM_ACCOUNT_ID,
+            point,
+            `Transfer ${point}coin to join the battle with ${user1.name}`,
+        );
         const battle = new DiscordBattle({
             player1DiscordId: player1DiscordId,
             player2DiscordId: player2DiscordId,

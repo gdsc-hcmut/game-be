@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { ObjectId, Types } from 'mongoose';
+import { SYSTEM_ACCOUNT_ID } from '../config';
 import Transaction, { TransactionDocument } from '../models/transaction.model';
 import { UserDocument } from '../models/user.model';
 import { ServiceType } from '../types';
@@ -102,15 +103,17 @@ export class TransactionService {
             toUser,
         }: { fromUser: UserDocument; toUser: UserDocument } =
             await this.userService.transferBalanceByDiscordIdP2P(
-                fromUserDiscordId,
+                SYSTEM_ACCOUNT_ID,
                 toUserDiscordId,
                 amount,
             );
-        let message = `End Battle ${fromUser.name} transfer to ${toUser.name} ${amount}Gcoin`;
+        let message = `End Battle transfer to ${toUser.name} ${
+            2 * amount
+        }Gcoin`;
         const newTransaction = new Transaction({
-            fromUser: fromUser._id,
+            fromUser: SYSTEM_ACCOUNT_ID,
             toUser: toUser._id,
-            amount,
+            amount: amount * 2,
             message,
             createdAt: Date.now(),
         });
