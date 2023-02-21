@@ -302,7 +302,7 @@ export class MarketplaceItemService {
     async claimBid(userId: Types.ObjectId, bidId: Types.ObjectId) {
         // Check if user is the current bid user
         const bid = await MarketplaceItem.findById(bidId);
-        if (bid.currentBidUserId.equals(userId)) {
+        if (!bid.currentBidUserId.equals(userId)) {
             throw new ErrorInvalidData('You not own this bid');
         }
 
