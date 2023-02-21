@@ -227,7 +227,9 @@ class ClientUser {
 
     async answerQuiz(socketId: any, answer: any, connectedUser: ConnectedUser) {
         if (answer !== this.sockets[socketId].isQuizTrue) {
-            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+            this.sockets[socketId].socket.emit(EventTypes.END_QUIZ, {
+                ranking: this.MathQuizRanking,
+            });
             this.sockets[socketId].isQuizStart = false;
             await this.transactionService
                 .createNewTransactionGame(
@@ -295,7 +297,9 @@ class ClientUser {
             return;
         }
         clearTimeout(this.sockets[socketId].quizTimeout);
-        this.sockets[socketId].socket.emit(EventTypes.END_QUIZ);
+        this.sockets[socketId].socket.emit(EventTypes.END_QUIZ, {
+            ranking: this.MathQuizRanking,
+        });
         this.sockets[socketId].isQuizStart = false;
         await this.transactionService
             .createNewTransactionGame(
