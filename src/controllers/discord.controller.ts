@@ -153,7 +153,7 @@ export class DiscordController extends Controller {
                 return;
             }
             let coin = 0;
-            coin = randomIntFromInterval(100, 250);
+            coin = randomIntFromInterval(50, 150);
             await this.transactionService.createNewTransactionByDiscordId(
                 SYSTEM_ACCOUNT_ID,
                 discordId,

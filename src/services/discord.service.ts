@@ -38,11 +38,11 @@ export class DiscordService {
         player2DiscordId: string,
         point: number,
     ): Promise<DiscordBattleDocument> {
-        const userBattle1 = await DiscordBattle.find({
+        const userBattle1 = await DiscordBattle.findOne({
             discordId: player1DiscordId,
             winner: '',
         });
-        const userBattle2 = await DiscordBattle.find({
+        const userBattle2 = await DiscordBattle.findOne({
             discordId: player2DiscordId,
             winner: '',
         });
