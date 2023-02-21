@@ -98,7 +98,7 @@ export class DiscordController extends Controller {
             }
             const { streak } = dis;
             let coin = 0;
-            coin = randomIntFromInterval(streak * 5, streak * 10);
+            coin = randomIntFromInterval((streak + 1) * 5, (streak + 1) * 10);
             await this.transactionService.createNewTransactionByDiscordId(
                 SYSTEM_ACCOUNT_ID,
                 discordId,
@@ -110,6 +110,7 @@ export class DiscordController extends Controller {
             dis.save();
             res.composer.success({
                 isSuccess: true,
+                coin: coin,
                 isDaily: true,
             });
         } catch (error) {

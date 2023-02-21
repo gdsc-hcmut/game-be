@@ -52,6 +52,12 @@ export class DiscordService {
         if (userBattle2) {
             throw Error('Player 2 already in other battle');
         }
+        const user1 = await this.userService.findOne({
+            discordId: player1DiscordId,
+        });
+        const user2 = await this.userService.findOne({
+            discordId: player2DiscordId,
+        });
         const battle = new DiscordBattle({
             player1DiscordId: player1DiscordId,
             player2DiscordId: player2DiscordId,
