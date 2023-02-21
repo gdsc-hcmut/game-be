@@ -77,8 +77,8 @@ export class DiscordService {
         battle.winner = winnerDiscordId;
         let loser = '';
         if (battle.winner == battle.player1DiscordId)
-            loser = battle.player1DiscordId;
-        else loser = battle.player2DiscordId;
+            loser = battle.player2DiscordId;
+        else loser = battle.player1DiscordId;
         await this.transactionService.createNewTransactionByDiscordIdP2PBattle(
             loser,
             winnerDiscordId,
