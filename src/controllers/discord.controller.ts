@@ -44,10 +44,6 @@ export class DiscordController extends Controller {
             '/private/:discordId',
             this.getDiscordActivityInformation.bind(this),
         );
-        this.router.post(
-            '/private/leaderboard',
-            this.discordLeaderboard.bind(this),
-        );
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
@@ -55,6 +51,10 @@ export class DiscordController extends Controller {
         this.router.get(
             '/private/users/:discordId',
             this.getUserInfo.bind(this),
+        );
+        this.router.post(
+            '/private/leaderboard',
+            this.discordLeaderboard.bind(this),
         );
     }
 
