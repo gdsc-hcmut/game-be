@@ -67,7 +67,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        scheduleJob('42 * * * * *', function async() {
+        scheduleJob('42 * * * * *', async () => {
             this.triggerResetDaily.bind(this)();
             this.triggerLeaderboard.bind(this)();
             this.resetAllScore.bind(this)();
