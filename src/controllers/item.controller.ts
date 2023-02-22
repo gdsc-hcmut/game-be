@@ -36,6 +36,7 @@ export class ItemController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.post('/private/items', this.createNewItem.bind(this));
         this.router.get('/private/items', this.getUserItems.bind(this));
+        this.router.post('/private/received', this.receivedRealItem.bind(this));
         // this.router.patch(
         //     '/private/items/:itemId',
         //     this.updateItemById.bind(this),
@@ -131,6 +132,32 @@ export class ItemController extends Controller {
                 update,
             );
             res.composer.success(updatedItem);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async receivedRealItem(req: Request, res: Response) {
+        try {
+            // const user = req.tokenMeta as UserDocument;
+            const userId = new Types.ObjectId(req.tokenMeta.userId.toString());
+            const { itemId } = req.body;
+
+            const item = await this.itemService.getItemById(
+                new mongoose.Types.ObjectId(itemId),
+            );
+            if (!item.ownerId.equals(userId)) {
+                throw Error('You not the owner of this items');
+            }
+
+            if (!item.isRequestToReceiveItem) {
+                throw Error('You have requested it');
+            }
+            item.isRequestToReceiveItem = true;
+            item.requestToReceiveItem = Date.now();
+            item.save();
+            return res.composer.success('success');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

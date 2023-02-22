@@ -17,6 +17,11 @@ export type ItemDocument = Document & {
     imgUrl: string;
     description: string;
     currentPrice: number;
+    isReceived: boolean;
+    receivedAt: boolean;
+    receivedNote: string;
+    isRequestToReceiveItem: boolean;
+    requestToReceiveItem: number;
     collectionName: Collection;
     priceHistory?: PriceHistory[];
 };
@@ -28,6 +33,11 @@ const itemSchema = new Schema<ItemDocument>({
     description: String,
     currentPrice: Number,
     collectionName: String,
+    isReceived: { type: Boolean, default: false },
+    receivedAt: Boolean,
+    receivedNote: String,
+    isRequestToReceiveItem: { type: Boolean, default: false },
+    requestToReceiveItem: Number,
     priceHistory: [
         { email: String, name: String, createdAt: Number, price: Number },
     ],
