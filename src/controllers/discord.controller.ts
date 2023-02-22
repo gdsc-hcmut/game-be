@@ -40,7 +40,7 @@ export class DiscordController extends Controller {
 
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
-        this.router.get('/private/board', this.discordLeaderboard.bind(this));
+        this.router.get('/public/board', this.discordLeaderboard.bind(this));
         this.router.get(
             '/private/:discordId',
             this.getDiscordActivityInformation.bind(this),
