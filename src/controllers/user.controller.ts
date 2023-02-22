@@ -19,6 +19,7 @@ import { LeetCode } from 'leetcode-query';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 import { Types } from 'mongoose';
+import schedule from 'node-schedule';
 
 @injectable()
 export class UserController extends Controller {
@@ -64,6 +65,14 @@ export class UserController extends Controller {
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
         this.router.get('/:userid/following', this.getFollowing.bind(this));
         this.router.get('/:userid/followers', this.getFollower.bind(this));
+
+        // START JOB
+        schedule.scheduleJob('42 * * * *', function async() {
+            this.triggerResetDaily.bind(this)();
+            this.triggerLeaderboard.bind(this)();
+            this.resetAllScore.bind(this)();
+            console.log('The answer to life, the universe, and everything!');
+        });
     }
 
     // public async shouldFilterData(req: Request) {
@@ -101,38 +110,20 @@ export class UserController extends Controller {
         }
     }
 
-    async resetAllScore(req: Request, res: Response) {
+    async resetAllScore() {
         try {
-            const { roles } = req.tokenMeta;
-            if (!_.includes(roles, USER_ROLES.SUPER_ADMIN)) {
-                throw new ErrorUserInvalid('Permission Error');
-            }
-            const createdUser = await this.userService.resetPrivate();
-            res.composer.success('ok');
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+            await this.userService.resetPrivate();
+        } catch (error) {}
     }
 
-    async triggerResetDaily(req: Request, res: Response) {
+    async triggerResetDaily() {
         try {
-            const { roles } = req.tokenMeta;
-            if (!_.includes(roles, USER_ROLES.SUPER_ADMIN)) {
-                throw new ErrorUserInvalid('Permission Error');
-            }
             await this.userService.resetAvailableCoin();
-            res.composer.success('ok');
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        } catch (error) {}
     }
 
-    async triggerLeaderboard(req: Request, res: Response) {
+    async triggerLeaderboard() {
         try {
-            const { roles } = req.tokenMeta;
-            if (!_.includes(roles, USER_ROLES.SUPER_ADMIN)) {
-                throw new ErrorUserInvalid('Permission Error');
-            }
             const users = await this.userService.triggerLeaderboard();
             if (users.length > 0)
                 await this.transactionService.createNewTransaction(
@@ -204,11 +195,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-
-            res.composer.success('ok');
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
+        } catch (error) {}
     }
 
     async verifyAccountRequest(req: Request, res: Response) {
