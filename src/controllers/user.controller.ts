@@ -92,6 +92,8 @@ export class UserController extends Controller {
             leaderboard.save();
             console.log('The answer to life, the universe, and everything!');
         });
+
+        //trigger
     }
 
     // public async shouldFilterData(req: Request) {
