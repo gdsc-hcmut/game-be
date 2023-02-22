@@ -83,7 +83,11 @@ export class UserController extends Controller {
                     discordId: e.discordId,
                 };
             });
-            new Leaderboard({ createdAt: Date.now(), ranking: users });
+            const leaderboard = new Leaderboard({
+                createdAt: Date.now(),
+                ranking: users,
+            });
+            leaderboard.save();
             console.log('The answer to life, the universe, and everything!');
         });
     }
