@@ -64,6 +64,7 @@ export class AuthController extends Controller {
         this.router.post('/discordconnect', this.discordConnect.bind(this));
         this.router.post('/verify', this.verify.bind(this));
         this.router.post('/code', this.code.bind(this));
+        this.router.get('/syncnewmodal', this.syncNewModal.bind(this));
         this.router.post('/unconnectdiscord', this.unConnectDiscord.bind(this));
         this.router.post('/transgcoin', this.transGcoinFromDiscord.bind(this));
         this.router.get('/ping', (req, res) => {
@@ -166,6 +167,33 @@ export class AuthController extends Controller {
             user.discordId = '';
             user.save();
             res.composer.success('Verify discord code success');
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async syncNewModal(req: Request, res: Response) {
+        const { discordId, code } = req.body;
+        let { roles } = req.tokenMeta as TokenDocument;
+
+        try {
+            if (!_.includes(roles, USER_ROLES.SYSTEM)) {
+                throw Error('Permission Error');
+            }
+            const users = await User.find();
+            users.map((e) => {
+                if (e.discordId) {
+                    const dis = DiscordActivity.find({
+                        discordId: e.discordId,
+                    });
+                    if (dis) return;
+                    new DiscordActivity({
+                        discordId: e.discordId,
+                        userId: e._id,
+                    }).save();
+                }
+            });
+            res.composer.success('Sync success');
         } catch (error) {
             res.composer.badRequest(error.message);
         }
