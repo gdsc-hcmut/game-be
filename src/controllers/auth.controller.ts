@@ -183,7 +183,7 @@ export class AuthController extends Controller {
             const users = await User.find();
             users.map(async (e) => {
                 if (e.discordId) {
-                    const dis = await DiscordActivity.find({
+                    const dis = await DiscordActivity.findOne({
                         discordId: e.discordId,
                     });
                     if (dis) return;
