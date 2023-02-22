@@ -71,7 +71,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        scheduleJob('0 16 0 * * *', async () => {
+        scheduleJob('0 0 0 * * *', async () => {
             this.triggerResetDaily.bind(this)();
             this.triggerLeaderboard.bind(this)();
             const res = await this.gameService.findTopRankingDiscord();
