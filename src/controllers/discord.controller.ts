@@ -40,6 +40,7 @@ export class DiscordController extends Controller {
 
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
+        this.router.get('/private/board', this.discordLeaderboard.bind(this));
         this.router.get(
             '/private/:discordId',
             this.getDiscordActivityInformation.bind(this),
@@ -48,7 +49,6 @@ export class DiscordController extends Controller {
             '/private/users/:discordId',
             this.getUserInfo.bind(this),
         );
-        this.router.get('/private/board', this.discordLeaderboard.bind(this));
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
