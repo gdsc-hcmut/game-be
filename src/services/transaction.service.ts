@@ -36,6 +36,7 @@ export class TransactionService {
         const trans = Transaction.find({
             $or: [{ toUser: userId }, { fromUser: userId }],
         })
+            .sort({ createdAt: -1 })
             .populate('toUser')
             .populate('fromUser');
 
