@@ -155,7 +155,7 @@ export class ItemController extends Controller {
                 throw Error('You have requested it');
             }
             item.isRequestToReceiveItem = true;
-            item.requestToReceiveItem = Date.now();
+            item.requestToReceiveItemAt = Date.now();
             item.save();
             return res.composer.success('success');
         } catch (error) {

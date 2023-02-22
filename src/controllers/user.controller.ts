@@ -11,6 +11,7 @@ import {
     // MailService,
     AuthService,
     TransactionService,
+    GameService,
 } from '../services';
 import { ObjectID, ObjectId } from 'mongodb';
 import { EMAIL_SENDER, LIMIT_PAGING, SYSTEM_ACCOUNT_ID } from '../config';
@@ -20,6 +21,7 @@ import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 import { Types } from 'mongoose';
 import { scheduleJob } from 'node-schedule';
+import Leaderboard from '../models/leaderboard.model';
 
 @injectable()
 export class UserController extends Controller {
@@ -29,6 +31,7 @@ export class UserController extends Controller {
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.Game) private gameService: GameService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
     ) {
@@ -71,6 +74,16 @@ export class UserController extends Controller {
             this.triggerResetDaily.bind(this)();
             this.triggerLeaderboard.bind(this)();
             this.resetAllScore.bind(this)();
+            const res = await this.gameService.findTopRankingDiscord();
+            const users = res.map((e) => {
+                return {
+                    name: e.name,
+                    userId: e._id,
+                    point: e.highestScoreMathQuiz,
+                    discordId: e.discordId,
+                };
+            });
+            new Leaderboard({ createdAt: Date.now(), ranking: users });
             console.log('The answer to life, the universe, and everything!');
         });
     }

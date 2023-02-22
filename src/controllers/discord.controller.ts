@@ -20,6 +20,7 @@ import { Reward } from '../models/club_day';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
 import { Types } from 'mongoose';
+import Leaderboard from '../models/leaderboard.model';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
@@ -42,6 +43,10 @@ export class DiscordController extends Controller {
         this.router.get(
             '/private/:discordId',
             this.getDiscordActivityInformation.bind(this),
+        );
+        this.router.post(
+            '/private/leaderboard',
+            this.discordLeaderboard.bind(this),
         );
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
@@ -229,6 +234,18 @@ export class DiscordController extends Controller {
             }
 
             res.composer.success(dis);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async discordLeaderboard(req: Request, res: Response) {
+        try {
+            const leaderboard = await Leaderboard.find()
+                .sort({ createdAt: -1 })
+                .limit(1);
+            res.composer.success(leaderboard);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

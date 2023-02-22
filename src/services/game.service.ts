@@ -128,6 +128,14 @@ export class GameService {
         return users;
     }
 
+    async findTopRankingDiscord(): Promise<UserDocument[]> {
+        let users = await User.find()
+            .sort({ highestScoreMathQuiz: -1 })
+            .limit(15);
+
+        return users;
+    }
+
     // async ChooseField(
     //     gameSession: GameSessionDocument,
     //     cellId: number,

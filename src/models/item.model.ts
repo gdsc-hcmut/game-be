@@ -21,7 +21,7 @@ export type ItemDocument = Document & {
     receivedAt: boolean;
     receivedNote: string;
     isRequestToReceiveItem: boolean;
-    requestToReceiveItem: number;
+    requestToReceiveItemAt: number;
     collectionName: Collection;
     priceHistory?: PriceHistory[];
 };
@@ -37,7 +37,7 @@ const itemSchema = new Schema<ItemDocument>({
     receivedAt: Boolean,
     receivedNote: String,
     isRequestToReceiveItem: { type: Boolean, default: false },
-    requestToReceiveItem: Number,
+    requestToReceiveItemAt: Number,
     priceHistory: [
         { email: String, name: String, createdAt: Number, price: Number },
     ],
