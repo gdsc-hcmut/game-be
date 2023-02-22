@@ -67,11 +67,10 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        scheduleJob('42 * * * *', function async() {
-            // this.triggerResetDaily.bind(this)();
-            // this.triggerLeaderboard.bind(this)();
-            // this.resetAllScore.bind(this)();
-            console.log(this);
+        scheduleJob('42 * * * * *', function async() {
+            this.triggerResetDaily.bind(this)();
+            this.triggerLeaderboard.bind(this)();
+            this.resetAllScore.bind(this)();
             console.log('The answer to life, the universe, and everything!');
         });
     }
