@@ -181,9 +181,9 @@ export class AuthController extends Controller {
                 throw Error('Permission Error');
             }
             const users = await User.find();
-            users.map((e) => {
+            users.map(async (e) => {
                 if (e.discordId) {
-                    const dis = DiscordActivity.find({
+                    const dis = await DiscordActivity.find({
                         discordId: e.discordId,
                     });
                     if (dis) return;
