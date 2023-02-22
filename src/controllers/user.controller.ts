@@ -22,6 +22,7 @@ import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 import { Types } from 'mongoose';
 import { scheduleJob } from 'node-schedule';
 import Leaderboard from '../models/leaderboard.model';
+import DiscordActivity from '../models/discord_activity';
 
 @injectable()
 export class UserController extends Controller {
@@ -70,7 +71,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        scheduleJob('42 * * * * *', async () => {
+        scheduleJob('0 0 * * * *', async () => {
             this.triggerResetDaily.bind(this)();
             this.triggerLeaderboard.bind(this)();
             this.resetAllScore.bind(this)();
@@ -87,6 +88,7 @@ export class UserController extends Controller {
                 createdAt: Date.now(),
                 ranking: users,
             });
+            await DiscordActivity.find().updateMany({ isDaily: false });
             leaderboard.save();
             console.log('The answer to life, the universe, and everything!');
         });
