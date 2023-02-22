@@ -72,7 +72,6 @@ export class UserController extends Controller {
             this.triggerLeaderboard.bind(this)();
             this.resetAllScore.bind(this)();
             console.log('The answer to life, the universe, and everything!');
-            //TRigger
         });
     }
 
