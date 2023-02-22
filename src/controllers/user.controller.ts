@@ -71,10 +71,13 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        scheduleJob('0 8 0 * * *', async () => {
+        scheduleJob('0 16 0 * * *', async () => {
             this.triggerResetDaily.bind(this)();
             this.triggerLeaderboard.bind(this)();
             const res = await this.gameService.findTopRankingDiscord();
+            if (res) {
+                this.resetAllScore.bind(this)();
+            }
             const users = res.map((e) => {
                 return {
                     name: e.name,
@@ -87,15 +90,10 @@ export class UserController extends Controller {
                 createdAt: Date.now(),
                 ranking: users,
             });
-            await DiscordActivity.find().updateMany({ isDaily: false });
             leaderboard.save();
+            await DiscordActivity.find().updateMany({ isDaily: false });
             console.log('The answer to life, the universe, and everything!');
         });
-
-        scheduleJob('0 10 0 * * *', async () => {
-            this.resetAllScore.bind(this)();
-        });
-
         //trigger
     }
 
