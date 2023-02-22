@@ -44,18 +44,15 @@ export class DiscordController extends Controller {
             '/private/:discordId',
             this.getDiscordActivityInformation.bind(this),
         );
-        this.router.post('/private/daily', this.discordDaily.bind(this));
-        this.router.post('/private/work', this.discordWork.bind(this));
-        this.router.post('/private/battle/start', this.startBattle.bind(this));
-        this.router.post('/private/battle/end', this.endBattle.bind(this));
         this.router.get(
             '/private/users/:discordId',
             this.getUserInfo.bind(this),
         );
-        this.router.post(
-            '/private/leaderboard',
-            this.discordLeaderboard.bind(this),
-        );
+        this.router.post('/private/daily', this.discordDaily.bind(this));
+        this.router.post('/private/work', this.discordWork.bind(this));
+        this.router.post('/private/battle/start', this.startBattle.bind(this));
+        this.router.post('/private/battle/end', this.endBattle.bind(this));
+        this.router.post('/private/board', this.discordLeaderboard.bind(this));
     }
 
     async getDiscordActivityInformation(req: Request, res: Response) {
