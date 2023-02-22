@@ -19,7 +19,7 @@ import { LeetCode } from 'leetcode-query';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { ErrorNotFound, ErrorUserInvalid } from '../lib/errors';
 import { Types } from 'mongoose';
-import schedule from 'node-schedule';
+import { scheduleJob } from 'node-schedule';
 
 @injectable()
 export class UserController extends Controller {
@@ -67,10 +67,11 @@ export class UserController extends Controller {
         this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
-        schedule.scheduleJob('42 * * * *', function async() {
-            this.triggerResetDaily.bind(this)();
-            this.triggerLeaderboard.bind(this)();
-            this.resetAllScore.bind(this)();
+        scheduleJob('42 * * * *', function async() {
+            // this.triggerResetDaily.bind(this)();
+            // this.triggerLeaderboard.bind(this)();
+            // this.resetAllScore.bind(this)();
+            console.log(this);
             console.log('The answer to life, the universe, and everything!');
         });
     }
