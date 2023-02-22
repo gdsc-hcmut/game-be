@@ -353,7 +353,14 @@ export class UserService {
 
     async updatePrivate(
         userId: Types.ObjectId,
-        update: { balance?: number; type?: string },
+        update: {
+            email: string;
+            name: string;
+            phone: string;
+            university: string;
+            studentId: string;
+            dob: string;
+        },
     ): Promise<UserDocument> {
         const updatedUser = await User.findByIdAndUpdate(userId, update, {
             new: true,

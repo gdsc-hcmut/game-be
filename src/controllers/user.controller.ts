@@ -373,11 +373,15 @@ export class UserController extends Controller {
             if (!user) {
                 throw new ErrorNotFound('User not found');
             }
-            if (_.includes(user.roles, USER_ROLES.SYSTEM)) {
-                throw new ErrorUserInvalid('Permission denied');
-            }
 
-            const update = _.pick(req.body, ['balance', 'type']);
+            const update = _.pick(req.body, [
+                'email',
+                'name',
+                'phone',
+                'university',
+                'studentId',
+                'dob',
+            ]);
             const updatedUser = await this.userService.updatePrivate(
                 userId,
                 update,
