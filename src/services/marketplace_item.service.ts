@@ -118,66 +118,58 @@ export class MarketplaceItemService {
             );
         }
 
-        if (bidPrice > maxPrice) {
+        // Between min and max price
+        // Compare with currentPrice
+        if (bidPrice < currentPrice * 1.1) {
             throw new ErrorInvalidData(
-                'Bid price must be less than or equal to max price',
+                'Bid price must be greater than current price 10%',
             );
         }
 
-        // Between min and max price
-        if (minPrice <= bidPrice && bidPrice <= maxPrice) {
-            // Compare with currentPrice
-            if (bidPrice < currentPrice * 1.1) {
-                throw new ErrorInvalidData(
-                    'Bid price must be greater than current price 10%',
-                );
-            }
+        // Create new order -> new transaction
+        const newOrder = new Order();
+        newOrder.description = `Bid item ${itemId} of ${ownerName}`;
+        newOrder.status = 'success';
+        newOrder.marketplaceItemId = itemId;
+        // Transfer money to system account
+        const newTransaction =
+            await this.transactionService.createNewTransaction(
+                fromUser,
+                toUser,
+                bidPrice,
+                `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
+            );
 
-            // Create new order -> new transaction
-            const newOrder = new Order();
-            newOrder.description = `Bid item ${itemId} of ${ownerName}`;
-            newOrder.status = 'success';
-            newOrder.marketplaceItemId = itemId;
-            // Transfer money to system account
-            const newTransaction =
-                await this.transactionService.createNewTransaction(
-                    fromUser,
-                    toUser,
-                    bidPrice,
-                    `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
-                );
-
-            // Refund user currently bidding
-            if (priceHistory.length > 0) {
-                const prevBidder = await this.userService.findOne({
-                    email: priceHistory[0].email,
-                });
-                const refundTransaction =
-                    await this.transactionService.createNewTransaction(
-                        toUser,
-                        prevBidder._id.toString(),
-                        priceHistory[0].price,
-                        `Bidding system refund ${priceHistory[0].price} for you because someone bid higher than you`,
-                    );
-            }
-            newOrder.transactionId = newTransaction._id.toString();
-            await newOrder.save();
-            // Write priceHistory of marketplaceItem
-            const { email, name } = await User.findById(fromUser, { email: 1 });
-            priceHistory.unshift({
-                email,
-                name,
-                createdAt: Date.now(),
-                price: bidPrice,
+        // Refund user currently bidding
+        if (priceHistory.length > 0) {
+            const prevBidder = await this.userService.findOne({
+                email: priceHistory[0].email,
             });
-            marketplaceItem.currentPrice = bidPrice;
-            marketplaceItem.currentBidUserId = fromUser;
-            if (!marketplaceItem.followedUsers.includes(fromUser)) {
-                marketplaceItem.followedUsers.push(fromUser);
-            }
-            await marketplaceItem.save();
-            return newOrder;
+            const refundTransaction =
+                await this.transactionService.createNewTransaction(
+                    toUser,
+                    prevBidder._id.toString(),
+                    priceHistory[0].price,
+                    `Bidding system refund ${priceHistory[0].price} for you because someone bid higher than you`,
+                );
         }
+        newOrder.transactionId = newTransaction._id.toString();
+        await newOrder.save();
+        // Write priceHistory of marketplaceItem
+        const { email, name } = await User.findById(fromUser, { email: 1 });
+        priceHistory.unshift({
+            email,
+            name,
+            createdAt: Date.now(),
+            price: bidPrice,
+        });
+        marketplaceItem.currentPrice = bidPrice;
+        marketplaceItem.currentBidUserId = fromUser;
+        if (!marketplaceItem.followedUsers.includes(fromUser)) {
+            marketplaceItem.followedUsers.push(fromUser);
+        }
+        await marketplaceItem.save();
+        return newOrder;
 
         // if (bidPrice >= maxPrice) {
         //     // If item is bought, write to priceHistory of item
