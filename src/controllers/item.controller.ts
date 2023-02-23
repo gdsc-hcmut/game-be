@@ -151,7 +151,7 @@ export class ItemController extends Controller {
                 throw Error('You not the owner of this items');
             }
 
-            if (!item.isRequestToReceiveItem) {
+            if (item.isRequestToReceiveItem) {
                 throw Error('You have requested it');
             }
             item.isRequestToReceiveItem = true;
