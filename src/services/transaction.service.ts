@@ -106,7 +106,7 @@ export class TransactionService {
             await this.userService.transferBalanceByDiscordIdP2P(
                 SYSTEM_ACCOUNT_ID,
                 toUserDiscordId,
-                amount,
+                amount * 2,
             );
         let message = `End Battle transfer to ${toUser.name} ${
             2 * amount
