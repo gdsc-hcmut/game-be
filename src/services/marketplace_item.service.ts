@@ -126,9 +126,15 @@ export class MarketplaceItemService {
             );
         }
 
+        const toUserDoc = await this.userService.findById(toUser);
+
+        if (toUserDoc.balance < bidPrice) {
+            throw new ErrorBidInvalid('Your balance not enough');
+        }
+
         // Create new order -> new transaction
         const newOrder = new Order();
-        newOrder.description = `Bid item ${itemId} of ${ownerName}`;
+        newOrder.description = `${toUserDoc.name} Bid an item Id: ${itemId} of ${ownerName}`;
         newOrder.status = 'success';
         newOrder.marketplaceItemId = itemId;
         // Transfer money to system account
@@ -137,7 +143,7 @@ export class MarketplaceItemService {
                 fromUser,
                 toUser,
                 bidPrice,
-                `You have to transfer ${bidPrice}GCoin to the bidding system for bidding.`,
+                `You have to transfer ${bidPrice} GCoins to the bidding system for bidding.`,
             );
 
         // Refund user currently bidding
@@ -150,7 +156,7 @@ export class MarketplaceItemService {
                     toUser,
                     prevBidder._id.toString(),
                     priceHistory[0].price,
-                    `Bidding system refund ${priceHistory[0].price} for you because someone bid higher than you`,
+                    `Bidding system refund ${priceHistory[0].price} GCoins for you because someone bid higher than you`,
                 );
         }
         newOrder.transactionId = newTransaction._id.toString();

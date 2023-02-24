@@ -7,7 +7,7 @@ import moment from 'moment';
 import mongoose, { ObjectId, Types } from 'mongoose';
 import { DatabaseService } from './database.service';
 import { USER_FORBIDDEN_FIELDS } from '../models/user.model';
-import { ErrorUserInvalid } from '../lib/errors';
+import { ErrorBalance, ErrorBidInvalid, ErrorUserInvalid } from '../lib/errors';
 import {
     HASH_ROUNDS,
     SocialAccountType,
@@ -263,7 +263,12 @@ export class UserService {
         toUser: Types.ObjectId,
         amount: number,
     ): Promise<boolean> {
-        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+        const fromUserDoc = await User.findById(fromUser);
+        if (fromUserDoc.balance < amount) {
+            throw new ErrorBalance();
+        }
+        fromUserDoc.balance = fromUserDoc.balance - amount;
+        fromUserDoc.save();
         await User.findByIdAndUpdate(toUser, { $inc: { balance: amount } });
         return true;
     }
@@ -296,7 +301,12 @@ export class UserService {
         toUserDiscordId: string,
         amount: number,
     ): Promise<Types.ObjectId> {
-        await User.findByIdAndUpdate(fromUser, { $inc: { balance: -amount } });
+        const fromUserDoc = await User.findById(fromUser);
+        if (fromUserDoc.balance < amount) {
+            throw new ErrorBalance();
+        }
+        fromUserDoc.balance = fromUserDoc.balance - amount;
+        fromUserDoc.save();
         const toUser = await User.findOneAndUpdate(
             { discordId: toUserDiscordId },
             { $inc: { balance: amount } },
@@ -309,17 +319,20 @@ export class UserService {
         toUserDiscordId: string,
         amount: number,
     ): Promise<{ toUser: UserDocument; fromUser: UserDocument }> {
-        const fromUser = await User.findByIdAndUpdate(fromUserId, {
-            $inc: { balance: -amount },
-        });
+        const fromUserDoc = await User.findById(fromUserId);
+        if (fromUserDoc.balance < amount) {
+            throw new ErrorBalance();
+        }
+        fromUserDoc.balance = fromUserDoc.balance - amount;
         const toUser = await User.findOneAndUpdate(
             { discordId: toUserDiscordId },
             { $inc: { balance: amount } },
         );
-        if (!fromUser || !toUser) {
+        if (!fromUserDoc || !toUser) {
             throw Error('Some Error');
         }
-        return { toUser: toUser, fromUser: fromUser };
+        fromUserDoc.save();
+        return { toUser: toUser, fromUser: fromUserDoc };
     }
 
     async getUserBalance(userId: Types.ObjectId): Promise<number> {

@@ -49,3 +49,8 @@ export class ErrorBidInvalid extends Error {
     public static readonly code = 'bid/invalid';
     message = 'Invalid Bid';
 }
+
+export class ErrorBalance extends Error {
+    public static readonly code = 'transfer/balance';
+    message = 'Invalid Balance';
+}
