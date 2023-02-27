@@ -12,6 +12,7 @@ import { ConnectedUser, CustomSocket } from '.';
 import { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
+import expressionToSVG from '../game/math-quiz/expressionToSVG';
 const INIT_LEVEL = 0;
 
 export interface SocketInfo {
@@ -163,9 +164,9 @@ class ClientUser {
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: 1,
-            question: `${num1} ${
-                operation ? '+' : '-'
-            } ${num2} = ${fakeAnwser}`,
+            question: expressionToSVG(
+                `${num1} ${operation ? '+' : '-'} ${num2} = ${fakeAnwser}`,
+            ),
             score: 0,
             questionTime: this.calQuestionTimeWithLevel(
                 this.sockets[socketId].levelQuiz,
@@ -282,9 +283,9 @@ class ClientUser {
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: this.sockets[socketId].levelQuiz,
-            question: `${num1} ${
-                operation ? '+' : '-'
-            } ${num2} = ${fakeAnwser}`,
+            question: expressionToSVG(
+                `${num1} ${operation ? '+' : '-'} ${num2} = ${fakeAnwser}`,
+            ),
             score: this.sockets[socketId].scoreQuiz,
             questionTime: this.calQuestionTimeWithLevel(
                 this.sockets[socketId].levelQuiz,
