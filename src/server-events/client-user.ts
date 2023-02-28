@@ -161,9 +161,7 @@ class ClientUser {
             while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
                 fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
-        this.sockets[socketId].quizTimeout = setTimeout(() => {
-            this.endQuizTimeout(socketId, connectedUser);
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
+
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: 1,
             question: expressionToSVG(
