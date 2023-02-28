@@ -163,7 +163,7 @@ class ClientUser {
         }
         this.sockets[socketId].quizTimeout = setTimeout(() => {
             this.endQuizTimeout(socketId, connectedUser);
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 4000);
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: 1,
             question: expressionToSVG(
@@ -286,7 +286,7 @@ class ClientUser {
 
         this.sockets[socketId].quizTimeout = setTimeout(() => {
             this.endQuizTimeout(socketId, connectedUser);
-        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 3000);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: this.sockets[socketId].levelQuiz,
