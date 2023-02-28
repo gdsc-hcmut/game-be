@@ -113,7 +113,10 @@ export class SocketService {
         );
 
         socket.on(EventTypes.START_QUIZ, () =>
-            this.connectedUser[socket.userId].startQuiz(socket.id),
+            this.connectedUser[socket.userId].startQuiz(
+                socket.id,
+                this.connectedUser,
+            ),
         );
 
         socket.on(EventTypes.ANSWER_QUIZ, (answer: any) =>

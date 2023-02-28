@@ -146,7 +146,7 @@ class ClientUser {
         return _.random(min, max);
     }
 
-    async startQuiz(socketId: any) {
+    async startQuiz(socketId: any, connectedUser: ConnectedUser) {
         this.sockets[socketId].levelQuiz = 1;
         this.sockets[socketId].scoreQuiz = 0;
         this.sockets[socketId].isQuizStart = true;
@@ -161,7 +161,9 @@ class ClientUser {
             while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
                 fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
-
+        this.sockets[socketId].quizTimeout = setTimeout(() => {
+            this.endQuizTimeout(socketId, connectedUser);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: 1,
             question: expressionToSVG(
@@ -227,6 +229,7 @@ class ClientUser {
     };
 
     async answerQuiz(socketId: any, answer: any, connectedUser: ConnectedUser) {
+        clearTimeout(this.sockets[socketId].quizTimeout);
         if (answer !== this.sockets[socketId].isQuizTrue) {
             this.sockets[socketId].socket.emit(EventTypes.END_QUIZ, {
                 ranking: this.MathQuizRanking,
@@ -280,6 +283,10 @@ class ClientUser {
             while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
                 fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
         }
+
+        this.sockets[socketId].quizTimeout = setTimeout(() => {
+            this.endQuizTimeout(socketId, connectedUser);
+        }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: this.sockets[socketId].levelQuiz,
