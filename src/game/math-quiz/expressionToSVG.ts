@@ -219,7 +219,7 @@ function expressionToSVG(expression: string): string {
         offset += element.width + element.padding * 2;
     }
 
-    return `<svg height="100%" viewBox="0 0 ${offset} 81" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${path}" fill="black"/></svg>`;
+    return `<svg height="100%" viewBox="0 0 ${offset} 81" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${path}" fill="blue"/></svg>`;
 }
 
 export default expressionToSVG;
