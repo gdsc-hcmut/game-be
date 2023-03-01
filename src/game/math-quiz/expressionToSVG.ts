@@ -253,7 +253,7 @@ function format(
     });
 }
 
-function expressionToSVG(expression: string, fill: string = 'black'): string {
+function expressionToSVG(expression: string, fill: string = 'blue'): string {
     let path: string = '';
     let offset: number = 0;
     let width: number = 0;
