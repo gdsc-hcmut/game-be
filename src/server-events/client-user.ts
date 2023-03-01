@@ -243,8 +243,13 @@ class ClientUser {
             let realAnswer = eval(num1 + operation + num2);
             let anwser = eval(num1 + operation + num2);
             if (isFake) {
-                while (anwser === realAnswer)
-                    anwser = anwser + this.getRandomInt(-10, 10);
+                if (operation == '/') {
+                    anwser = anwser + this.getRandomInt(1, 3);
+                } else {
+                    while (anwser === realAnswer) {
+                        anwser = anwser + this.getRandomInt(-10, 10);
+                    }
+                }
             }
             return expressionToSVG(`${num1} ${operation} ${num2} = ${anwser}`);
         }
