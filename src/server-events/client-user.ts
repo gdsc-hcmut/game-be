@@ -249,8 +249,8 @@ class ClientUser {
             operation = _.sample(['+', '-']);
         }
         if (operation == '*') {
-            num1 = this.getRandomInt(-10, 10);
-            num2 = this.getRandomInt(-10, 10);
+            while (num1 == 0) num1 = this.getRandomInt(-10, 10);
+            while (num2 == 0) num2 = this.getRandomInt(-10, 10);
         }
         if (operation == '/') {
             num1 = num2 * this.getRandomInt(-10, 10);
