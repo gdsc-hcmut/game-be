@@ -229,12 +229,12 @@ class ClientUser {
     createQuestion = (level: number, isFake: boolean) => {
         level = 60;
         let num1 = this.getRandomInt(
-            this.calMinRangeWithLevel(level),
-            this.calMaxRangeWithLevel(level),
+            this.calMinRangeWithLevel(level % 40),
+            this.calMaxRangeWithLevel(level % 40),
         );
         let num2 = this.getRandomInt(
-            this.calMinRangeWithLevel(level),
-            this.calMaxRangeWithLevel(level),
+            this.calMinRangeWithLevel(level % 40),
+            this.calMaxRangeWithLevel(level % 40),
         );
         let operation = _.sample(['+', '-', '*', '/']);
         if (operation == '*') {
@@ -266,8 +266,8 @@ class ClientUser {
             return expressionToSVG(`${num1} ${operation} ${num2} = ${anwser}`);
         }
         let num3 = this.getRandomInt(
-            this.calMinRangeWithLevel(level - 40),
-            this.calMaxRangeWithLevel(level - 40),
+            this.calMinRangeWithLevel(level % 40),
+            this.calMaxRangeWithLevel(level % 40),
         );
         let operation2 = _.sample(['+', '-']);
         realAnswer = eval(realAnswer + operation2 + num3);
