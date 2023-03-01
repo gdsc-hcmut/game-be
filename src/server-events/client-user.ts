@@ -13,7 +13,7 @@ import { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
-const INIT_LEVEL = 0;
+const MAX_CHAPTER = 50;
 
 export interface SocketInfo {
     socket: CustomSocket;
@@ -190,6 +190,9 @@ class ClientUser {
             return 10;
         }
         if (level < 40) {
+            return 20;
+        }
+        if (level < 50) {
             return 10;
         }
         return 20;
@@ -199,13 +202,16 @@ class ClientUser {
             return 10;
         }
         if (level < 20) {
-            return 30;
+            return 20;
         }
         if (level < 30) {
-            return 50;
+            return 30;
         }
         if (level < 40) {
-            return 80;
+            return 50;
+        }
+        if (level < 50) {
+            return 60;
         }
         return 100;
     };
@@ -227,14 +233,13 @@ class ClientUser {
     };
 
     createQuestion = (level: number, isFake: boolean) => {
-        level = 60;
         let num1 = this.getRandomInt(
-            this.calMinRangeWithLevel(level % 40),
-            this.calMaxRangeWithLevel(level % 40),
+            this.calMinRangeWithLevel(level % MAX_CHAPTER),
+            this.calMaxRangeWithLevel(level % MAX_CHAPTER),
         );
         let num2 = this.getRandomInt(
-            this.calMinRangeWithLevel(level % 40),
-            this.calMaxRangeWithLevel(level % 40),
+            this.calMinRangeWithLevel(level % MAX_CHAPTER),
+            this.calMaxRangeWithLevel(level % MAX_CHAPTER),
         );
         let operation = _.sample(['+', '-', '*', '/']);
         if (operation == '*') {
@@ -262,12 +267,12 @@ class ClientUser {
             }
         }
         let isAddNum3 = _.sample([true, false]);
-        if (level < 40 || isAddNum3 == false) {
+        if (level < MAX_CHAPTER || isAddNum3 == false) {
             return expressionToSVG(`${num1} ${operation} ${num2} = ${anwser}`);
         }
         let num3 = this.getRandomInt(
-            this.calMinRangeWithLevel(level % 40),
-            this.calMaxRangeWithLevel(level % 40),
+            this.calMinRangeWithLevel(level % MAX_CHAPTER),
+            this.calMaxRangeWithLevel(level % MAX_CHAPTER),
         );
         let operation2 = _.sample(['+', '-']);
         realAnswer = eval(realAnswer + operation2 + num3);
