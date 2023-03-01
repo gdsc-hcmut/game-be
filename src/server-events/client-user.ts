@@ -226,6 +226,32 @@ class ClientUser {
         return 2000;
     };
 
+    createQuestion = (level: number, isFake: boolean) => {
+        if (level < 40) {
+            let num1 = this.getRandomInt(
+                this.calMinRangeWithLevel(level),
+                this.calMaxRangeWithLevel(level),
+            );
+            let num2 = this.getRandomInt(
+                this.calMinRangeWithLevel(level),
+                this.calMaxRangeWithLevel(level),
+            );
+            let operation = _.sample(['+', '-', '*', '/']);
+            if (operation == '/') {
+                num1 = num2 * this.getRandomInt(-10, 10);
+            }
+            let realAnswer = eval(num1 + operation + num2);
+            let anwser = eval(num1 + operation + num2);
+            if (isFake) {
+                while (anwser === realAnswer)
+                    anwser = anwser + this.getRandomInt(-10, 10);
+            }
+            return `${num1} ${operation} ${num2} = ${anwser}`;
+        }
+        if (level < 60) {
+        }
+    };
+
     async answerQuiz(socketId: any, answer: any, connectedUser: ConnectedUser) {
         clearTimeout(this.sockets[socketId].quizTimeout);
         if (answer !== this.sockets[socketId].isQuizTrue) {
@@ -264,23 +290,8 @@ class ClientUser {
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
         this.sockets[socketId].scoreQuiz =
             this.sockets[socketId].scoreQuiz + 10;
-        let num1 = this.getRandomInt(
-            this.calMinRangeWithLevel(this.sockets[socketId].levelQuiz),
-            this.calMaxRangeWithLevel(this.sockets[socketId].levelQuiz),
-        );
-        let num2 = this.getRandomInt(
-            this.calMinRangeWithLevel(this.sockets[socketId].levelQuiz),
-            this.calMaxRangeWithLevel(this.sockets[socketId].levelQuiz),
-        );
-        let operation = _.sample([true, false]);
         let fake = _.sample([true, false]);
         this.sockets[socketId].isQuizTrue = !fake;
-
-        let fakeAnwser = operation ? num1 + num2 : num1 - num2;
-        if (fake) {
-            while (fakeAnwser === (operation ? num1 + num2 : num1 - num2))
-                fakeAnwser = fakeAnwser + this.getRandomInt(-10, 10);
-        }
 
         this.sockets[socketId].quizTimeout = setTimeout(() => {
             this.endQuizTimeout(socketId, connectedUser);
@@ -288,8 +299,9 @@ class ClientUser {
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: this.sockets[socketId].levelQuiz,
-            question: expressionToSVG(
-                `${num1} ${operation ? '+' : '-'} ${num2} = ${fakeAnwser}`,
+            question: this.createQuestion(
+                this.sockets[socketId].levelQuiz,
+                fake,
             ),
             score: this.sockets[socketId].scoreQuiz,
             questionTime: this.calQuestionTimeWithLevel(
