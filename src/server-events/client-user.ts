@@ -227,40 +227,55 @@ class ClientUser {
     };
 
     createQuestion = (level: number, isFake: boolean) => {
-        if (level < 40) {
-            let num1 = this.getRandomInt(
-                this.calMinRangeWithLevel(level),
-                this.calMaxRangeWithLevel(level),
-            );
-            let num2 = this.getRandomInt(
-                this.calMinRangeWithLevel(level),
-                this.calMaxRangeWithLevel(level),
-            );
-            let operation = _.sample(['+', '-', '*', '/']);
+        level = 60;
+        let num1 = this.getRandomInt(
+            this.calMinRangeWithLevel(level),
+            this.calMaxRangeWithLevel(level),
+        );
+        let num2 = this.getRandomInt(
+            this.calMinRangeWithLevel(level),
+            this.calMaxRangeWithLevel(level),
+        );
+        let operation = _.sample(['+', '-', '*', '/']);
+        if (operation == '/') {
+            num1 = num2 * this.getRandomInt(-10, 10);
+        }
+        let realAnswer = eval(num1 + operation + num2);
+        let anwser = eval(num1 + operation + num2);
+        if (isFake) {
             if (operation == '/') {
-                num1 = num2 * this.getRandomInt(-10, 10);
-            }
-            let realAnswer = eval(num1 + operation + num2);
-            let anwser = eval(num1 + operation + num2);
-            if (isFake) {
-                if (operation == '/') {
-                    anwser = anwser + this.getRandomInt(1, 3);
-                } else if (operation == '*') {
-                    if (num2 > num1) {
-                        anwser = anwser + num1 * this.getRandomInt(1, 3);
-                    } else {
-                        anwser = anwser + num2 * this.getRandomInt(1, 3);
-                    }
+                anwser = anwser + this.getRandomInt(1, 3);
+            } else if (operation == '*') {
+                if (num2 > num1) {
+                    anwser = anwser + num1 * this.getRandomInt(1, 3);
                 } else {
-                    while (anwser === realAnswer) {
-                        anwser = anwser + this.getRandomInt(-10, 10);
-                    }
+                    anwser = anwser + num2 * this.getRandomInt(1, 3);
+                }
+            } else {
+                while (anwser === realAnswer) {
+                    anwser = anwser + this.getRandomInt(-10, 10);
                 }
             }
+        }
+        let isAddNum3 = _.sample([true, false]);
+        if (level < 40 || isAddNum3 == false) {
             return expressionToSVG(`${num1} ${operation} ${num2} = ${anwser}`);
         }
-        if (level < 60) {
+        let num3 = this.getRandomInt(
+            this.calMinRangeWithLevel(level - 40),
+            this.calMaxRangeWithLevel(level - 40),
+        );
+        let operation2 = _.sample(['+', '-']);
+        realAnswer = eval(realAnswer + operation2 + num3);
+        anwser = eval(realAnswer + operation2 + num3);
+        if (isFake) {
+            while (anwser === realAnswer) {
+                anwser = anwser + this.getRandomInt(-10, 10);
+            }
         }
+        return expressionToSVG(
+            `${num1} ${operation} ${num2} ${operation2} ${num3} = ${anwser}`,
+        );
     };
 
     async answerQuiz(socketId: any, answer: any, connectedUser: ConnectedUser) {
