@@ -267,7 +267,7 @@ class ClientUser {
         );
         let operation2 = _.sample(['+', '-']);
         realAnswer = eval(realAnswer + operation2 + num3);
-        anwser = eval(realAnswer + operation2 + num3);
+        anwser = realAnswer;
         if (isFake) {
             while (anwser === realAnswer) {
                 anwser = anwser + this.getRandomInt(-10, 10);
