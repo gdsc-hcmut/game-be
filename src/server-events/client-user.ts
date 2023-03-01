@@ -245,6 +245,12 @@ class ClientUser {
             if (isFake) {
                 if (operation == '/') {
                     anwser = anwser + this.getRandomInt(1, 3);
+                } else if (operation == '*') {
+                    if (num2 > num1) {
+                        anwser = anwser + num1 * this.getRandomInt(1, 3);
+                    } else {
+                        anwser = anwser + num2 * this.getRandomInt(1, 3);
+                    }
                 } else {
                     while (anwser === realAnswer) {
                         anwser = anwser + this.getRandomInt(-10, 10);
