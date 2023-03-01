@@ -187,15 +187,15 @@ class ClientUser {
             return 10;
         }
         if (level < 30) {
-            return 10;
+            return 1;
         }
         if (level < 40) {
-            return 20;
+            return 10;
         }
         if (level < 50) {
             return 10;
         }
-        return 20;
+        return 10;
     };
     calMaxRangeWithLevel = (level: number) => {
         if (level < 10) {
@@ -205,10 +205,10 @@ class ClientUser {
             return 20;
         }
         if (level < 30) {
-            return 30;
+            return 20;
         }
         if (level < 40) {
-            return 50;
+            return 30;
         }
         if (level < 50) {
             return 60;
@@ -224,7 +224,10 @@ class ClientUser {
             return 2500;
         }
         if (level < 30) {
-            return 2000;
+            return 3000;
+        }
+        if (level < 40) {
+            return 2500;
         }
         if (level < 40) {
             return 2000;
@@ -242,6 +245,9 @@ class ClientUser {
             this.calMaxRangeWithLevel(level % MAX_CHAPTER),
         );
         let operation = _.sample(['+', '-', '*', '/']);
+        if (level < 20) {
+            operation = _.sample(['+', '-']);
+        }
         if (operation == '*') {
             num1 = this.getRandomInt(-10, 10);
             num2 = this.getRandomInt(-10, 10);
