@@ -246,7 +246,7 @@ class ClientUser {
                 while (anwser === realAnswer)
                     anwser = anwser + this.getRandomInt(-10, 10);
             }
-            return `${num1} ${operation} ${num2} = ${anwser}`;
+            return expressionToSVG(`${num1} ${operation} ${num2} = ${anwser}`);
         }
         if (level < 60) {
         }
