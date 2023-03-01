@@ -237,6 +237,10 @@ class ClientUser {
             this.calMaxRangeWithLevel(level),
         );
         let operation = _.sample(['+', '-', '*', '/']);
+        if (operation == '*') {
+            num1 = this.getRandomInt(-10, 10);
+            num2 = this.getRandomInt(-10, 10);
+        }
         if (operation == '/') {
             num1 = num2 * this.getRandomInt(-10, 10);
         }
