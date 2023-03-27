@@ -21,6 +21,7 @@ import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
 import { Types } from 'mongoose';
 import Leaderboard from '../models/leaderboard.model';
+import { AchievementService } from '../services/achievement.service';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
@@ -33,6 +34,7 @@ export class DiscordController extends Controller {
         @inject(ServiceType.Item) private itemService: ItemService,
         @inject(ServiceType.ClubDay) private clubdayService: ClubDayService,
         @inject(ServiceType.Discord) private discordService: DiscordService,
+        @inject(ServiceType.Achievement) private achievementService: AchievementService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
     ) {
@@ -49,6 +51,9 @@ export class DiscordController extends Controller {
             '/private/users/:discordId',
             this.getUserInfo.bind(this),
         );
+        this.router.get('/private/:discordId/achievement/:type', this.getAchievementByType.bind(this));
+        this.router.delete('/private/:discordId/achievement/:type', this.deleteAchievement.bind(this));
+        this.router.post('/private/achievement/', this.updateAchievement.bind(this));
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
@@ -243,6 +248,54 @@ export class DiscordController extends Controller {
                 .sort({ createdAt: -1 })
                 .limit(1);
             res.composer.success(leaderboard);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getAchievementByType(req: Request, res: Response) {
+        try {
+            const { discordId, type } = req.params;
+
+            const user = await this.userService.findOne({ discordId });
+            const data = await this.achievementService.findByType(
+                user._id,
+                parseInt(type)
+            );
+            res.composer.success(data);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async updateAchievement(req: Request, res: Response) {
+        try {
+            const { discordId, type, gain } = req.body;
+
+            const user = await this.userService.findOne({ discordId });
+            const data = await this.achievementService.update(
+                user._id,
+                parseInt(type),
+                parseInt(gain)
+            );
+
+            res.composer.success(data);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async deleteAchievement(req: Request, res: Response) {
+        try {
+            const { discordId, type } = req.params;
+
+            const user = await this.userService.findOne({ discordId });
+            await this.achievementService.delete(user._id, parseInt(type));
+
+            res.composer.success("Delete success !");
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

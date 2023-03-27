@@ -8,6 +8,7 @@ import DiscordBattle, { DiscordBattleDocument } from '../models/discord_battle';
 import Transaction, { TransactionDocument } from '../models/transaction.model';
 import { UserDocument } from '../models/user.model';
 import { ServiceType } from '../types';
+import { AchievementService } from './achievement.service';
 import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
 
@@ -17,7 +18,9 @@ export class DiscordService {
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
         @inject(ServiceType.User) private userService: UserService,
-    ) {}
+        @inject(ServiceType.Achievement)
+        private achievementService: AchievementService
+    ) { }
 
     async createNewTransaction(
         userId: Types.ObjectId,

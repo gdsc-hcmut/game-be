@@ -23,6 +23,8 @@ import { Types } from 'mongoose';
 import { scheduleJob } from 'node-schedule';
 import Leaderboard from '../models/leaderboard.model';
 import DiscordActivity from '../models/discord_activity';
+import { Achievement } from '../models/achievement.model';
+import { AchievementService } from '../services/achievement.service';
 
 @injectable()
 export class UserController extends Controller {
@@ -33,6 +35,7 @@ export class UserController extends Controller {
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Game) private gameService: GameService,
+        @inject(ServiceType.Achievement) private achievementService: AchievementService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
     ) {
@@ -69,6 +72,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
         this.router.get('/:userid/following', this.getFollowing.bind(this));
         this.router.get('/:userid/followers', this.getFollower.bind(this));
+        this.router.get('/:userid/achievement', this.getAchievement.bind(this));
 
         // START JOB
         scheduleJob('0 0 0 * * *', async () => {
@@ -135,13 +139,13 @@ export class UserController extends Controller {
     async resetAllScore() {
         try {
             await this.userService.resetPrivate();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerResetDaily() {
         try {
             await this.userService.resetAvailableCoin();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerLeaderboard() {
@@ -217,7 +221,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async verifyAccountRequest(req: Request, res: Response) {
@@ -413,6 +417,17 @@ export class UserController extends Controller {
                 { new: true },
             );
             res.composer.success(updatedUser);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getAchievement(req: Request, res: Response) {
+        const userId = req.tokenMeta.userId;
+        try {
+            const data = await this.achievementService.findAll(userId);
+            res.composer.success(data);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

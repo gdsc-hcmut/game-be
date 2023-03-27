@@ -19,10 +19,10 @@ export class AchievementService {
         this.achievementList = achievementList;
     }
 
-    async updateProgress(
+    async update(
         userId: string,
         type: number,
-        progress: number,
+        gain: number,
     ): Promise<UserAchievementDocument> {
         const achievement: Achievement = this.achievementList[type];
         const currentDate: number = new Date().getTime();
@@ -30,6 +30,9 @@ export class AchievementService {
 
         if (!achievement)
             throw Error("Achievement not found!");
+
+        if (gain < 0)
+            throw Error("Progress cannot be negative!");
 
         if (!userAchievement)
             userAchievement = new UserAchievement({
@@ -42,7 +45,7 @@ export class AchievementService {
         if (userAchievement.progress >= achievement.target)
             return userAchievement;
 
-        if (progress >= achievement.target) {
+        if (userAchievement.progress + gain >= achievement.target) {
             await this.transactionService.createNewTransaction(
                 SYSTEM_ACCOUNT_ID,
                 new mongoose.Types.ObjectId(userId),
@@ -57,7 +60,7 @@ export class AchievementService {
             // TODO: Notify user
         }
 
-        userAchievement.progress += progress;
+        userAchievement.progress += gain;
         userAchievement.updatedAt = currentDate;
 
         await userAchievement.save();
@@ -65,7 +68,7 @@ export class AchievementService {
         return userAchievement;
     }
 
-    async getProgress(userId: string) {
+    async findAll(userId: string) {
         const userAchievementList: UserAchievementDocument[] = await UserAchievement.find({ userId });
 
         return this.achievementList
@@ -83,6 +86,34 @@ export class AchievementService {
                     updatedAt: userAchievement?.updatedAt ? userAchievement.updatedAt : 0,
                 };
             });
+    }
+
+    async findByType(userId: string, type: number) {
+        let userAchievement: UserAchievementDocument = await UserAchievement.findOne({
+            userId,
+            type
+        });
+
+        return {
+            ...this.achievementList[type],
+            userId,
+            progress: userAchievement?.progress ? userAchievement.progress : 0,
+            updatedAt: userAchievement?.updatedAt ? userAchievement.updatedAt : 0,
+        }
+    }
+
+    async delete(userId: string, type: number): Promise<void> {
+        let userAchievement = await UserAchievement.findOne({
+            userId,
+            type
+        });
+
+        if (!userAchievement)
+            throw Error("Achievement not found!");
+
+        userAchievement.progress = 0;
+
+        await userAchievement.save();
     }
 
     async removeUserAchievement(userId: string, type: string): Promise<boolean> {
