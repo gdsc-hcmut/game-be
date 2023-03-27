@@ -38,6 +38,8 @@ export type UserDocument = Document & {
     verifyDiscordCodeAt: number;
     availableReceiving: number;
     roles: USER_ROLES[];
+    isRefetchAchievement: boolean;
+    achievementPoint: number;
 };
 
 const userSchema = new Schema<UserDocument>({
@@ -57,6 +59,8 @@ const userSchema = new Schema<UserDocument>({
     verifyDiscordCodeAt: Number,
     availableReceiving: { type: Number, default: 1000 },
     roles: Array<USER_ROLES>,
+    isRefetchAchievement: { type: Boolean, default: false },
+    achievementPoint: { type: Number, default: 0 },
 });
 
 const User = mongoose.model<UserDocument>('User', userSchema);

@@ -28,6 +28,7 @@ import {
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
+import { AchievementService } from './services/achievement.service';
 
 // Binding service
 container
@@ -69,6 +70,10 @@ container
 container
     .bind<DiscordService>(ServiceType.Discord)
     .to(DiscordService)
+    .inSingletonScope();
+container
+    .bind<AchievementService>(ServiceType.Achievement)
+    .to(AchievementService)
     .inSingletonScope();
 // Initialize service first
 Promise.all([

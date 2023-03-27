@@ -395,6 +395,11 @@ export class UserService {
         return users;
     }
 
+    async triggerAchievementLeaderboard(): Promise<UserDocument[]> {
+        const users = await User.find().sort({ achievementPoint: -1 });
+        return users;
+    }
+
     async getUserInfoByDiscordId(discordId: string): Promise<UserDocument> {
         const user = await User.findOne({ discordId: discordId });
         return user;

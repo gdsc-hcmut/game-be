@@ -22,6 +22,7 @@ export const ServiceType = {
     Order: Symbol.for('OrderService'),
     ClubDay: Symbol.for('ClubDayService'),
     Discord: Symbol.for('DiscordService'),
+    Achievement: Symbol.for('AchievementService'),
 };
 
 export enum PrivacyType {
