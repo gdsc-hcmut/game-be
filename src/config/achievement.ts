@@ -103,7 +103,7 @@ export const achievementList: Achievement[] = [
     },
     {
         type: 10,
-        name: 'Clear Daily Earnings 1 week in a row',
+        name: 'Clear Daily Earnings 1 month in a row',
         GCoin: 4000,
         target: 30,
         hidden: false,

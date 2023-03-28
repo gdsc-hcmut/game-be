@@ -68,7 +68,7 @@ export class AchievementService {
         return userAchievement;
     }
 
-    async findAll(userId: string) {
+    async findAllByUser(userId: string) {
         const userAchievementList: UserAchievementDocument[] = await UserAchievement.find({ userId });
 
         return this.achievementList
@@ -88,7 +88,7 @@ export class AchievementService {
             });
     }
 
-    async findByType(userId: string, type: number) {
+    async findOne(userId: string, type: number) {
         let userAchievement: UserAchievementDocument = await UserAchievement.findOne({
             userId,
             type
@@ -102,7 +102,7 @@ export class AchievementService {
         }
     }
 
-    async delete(userId: string, type: number): Promise<void> {
+    async reset(userId: string, type: number, progress: number = 0): Promise<void> {
         let userAchievement = await UserAchievement.findOne({
             userId,
             type
@@ -112,7 +112,7 @@ export class AchievementService {
         if (!userAchievement)
             throw Error("Achievement not found!");
 
-        userAchievement.progress = 0;
+        userAchievement.progress = progress;
         userAchievement.updatedAt = currentDate;
 
         await userAchievement.save();

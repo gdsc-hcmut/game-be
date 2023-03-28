@@ -21,7 +21,7 @@ import { randomPassword, encodeObjectId } from '../lib/helper';
 // import { MailService } from '.';
 import User, { UserDocument } from '../models/user.model';
 import { TransactionService } from './transaction.service';
-// import { AchievementService } from './achievement.service';
+import { AchievementService } from './achievement.service';
 import { achievementTypes } from '../config/achievement-types';
 
 const USER_CREATE_ALLOW_FIELDS = [
@@ -37,7 +37,7 @@ export class UserService {
     private userCollection: Collection;
 
     constructor(
-        // @inject(ServiceType.Achievement) private achievementService: AchievementService
+        @inject(ServiceType.Achievement) private achievementService: AchievementService
     ) {
         // @inject(ServiceType.Mail) private mailService: MailService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Database) private dbService: DatabaseService,
         // this.userCollection = this.dbService.db.collection('users');
@@ -298,6 +298,46 @@ export class UserService {
         targetUser.markModified('balance');
         targetUser.markModified('availableReceiving');
         targetUser.save();
+
+        if (targetUser.availableReceiving <= 0) {
+            const targetUserId: string = targetUser._id.toString();
+            await this.achievementService.update(
+                targetUserId,
+                achievementTypes.DAILY_EARNING,
+                1
+            );
+
+            const { updatedAt } = await this.achievementService.findOne(
+                targetUser._id.toString(),
+                achievementTypes.DAILY_EARNING_BY_WEEK
+            );
+            const currentDate: number = new Date().getTime();
+
+            if (!updatedAt || currentDate - updatedAt <= 24 * 3600 * 1000) {
+                await this.achievementService.update(
+                    targetUserId,
+                    achievementTypes.DAILY_EARNING_BY_WEEK,
+                    1
+                );
+                await this.achievementService.update(
+                    targetUserId,
+                    achievementTypes.DAILY_EARNING_BY_MONTH,
+                    1
+                );
+            } else {
+                await this.achievementService.reset(
+                    targetUserId,
+                    achievementTypes.DAILY_EARNING_BY_WEEK,
+                    1
+                );
+                await this.achievementService.reset(
+                    targetUserId,
+                    achievementTypes.DAILY_EARNING_BY_MONTH,
+                    1
+                );
+            }
+        }
+
         return true;
     }
 

@@ -53,7 +53,7 @@ export class DiscordController extends Controller {
             this.getUserInfo.bind(this),
         );
         this.router.get('/private/:discordId/achievement/:type', this.getAchievement.bind(this));
-        this.router.delete('/private/:discordId/achievement/:type', this.deleteAchievement.bind(this));
+        this.router.delete('/private/:discordId/achievement/:type', this.resetAchievement.bind(this));
         this.router.post('/private/achievement/', this.createAchievement.bind(this));
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
@@ -262,7 +262,7 @@ export class DiscordController extends Controller {
             const { discordId, type } = req.params;
 
             const user = await this.userService.findOne({ discordId });
-            const data = await this.achievementService.findByType(
+            const data = await this.achievementService.findOne(
                 user._id,
                 parseInt(type)
             );
@@ -291,12 +291,12 @@ export class DiscordController extends Controller {
         }
     }
 
-    async deleteAchievement(req: Request, res: Response) {
+    async resetAchievement(req: Request, res: Response) {
         try {
             const { discordId, type } = req.params;
 
             const user = await this.userService.findOne({ discordId });
-            await this.achievementService.delete(user._id, parseInt(type));
+            await this.achievementService.reset(user._id, parseInt(type));
 
             res.composer.success("Delete success !");
         } catch (error) {

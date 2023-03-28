@@ -426,7 +426,7 @@ export class UserController extends Controller {
     async getAchievement(req: Request, res: Response) {
         const userId = req.tokenMeta.userId;
         try {
-            const data = await this.achievementService.findAll(userId);
+            const data = await this.achievementService.findAllByUser(userId);
             res.composer.success(data);
         } catch (error) {
             console.log(error);
