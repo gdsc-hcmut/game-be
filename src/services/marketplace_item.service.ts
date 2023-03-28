@@ -19,6 +19,8 @@ import { UserService } from './user.service';
 import { ItemService } from './item.service';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import { ObjectId, Query, Types } from 'mongoose';
+import { AchievementService } from './achievement.service';
+import { achievementTypes } from '../config/achievement-types';
 
 @injectable()
 export class MarketplaceItemService {
@@ -27,7 +29,8 @@ export class MarketplaceItemService {
         private transactionService: TransactionService,
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Item) private itemService: ItemService,
-    ) {}
+        @inject(ServiceType.Achievement) private achievementSerivce: AchievementService
+    ) { }
 
     async auctionNewItem(
         userId: Types.ObjectId,
@@ -175,6 +178,13 @@ export class MarketplaceItemService {
             marketplaceItem.followedUsers.push(fromUser);
         }
         await marketplaceItem.save();
+
+        await this.achievementSerivce.update(
+            fromUser.toString(),
+            achievementTypes.PLACE_BID,
+            1,
+        );
+
         return newOrder;
 
         // if (bidPrice >= maxPrice) {
@@ -338,5 +348,17 @@ export class MarketplaceItemService {
         await item.save();
         bid.claimed = true;
         await bid.save();
+
+        await this.achievementSerivce.update(
+            userId.toString(),
+            achievementTypes.WIN_BID,
+            1
+        );
+
+        await this.achievementSerivce.update(
+            userId.toString(),
+            achievementTypes.WIN_10_BIDS,
+            1
+        );
     }
 }

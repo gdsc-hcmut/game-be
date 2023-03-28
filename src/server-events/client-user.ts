@@ -13,6 +13,8 @@ import { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
+import { AchievementService } from '../services/achievement.service';
+import { achievementTypes } from '../config/achievement-types';
 const MAX_CHAPTER = 50;
 
 export interface SocketInfo {
@@ -40,6 +42,7 @@ class ClientUser {
     private userService: UserService;
     private userData: UserDocument;
     private transactionService: TransactionService;
+    private achievementService: AchievementService;
 
     constructor(
         userId: string,
@@ -47,6 +50,7 @@ class ClientUser {
         clubDayService: ClubDayService,
         userService: UserService,
         transactionService: TransactionService,
+        achievementService: AchievementService
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -56,6 +60,7 @@ class ClientUser {
         this.MathQuizRanking = [];
         this.userService = userService;
         this.transactionService = transactionService;
+        this.achievementService = achievementService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -84,6 +89,13 @@ class ClientUser {
             EventTypes.RECEIVE_NEW_GAME_SESSION,
             newSession,
         );
+
+        await this.achievementService.update(
+            this.userId,
+            achievementTypes.PLAY_GAME_ONCE,
+            1
+        );
+
         this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
             type: 'success',
             message: 'Start game success',
@@ -133,7 +145,7 @@ class ClientUser {
                         message:
                             'You have pass first 20 level and claim reward from Club Day',
                     });
-                } catch (err) {}
+                } catch (err) { }
         } else {
             gameSession.save();
         }
@@ -300,13 +312,13 @@ class ClientUser {
                 ranking: this.MathQuizRanking,
             });
             this.sockets[socketId].isQuizStart = false;
+
             await this.transactionService
                 .createNewTransactionGame(
                     SYSTEM_ACCOUNT_ID,
                     new Types.ObjectId(this.userId),
                     this.sockets[socketId].scoreQuiz / 10,
-                    `You got ${
-                        this.sockets[socketId].scoreQuiz / 10
+                    `You got ${this.sockets[socketId].scoreQuiz / 10
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
@@ -360,13 +372,37 @@ class ClientUser {
             ranking: this.MathQuizRanking,
         });
         this.sockets[socketId].isQuizStart = false;
+
+        if (this.sockets[socketId].scoreQuiz / 10 >= 10) {
+            await this.achievementService.update(
+                this.userId,
+                achievementTypes.LEVEL_10_QUIZ,
+                1
+            );
+        }
+
+        if (this.sockets[socketId].scoreQuiz / 10 >= 50) {
+            await this.achievementService.update(
+                this.userId,
+                achievementTypes.LEVEL_50_QUIZ,
+                1
+            );
+        }
+
+        if (this.sockets[socketId].scoreQuiz / 10 >= 100) {
+            await this.achievementService.update(
+                this.userId,
+                achievementTypes.LEVEL_100_QUIZ,
+                1
+            );
+        }
+
         await this.transactionService
             .createNewTransactionGame(
                 SYSTEM_ACCOUNT_ID,
                 new Types.ObjectId(this.userId),
                 this.sockets[socketId].scoreQuiz / 10,
-                `You got ${
-                    this.sockets[socketId].scoreQuiz / 10
+                `You got ${this.sockets[socketId].scoreQuiz / 10
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {

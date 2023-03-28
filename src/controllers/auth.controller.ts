@@ -11,6 +11,8 @@ import { TokenDocument } from '../models/token.model';
 import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
+import { AchievementService } from '../services/achievement.service';
+import { achievementTypes } from '../config/achievement-types';
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
@@ -18,6 +20,7 @@ export class AuthController extends Controller {
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
+        @inject(ServiceType.Achievement) private achievementService: AchievementService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
     ) {
@@ -262,6 +265,13 @@ export class AuthController extends Controller {
                 discordId: discordId,
             });
             discord.save();
+
+            await this.achievementService.update(
+                user._id,
+                achievementTypes.CONNECT_DISCORD,
+                1,
+            )
+
             res.composer.success(
                 'Verification successful! Welcome to GDSC Game',
             );

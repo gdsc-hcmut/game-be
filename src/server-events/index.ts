@@ -27,6 +27,7 @@ import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
 import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
+import { AchievementService } from '../services/achievement.service';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -61,6 +62,7 @@ export class SocketService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
+        @inject(ServiceType.Achievement) private achievementService: AchievementService
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -94,6 +96,7 @@ export class SocketService {
                 this.clubDayService,
                 this.userService,
                 this.transactionService,
+                this.achievementService
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
