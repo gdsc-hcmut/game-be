@@ -51,9 +51,9 @@ export class DiscordController extends Controller {
             '/private/users/:discordId',
             this.getUserInfo.bind(this),
         );
-        this.router.get('/private/:discordId/achievement/:type', this.getAchievementByType.bind(this));
+        this.router.get('/private/:discordId/achievement/:type', this.getAchievement.bind(this));
         this.router.delete('/private/:discordId/achievement/:type', this.deleteAchievement.bind(this));
-        this.router.post('/private/achievement/', this.updateAchievement.bind(this));
+        this.router.post('/private/achievement/', this.createAchievement.bind(this));
         this.router.post('/private/daily', this.discordDaily.bind(this));
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
@@ -254,7 +254,7 @@ export class DiscordController extends Controller {
         }
     }
 
-    async getAchievementByType(req: Request, res: Response) {
+    async getAchievement(req: Request, res: Response) {
         try {
             const { discordId, type } = req.params;
 
@@ -270,15 +270,15 @@ export class DiscordController extends Controller {
         }
     }
 
-    async updateAchievement(req: Request, res: Response) {
+    async createAchievement(req: Request, res: Response) {
         try {
-            const { discordId, type, gain } = req.body;
+            const { discordId, type } = req.body;
 
             const user = await this.userService.findOne({ discordId });
             const data = await this.achievementService.update(
                 user._id,
                 parseInt(type),
-                parseInt(gain)
+                1
             );
 
             res.composer.success(data);

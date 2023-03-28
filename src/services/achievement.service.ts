@@ -107,11 +107,13 @@ export class AchievementService {
             userId,
             type
         });
+        const currentDate = new Date().getTime();
 
         if (!userAchievement)
             throw Error("Achievement not found!");
 
         userAchievement.progress = 0;
+        userAchievement.updatedAt = currentDate;
 
         await userAchievement.save();
     }

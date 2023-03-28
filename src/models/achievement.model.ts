@@ -8,7 +8,7 @@ export type Achievement = {
     hidden: boolean,
     point: number,
     arena: string,
-    limit: number,
+    limit: string,
 };
 
 export type UserAchievementDocument = Document & {

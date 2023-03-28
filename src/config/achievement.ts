@@ -9,7 +9,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 1,
@@ -19,7 +19,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 2,
@@ -29,7 +29,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 3,
@@ -39,7 +39,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 4,
@@ -49,7 +49,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 5,
@@ -59,7 +59,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 6,
@@ -69,7 +69,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 7,
@@ -79,7 +79,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 8,
@@ -89,7 +89,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 9,
@@ -99,7 +99,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 10,
@@ -109,7 +109,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 11,
@@ -119,7 +119,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 12,
@@ -129,7 +129,7 @@ export const achievementList: Achievement[] = [
         hidden: true,
         point: 20,
         arena: 'Web game',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 13,
@@ -139,7 +139,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 5,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 14,
@@ -149,7 +149,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 15,
@@ -159,7 +159,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 16,
@@ -169,7 +169,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 17,
@@ -179,7 +179,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 5,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 18,
@@ -189,7 +189,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 19,
@@ -199,7 +199,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 20,
@@ -209,7 +209,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 21,
@@ -219,7 +219,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 5,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 22,
@@ -229,7 +229,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 10,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 23,
@@ -239,7 +239,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 20,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 24,
@@ -249,7 +249,7 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 40,
         arena: 'Discord',
-        limit: 0,
+        limit: 'One Time',
     },
     {
         type: 25,
@@ -259,16 +259,16 @@ export const achievementList: Achievement[] = [
         hidden: false,
         point: 5,
         arena: 'Discord',
-        limit: 0,
+        limit: 'Once a Week',
     },
     {
-        type: 25,
+        type: 26,
         name: 'Win in 1 turn in /hangman or /guess',
         GCoin: 1000,
         target: 1,
         hidden: false,
         point: 20,
         arena: 'Discord',
-        limit: 0,
+        limit: 'Once a Month',
     },
 ];
