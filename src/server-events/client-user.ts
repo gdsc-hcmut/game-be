@@ -312,6 +312,38 @@ class ClientUser {
             });
             this.sockets[socketId].isQuizStart = false;
 
+            if (this.sockets[socketId].scoreQuiz === 0) {
+                await this.achievementService.update(
+                    this.userId,
+                    achievementTypes.LOSE_QUIZ_FIRST_STAGE,
+                    1
+                );
+            }
+
+            if (this.sockets[socketId].scoreQuiz / 10 >= 10) {
+                await this.achievementService.update(
+                    this.userId,
+                    achievementTypes.LEVEL_10_QUIZ,
+                    1
+                );
+            }
+
+            if (this.sockets[socketId].scoreQuiz / 10 >= 50) {
+                await this.achievementService.update(
+                    this.userId,
+                    achievementTypes.LEVEL_50_QUIZ,
+                    1
+                );
+            }
+
+            if (this.sockets[socketId].scoreQuiz / 10 >= 100) {
+                await this.achievementService.update(
+                    this.userId,
+                    achievementTypes.LEVEL_100_QUIZ,
+                    1
+                );
+            }
+
             await this.transactionService
                 .createNewTransactionGame(
                     SYSTEM_ACCOUNT_ID,

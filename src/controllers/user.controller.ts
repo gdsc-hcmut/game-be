@@ -25,6 +25,7 @@ import { scheduleJob } from 'node-schedule';
 import Leaderboard from '../models/leaderboard.model';
 import DiscordActivity from '../models/discord_activity';
 import { Achievement } from '../models/achievement.model';
+import { achievementTypes } from '../config/achievement-types';
 
 @injectable()
 export class UserController extends Controller {
@@ -90,6 +91,15 @@ export class UserController extends Controller {
                     discordId: e.discordId,
                 };
             });
+
+            if (users[0].point !== 0) {
+                await this.achievementService.update(
+                    users[0].userId,
+                    achievementTypes.QUIZ_FIRST_PLACE,
+                    1
+                );
+            }
+
             const leaderboard = new Leaderboard({
                 createdAt: Date.now(),
                 ranking: users,
