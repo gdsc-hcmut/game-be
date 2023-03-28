@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import _ from 'lodash';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
+import { achievementTypes } from '../config/achievement-types';
 
 import { ErrorInvalidData } from '../lib/errors';
 import {
@@ -176,7 +177,7 @@ export class MarketplaceController extends Controller {
             );
 
             await this.achievementSerivce.update(
-                fromUser.toString(),
+                userId.toString(),
                 achievementTypes.PLACE_BID,
                 1,
             );
@@ -206,6 +207,17 @@ export class MarketplaceController extends Controller {
             const item = await this.marketplaceItemService.claimBid(
                 userId,
                 bidId,
+            );
+            await this.achievementSerivce.update(
+                userId.toString(),
+                achievementTypes.WIN_BID,
+                1
+            );
+
+            await this.achievementSerivce.update(
+                userId.toString(),
+                achievementTypes.WIN_10_BIDS,
+                1
             );
             res.composer.success(item);
         } catch (error) {

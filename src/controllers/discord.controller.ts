@@ -22,6 +22,7 @@ import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
 import { Types } from 'mongoose';
 import Leaderboard from '../models/leaderboard.model';
+import { achievementTypes } from '../config/achievement-types';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
@@ -115,10 +116,12 @@ export class DiscordController extends Controller {
             dis.isDaily = true;
             dis.streak = dis.streak + 1;
             dis.save();
+
             res.composer.success({
                 isSuccess: true,
                 coin: coin,
                 isDaily: true,
+                streak: dis.streak,
             });
         } catch (error) {
             console.log(error);

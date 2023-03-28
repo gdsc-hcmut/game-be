@@ -21,7 +21,7 @@ import { randomPassword, encodeObjectId } from '../lib/helper';
 // import { MailService } from '.';
 import User, { UserDocument } from '../models/user.model';
 import { TransactionService } from './transaction.service';
-import { AchievementService } from './achievement.service';
+// import { AchievementService } from './achievement.service';
 import { achievementTypes } from '../config/achievement-types';
 
 const USER_CREATE_ALLOW_FIELDS = [
@@ -37,7 +37,7 @@ export class UserService {
     private userCollection: Collection;
 
     constructor(
-        @inject(ServiceType.Achievement) private achievementService: AchievementService
+        // @inject(ServiceType.Achievement) private achievementService: AchievementService
     ) {
         // @inject(ServiceType.Mail) private mailService: MailService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Database) private dbService: DatabaseService,
         // this.userCollection = this.dbService.db.collection('users');
@@ -288,22 +288,6 @@ export class UserService {
         }
         if (targetUser.availableReceiving <= 0) {
             targetUser.save();
-
-            await this.achievementService.update(
-                toUser.toString(),
-                achievementTypes.DAILY_EARNING,
-                1
-            );
-            await this.achievementService.update(
-                toUser.toString(),
-                achievementTypes.DAILY_EARNING_WEEK,
-                1
-            );
-            await this.achievementService.update(
-                toUser.toString(),
-                achievementTypes.DAILY_EARNING_MONTH,
-                1
-            );
 
             return false;
         }
