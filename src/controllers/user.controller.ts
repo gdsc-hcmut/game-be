@@ -12,6 +12,7 @@ import {
     AuthService,
     TransactionService,
     GameService,
+    AchievementService
 } from '../services';
 import { ObjectID, ObjectId } from 'mongodb';
 import { EMAIL_SENDER, LIMIT_PAGING, SYSTEM_ACCOUNT_ID } from '../config';
@@ -24,7 +25,6 @@ import { scheduleJob } from 'node-schedule';
 import Leaderboard from '../models/leaderboard.model';
 import DiscordActivity from '../models/discord_activity';
 import { Achievement } from '../models/achievement.model';
-import { AchievementService } from '../services/achievement.service';
 
 @injectable()
 export class UserController extends Controller {

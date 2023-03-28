@@ -11,7 +11,6 @@ import { ServiceType } from '../types';
 import { AchievementService } from './achievement.service';
 import { TransactionService } from './transaction.service';
 import { UserService } from './user.service';
-
 @injectable()
 export class DiscordService {
     constructor(

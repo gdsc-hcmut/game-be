@@ -15,6 +15,7 @@ import {
     TransactionService,
     ClubDayService,
     DiscordService,
+    AchievementService,
 } from './services';
 import {
     AuthController,
@@ -28,7 +29,6 @@ import {
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
-import { AchievementService } from './services/achievement.service';
 
 // Binding service
 container

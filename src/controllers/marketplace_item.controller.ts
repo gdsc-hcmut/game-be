@@ -10,6 +10,7 @@ import {
     ItemService,
     MarketplaceItemService,
     UserService,
+    AchievementService
 } from '../services';
 import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
@@ -24,6 +25,7 @@ export class MarketplaceController extends Controller {
         @inject(ServiceType.MarketplaceItem)
         private marketplaceItemService: MarketplaceItemService,
         @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.Achievement) private achievementSerivce: AchievementService
     ) {
         super();
 
@@ -172,6 +174,13 @@ export class MarketplaceController extends Controller {
                 userId,
                 SYSTEM_ACCOUNT_ID,
             );
+
+            await this.achievementSerivce.update(
+                fromUser.toString(),
+                achievementTypes.PLACE_BID,
+                1,
+            );
+
             res.composer.success(order);
         } catch (error) {
             console.log(error);

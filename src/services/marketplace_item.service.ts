@@ -179,12 +179,6 @@ export class MarketplaceItemService {
         }
         await marketplaceItem.save();
 
-        await this.achievementSerivce.update(
-            fromUser.toString(),
-            achievementTypes.PLACE_BID,
-            1,
-        );
-
         return newOrder;
 
         // if (bidPrice >= maxPrice) {

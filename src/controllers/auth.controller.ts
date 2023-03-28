@@ -4,14 +4,13 @@ import _ from 'lodash';
 import User, { USER_ROLES } from '../models/user.model';
 import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
-import { AuthService, TransactionService } from '../services';
+import { AuthService, TransactionService, AchievementService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
 import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
-import { AchievementService } from '../services/achievement.service';
 import { achievementTypes } from '../config/achievement-types';
 @injectable()
 export class AuthController extends Controller {

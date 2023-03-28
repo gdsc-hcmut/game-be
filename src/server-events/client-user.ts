@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
 import { GameService, TransactionService } from '../services';
-import { ClubDayService, UserService } from '../services';
+import { ClubDayService, UserService, AchievementService } from '../services';
 
 import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
@@ -13,7 +13,6 @@ import { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
-import { AchievementService } from '../services/achievement.service';
 import { achievementTypes } from '../config/achievement-types';
 const MAX_CHAPTER = 50;
 

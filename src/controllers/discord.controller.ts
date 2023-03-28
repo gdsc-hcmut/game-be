@@ -12,6 +12,7 @@ import {
     MarketplaceItemService,
     TransactionService,
     UserService,
+    AchievementService
 } from '../services';
 import passport from 'passport';
 import { UserDocument, USER_ROLES } from '../models/user.model';
@@ -21,7 +22,6 @@ import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
 import { Types } from 'mongoose';
 import Leaderboard from '../models/leaderboard.model';
-import { AchievementService } from '../services/achievement.service';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
