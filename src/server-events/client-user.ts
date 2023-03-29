@@ -9,7 +9,7 @@ import { generateGameField } from '../game/game-logic';
 import { LevelInfo } from '../models/game_session.modal';
 import { Socket } from 'socket.io';
 import { ConnectedUser, CustomSocket } from '.';
-import { UserDocument, USER_ROLES } from '../models/user.model';
+import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
@@ -313,7 +313,7 @@ class ClientUser {
             this.sockets[socketId].isQuizStart = false;
 
             if (this.sockets[socketId].scoreQuiz === 0) {
-                await this.achievementService.update(
+                this.achievementService.update(
                     this.userId,
                     achievementTypes.LOSE_QUIZ_FIRST_STAGE,
                     1
@@ -321,7 +321,7 @@ class ClientUser {
             }
 
             if (this.sockets[socketId].scoreQuiz / 10 >= 10) {
-                await this.achievementService.update(
+                this.achievementService.update(
                     this.userId,
                     achievementTypes.LEVEL_10_QUIZ,
                     1
@@ -329,7 +329,7 @@ class ClientUser {
             }
 
             if (this.sockets[socketId].scoreQuiz / 10 >= 50) {
-                await this.achievementService.update(
+                this.achievementService.update(
                     this.userId,
                     achievementTypes.LEVEL_50_QUIZ,
                     1
@@ -337,7 +337,7 @@ class ClientUser {
             }
 
             if (this.sockets[socketId].scoreQuiz / 10 >= 100) {
-                await this.achievementService.update(
+                this.achievementService.update(
                     this.userId,
                     achievementTypes.LEVEL_100_QUIZ,
                     1
@@ -367,6 +367,50 @@ class ClientUser {
                         },
                     );
                 });
+
+            const targetUser = await this.userService.findById(
+                new Types.ObjectId(this.userId)
+            );
+
+            if (targetUser.availableReceiving <= 0) {
+                const targetUserId: string = targetUser._id.toString();
+                await this.achievementService.update(
+                    targetUserId,
+                    achievementTypes.DAILY_EARNING,
+                    1
+                );
+
+                const { updatedAt } = await this.achievementService.findOne(
+                    targetUser._id.toString(),
+                    achievementTypes.DAILY_EARNING_BY_WEEK
+                );
+                const currentDate: number = new Date().getTime();
+
+                if (!updatedAt || currentDate - updatedAt <= 24 * 3600 * 1000) {
+                    await this.achievementService.update(
+                        targetUserId,
+                        achievementTypes.DAILY_EARNING_BY_WEEK,
+                        1
+                    );
+                    await this.achievementService.update(
+                        targetUserId,
+                        achievementTypes.DAILY_EARNING_BY_MONTH,
+                        1
+                    );
+                } else {
+                    await this.achievementService.reset(
+                        targetUserId,
+                        achievementTypes.DAILY_EARNING_BY_WEEK,
+                        1
+                    );
+                    await this.achievementService.reset(
+                        targetUserId,
+                        achievementTypes.DAILY_EARNING_BY_MONTH,
+                        1
+                    );
+                }
+            }
+
             this.sockets[socketId].scoreQuiz = 0;
         }
         if (!this.sockets[socketId].isQuizStart) return;
@@ -405,7 +449,7 @@ class ClientUser {
         this.sockets[socketId].isQuizStart = false;
 
         if (this.sockets[socketId].scoreQuiz / 10 >= 10) {
-            await this.achievementService.update(
+            this.achievementService.update(
                 this.userId,
                 achievementTypes.LEVEL_10_QUIZ,
                 1
@@ -413,7 +457,7 @@ class ClientUser {
         }
 
         if (this.sockets[socketId].scoreQuiz / 10 >= 50) {
-            await this.achievementService.update(
+            this.achievementService.update(
                 this.userId,
                 achievementTypes.LEVEL_50_QUIZ,
                 1
@@ -421,7 +465,7 @@ class ClientUser {
         }
 
         if (this.sockets[socketId].scoreQuiz / 10 >= 100) {
-            await this.achievementService.update(
+            this.achievementService.update(
                 this.userId,
                 achievementTypes.LEVEL_100_QUIZ,
                 1
@@ -448,6 +492,7 @@ class ClientUser {
                     );
                 });
             });
+
         // trigger
         this.sockets[socketId].scoreQuiz = 0;
     }

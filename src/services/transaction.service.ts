@@ -8,7 +8,7 @@ import { UserService } from './user.service';
 
 @injectable()
 export class TransactionService {
-    constructor(@inject(ServiceType.User) private userService: UserService) {}
+    constructor(@inject(ServiceType.User) private userService: UserService) { }
 
     async createNewTransaction(
         fromUser: Types.ObjectId,
@@ -58,6 +58,7 @@ export class TransactionService {
         if (!isTransfer) {
             return true;
         }
+
         const newTransaction = new Transaction({
             fromUser,
             toUser,
@@ -108,9 +109,8 @@ export class TransactionService {
                 toUserDiscordId,
                 amount * 2,
             );
-        let message = `End Battle transfer to ${toUser.name} ${
-            2 * amount
-        }Gcoin`;
+        let message = `End Battle transfer to ${toUser.name} ${2 * amount
+            }Gcoin`;
         const newTransaction = new Transaction({
             fromUser: SYSTEM_ACCOUNT_ID,
             toUser: toUser._id,

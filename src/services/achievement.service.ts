@@ -19,14 +19,29 @@ export class AchievementService {
         this.achievementList = achievementList;
     }
 
-    async update(
+    private async onSuccess(
         userId: string,
-        type: number,
-        gain: number,
-    ): Promise<UserAchievementDocument> {
+        type: number
+    ) {
+        const achievement = this.achievementList[type];
+        await this.transactionService.createNewTransaction(
+            SYSTEM_ACCOUNT_ID,
+            new Types.ObjectId(userId),
+            achievement.GCoin,
+            `You claimed "${achievement.name}" achievement.`
+        )
+
+        const user = await User.findById(userId);
+        user.achievementPoint += achievement.point;
+        await user.save();
+
+        // TODO: Notify user
+    }
+
+    async update(userId: string, type: number, gain: number): Promise<UserAchievementDocument> {
         const achievement: Achievement = this.achievementList[type];
-        const currentDate: number = new Date().getTime();
-        let userAchievement = await UserAchievement.findOne({ userId, type });
+        const currentDate: number = Date.now();
+        let userAchievement: UserAchievementDocument = await UserAchievement.findOne({ userId, type });
 
         if (!achievement)
             throw Error("Achievement not found!");
@@ -45,27 +60,26 @@ export class AchievementService {
         if (userAchievement.progress >= achievement.target)
             return userAchievement;
 
-        if (userAchievement.progress + gain >= achievement.target) {
-            await this.transactionService.createNewTransaction(
-                SYSTEM_ACCOUNT_ID,
-                new mongoose.Types.ObjectId(userId),
-                achievement.GCoin,
-                `You claimed "${achievement.name}" achievement.`
-            )
-
-            const user = await User.findById(userId);
-            user.achievementPoint += achievement.point;
-            await user.save();
-
-            // TODO: Notify user
-        }
-
         userAchievement.progress += gain;
         userAchievement.updatedAt = currentDate;
 
         await userAchievement.save();
 
+        if (userAchievement.progress >= achievement.target) {
+            this.onSuccess(userId, type);
+        }
+
         return userAchievement;
+    }
+
+    async updateMany(
+        userId: string,
+        achievementEvent: {
+            type: number,
+            gain: number
+        }[]
+    ) {
+        const currentDate: number = Date.now();
     }
 
     async findAllByUser(userId: string) {
@@ -116,10 +130,6 @@ export class AchievementService {
         userAchievement.updatedAt = currentDate;
 
         await userAchievement.save();
-    }
-
-    async removeUserAchievement(userId: string, type: string): Promise<boolean> {
-        return true;
     }
 
     async checkUserAchievements(userId: string) {

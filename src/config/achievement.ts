@@ -35,7 +35,7 @@ export const achievementList: Achievement[] = [
         type: 3,
         name: 'Reach level 50 in GDSC Quiz',
         GCoin: 1000,
-        target: 50,
+        target: 1,
         hidden: false,
         point: 10,
         arena: 'Web game',
