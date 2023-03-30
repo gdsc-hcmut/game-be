@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { UserRanking } from "./leaderboard.model";
 
 export type StreakAchievementInfo = {
     achievementType: 'streak',
@@ -83,13 +82,14 @@ export type AchievementProgressDocument = Document & {
         // Discord
         workCount: number,
         workToday: number,
-        gameWin: number,
+        battleWin: number,
         maxLossFromBattle: number,
 
         // Web game
         isConnectDiscord: boolean,
-        gamePlayed: number,
+        webGamePlayed: number,
         maxLevelQuiz: number,
+        bidCount: number,
         wonBids: number,
         dailyEarnings: number,
         dailyEarningsStreak: number,
@@ -108,13 +108,14 @@ const achivementSchema = new Schema<AchievementProgressDocument>({
         // Discord
         workCount: { types: Number, default: 0 },
         workToday: { types: Number, default: 0 },
-        gameWin: { types: Number, default: 0 },
+        battleWin: { types: Number, default: 0 },
         maxLossFromBattle: { types: Number, default: 0 },
 
         // Web game
         isConnectDiscord: { types: Boolean, default: false },
-        gamePlayed: { types: Number, default: 0 },
+        webGamePlayed: { types: Number, default: 0 },
         maxLevelQuiz: { types: Number, default: 0 },
+        bidCount: { types: Number, default: 0 },
         wonBids: { types: Number, default: 0 },
         dailyEarnings: { types: Number, default: 0 },
         dailyEarningsStreak: { types: Number, default: 0 },
