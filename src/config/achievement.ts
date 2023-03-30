@@ -1,7 +1,6 @@
-import { Query } from "mongoose";
-import { AchievementInfo } from "../models/achievement.model";
+import { AchievementInfo, AchievementProgressDocument, StreakAchievementInfo } from "../models/achievement.model";
 
-export type Achievement = {
+export type TAchievement = {
     id: number,
     type: string,
     name: string,
@@ -11,8 +10,19 @@ export type Achievement = {
     arena: string,
     handler: (
         info: AchievementInfo,
-        docs: Query<any, any, {}, any>
+        userProgress: AchievementProgressDocument
     ) => Promise<Boolean>,
 };
 
-const achievementList = [];
+export const achievementList: TAchievement[] = [
+    {
+        id: 0,
+        type: "streak",
+        name: "/streak reaches 5",
+        GCoin: 100,
+        hidden: false,
+        point: 5,
+        arena: 'Discord',
+        handler: async (info: StreakAchievementInfo, userProgress: AchievementProgressDocument) => info.streak === 5
+    }
+];

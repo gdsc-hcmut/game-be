@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 import { UserRanking } from "./leaderboard.model";
 
 export type StreakAchievementInfo = {
@@ -47,6 +47,11 @@ export type BidAchievementInfo = {
     coin: number,
 }
 
+export type BidResultAchievemnetInfo = {
+    achievementType: 'bid_result',
+    userId: Types.ObjectId,
+}
+
 export type DailyEarningAchievementInfo = {
     achievementType: 'daily_earning',
     userId: Types.ObjectId
@@ -66,12 +71,14 @@ export type AchievementInfo =
     | PlayGameAchievementInfo
     | GameLevelAcheivementInfo
     | BidAchievementInfo
+    | BidResultAchievemnetInfo
     | DailyEarningAchievementInfo
     | LeaderboardAchievementInfo
 
 export type AchievementProgressDocument = Document & {
     userId: Types.ObjectId,
     updatedAt: number,
+    point: number,
     trackingData: {
         // Discord
         workCount: number,
@@ -84,7 +91,6 @@ export type AchievementProgressDocument = Document & {
         gamePlayed: number,
         maxLevelQuiz: number,
         wonBids: number,
-        lostBids: number,
         dailyEarnings: number,
         dailyEarningsStreak: number,
     },
@@ -93,3 +99,58 @@ export type AchievementProgressDocument = Document & {
         acquiredAt: number,
     }[]
 }
+
+const achivementSchema = new Schema<AchievementProgressDocument>({
+    userId: Types.ObjectId,
+    updatedAt: Number,
+    point: { types: Number, default: 0 },
+    trackingData: {
+        // Discord
+        workCount: { types: Number, default: 0 },
+        workToday: { types: Number, default: 0 },
+        gameWin: { types: Number, default: 0 },
+        maxLossFromBattle: { types: Number, default: 0 },
+
+        // Web game
+        isConnectDiscord: { types: Boolean, default: false },
+        gamePlayed: { types: Number, default: 0 },
+        maxLevelQuiz: { types: Number, default: 0 },
+        wonBids: { types: Number, default: 0 },
+        dailyEarnings: { types: Number, default: 0 },
+        dailyEarningsStreak: { types: Number, default: 0 },
+    },
+    achievements: Array<{
+        id: Number,
+        acquiredAt: Number,
+    }>
+})
+
+export const AchievementProgress = mongoose.model<AchievementProgressDocument>(
+    'achievementProgress',
+    achivementSchema
+);
+
+export type AchievementDocument = Document & {
+    id: number,
+    history: Array<{
+        userId: Types.ObjectId,
+        date: number,
+        status: 'gain' | 'reset'
+    }>,
+    owners: Array<Types.ObjectId>
+};
+
+const achievementSchema = new Schema<AchievementDocument>({
+    id: Number,
+    history: Array<{
+        userId: Types.ObjectId,
+        date: number,
+        status: 'gain' | 'reset'
+    }>,
+    owners: Array<Types.ObjectId>
+});
+
+export const Achievement = mongoose.model<AchievementDocument>(
+    'achievement',
+    achievementSchema
+)
