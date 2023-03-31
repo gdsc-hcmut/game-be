@@ -21,12 +21,14 @@ import { SYSTEM_ACCOUNT_ID } from '../config';
 import { randomIntFromInterval } from '../lib/helper';
 import { Types } from 'mongoose';
 import Leaderboard from '../models/leaderboard.model';
+import { AchievementService } from '../services/achievement.service';
 @injectable()
 export class DiscordController extends Controller {
     public readonly router = Router();
     public readonly path = '/discord';
 
     constructor(
+        @inject(ServiceType.Achievement) private achievementService: AchievementService,
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.Game) private gameService: GameService,
         @inject(ServiceType.User) private userService: UserService,
@@ -40,6 +42,7 @@ export class DiscordController extends Controller {
 
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
+        this.router.get('/public/test', this.test.bind(this));
         this.router.get('/public/board', this.discordLeaderboard.bind(this));
         this.router.get(
             '/private/:discordId',
@@ -53,6 +56,19 @@ export class DiscordController extends Controller {
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
         this.router.post('/private/battle/end', this.endBattle.bind(this));
+    }
+
+    async test(req: Request, res: Response) {
+        try {
+            const userId = req.tokenMeta.userId;
+            this.achievementService.update({
+                achievementType: 'streak',
+                userId: new Types.ObjectId(userId),
+                streak: 1,
+            })
+        } catch (err) {
+            res.composer.badRequest(err);
+        }
     }
 
     async getDiscordActivityInformation(req: Request, res: Response) {
