@@ -61,11 +61,12 @@ export class DiscordController extends Controller {
     async test(req: Request, res: Response) {
         try {
             const userId = req.tokenMeta.userId;
-            this.achievementService.update({
+            await this.achievementService.update({
                 achievementType: 'streak',
                 userId: new Types.ObjectId(userId),
-                streak: 1,
-            })
+                streak: 6,
+            });
+            res.composer.success("Noice");
         } catch (err) {
             res.composer.badRequest(err);
         }

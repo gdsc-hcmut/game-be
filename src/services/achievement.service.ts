@@ -43,13 +43,15 @@ export class AchievementService {
                     !achievementProgress.achievements.some(
                         (x) => x.id === achievement.id,
                     ) &&
-                    !(await achievement.check(info, achievementProgress))
+                    (await achievement.check(info, achievementProgress))
                 ) {
+
                     achievementProgress.achievements.push({
                         id: achievement.id,
                         acquiredAt: currentDate,
                     });
                     achievementProgress.point += achievement.point;
+                    achievementProgress.markModified('achievements');
 
                     await achievementProgress.save();
 
