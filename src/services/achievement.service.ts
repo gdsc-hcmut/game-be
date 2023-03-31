@@ -45,7 +45,6 @@ export class AchievementService {
                     ) &&
                     (await achievement.check(info, achievementProgress))
                 ) {
-
                     achievementProgress.achievements.push({
                         id: achievement.id,
                         acquiredAt: currentDate,

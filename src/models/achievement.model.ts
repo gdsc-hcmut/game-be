@@ -103,22 +103,22 @@ export type AchievementProgressDocument = Document & {
 const achivementSchema = new Schema<AchievementProgressDocument>({
     userId: Types.ObjectId,
     updatedAt: Number,
-    point: { types: Number, default: 0 },
+    point: { type: Number, default: 0 },
     trackingData: {
         // Discord
-        workCount: { types: Number, default: 0 },
-        workToday: { types: Number, default: 0 },
-        battleWin: { types: Number, default: 0 },
-        maxLossFromBattle: { types: Number, default: 0 },
+        workCount: { type: Number, default: 0 },
+        workToday: { type: Number, default: 0 },
+        battleWin: { type: Number, default: 0 },
+        maxLossFromBattle: { type: Number, default: 0 },
 
         // Web game
-        isConnectDiscord: { types: Boolean, default: false },
-        webGamePlayed: { types: Number, default: 0 },
-        maxLevelQuiz: { types: Number, default: 0 },
-        bidCount: { types: Number, default: 0 },
-        wonBids: { types: Number, default: 0 },
-        dailyEarnings: { types: Number, default: 0 },
-        dailyEarningsStreak: { types: Number, default: 0 },
+        isConnectDiscord: { type: Boolean, default: false },
+        webGamePlayed: { type: Number, default: 0 },
+        maxLevelQuiz: { type: Number, default: 0 },
+        bidCount: { type: Number, default: 0 },
+        wonBids: { type: Number, default: 0 },
+        dailyEarnings: { type: Number, default: 0 },
+        dailyEarningsStreak: { type: Number, default: 0 },
     },
     achievements: Array<{
         id: Number,

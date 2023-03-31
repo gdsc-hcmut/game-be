@@ -42,7 +42,6 @@ export class DiscordController extends Controller {
 
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
-        this.router.get('/public/test', this.test.bind(this));
         this.router.get('/public/board', this.discordLeaderboard.bind(this));
         this.router.get(
             '/private/:discordId',
@@ -56,20 +55,6 @@ export class DiscordController extends Controller {
         this.router.post('/private/work', this.discordWork.bind(this));
         this.router.post('/private/battle/start', this.startBattle.bind(this));
         this.router.post('/private/battle/end', this.endBattle.bind(this));
-    }
-
-    async test(req: Request, res: Response) {
-        try {
-            const userId = req.tokenMeta.userId;
-            await this.achievementService.update({
-                achievementType: 'streak',
-                userId: new Types.ObjectId(userId),
-                streak: 6,
-            });
-            res.composer.success("Noice");
-        } catch (err) {
-            res.composer.badRequest(err);
-        }
     }
 
     async getDiscordActivityInformation(req: Request, res: Response) {
