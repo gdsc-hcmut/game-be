@@ -45,12 +45,6 @@ export class UserController extends Controller {
             this.findLeetcodeUser.bind(this),
         );
 
-        // this.router.post(
-        //     '/verify-account-request',
-        //     this.verifyAccountRequest.bind(this),
-        // );
-        // this.router.post('/verify-account', this.verifyAccount.bind(this));
-
         this.router.all('*', this.authService.authenticate(false));
         this.router.post('/resetAllScore', this.resetAllScore.bind(this));
         this.router.post('/triggerreset', this.triggerResetDaily.bind(this));
@@ -64,11 +58,6 @@ export class UserController extends Controller {
         this.router.patch('/me', this.updatePrivate.bind(this));
         this.router.get('/balance', this.getUserBalance.bind(this));
         this.router.patch('/balance', this.increaseBalance.bind(this)); // TODO: Test only
-        this.router.get('/search', this.getByKeyword.bind(this));
-        this.router.get('/:username', this.getByUsername.bind(this));
-        this.router.get('/:userid/bundles', this.getBundles.bind(this));
-        this.router.get('/:userid/following', this.getFollowing.bind(this));
-        this.router.get('/:userid/followers', this.getFollower.bind(this));
 
         // START JOB
         scheduleJob('0 0 0 * * *', async () => {
@@ -96,16 +85,6 @@ export class UserController extends Controller {
         });
         //trigger
     }
-
-    // public async shouldFilterData(req: Request) {
-    //     const { userid } = req.params;
-    //     const { userId: tokenUserId } = req.tokenMeta;
-    //     const user = await this.userService.findOne({
-    //         _id: ObjectID.createFromHexString(userid),
-    //     });
-
-    //     return !(tokenUserId && userid == tokenUserId.toHexString());
-    // }
 
     async createUser(req: Request, res: Response) {
         // const user: UserDocument = _.pick(req.body, [
@@ -135,13 +114,13 @@ export class UserController extends Controller {
     async resetAllScore() {
         try {
             await this.userService.resetPrivate();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerResetDaily() {
         try {
             await this.userService.resetAvailableCoin();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerLeaderboard() {
@@ -217,118 +196,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-        } catch (error) {}
-    }
-
-    async verifyAccountRequest(req: Request, res: Response) {
-        // const { email: rawEmail } = req.body;
-        // const email = _.trim(rawEmail).toLowerCase().toString();
-        // try {
-        //     res.composer.success(
-        //         await this.userService.verifyAccountRequest(email),
-        //     );
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async verifyAccount(req: Request, res: Response) {
-        // const { verifyAccountCode } = req.body;
-        // try {
-        //     res.composer.success(
-        //         await this.userService.verifyAccount(verifyAccountCode),
-        //     );
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async getByUsername(req: Request, res: Response) {
-        // const { username } = req.params;
-        // const { userId: tokenUserId } = req.tokenMeta;
-        // try {
-        //     const user = await this.userService.findOne({ username });
-        //     if (!user) {
-        //         res.composer.notFound('User not found');
-        //     }
-        //     // if (!user.isPublishedProfile && !_.isEqual(tokenUserId, user._id)) {
-        //     //     res.composer.notFound('User not published');
-        //     //     return;
-        //     // }
-        //     // if (!user.isPublishedContact && !_.isEqual(tokenUserId, user._id)) {
-        //     //     delete user.contact;
-        //     // }
-        //     // delete user.isPublishedProfile;
-        //     // delete user.isPublishedContact;
-        //     res.composer.success(user);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async getByKeyword(req: Request, res: Response) {
-        // const { keyword } = req.body;
-        // try {
-        //     const users = await this.userService.find({
-        //         $text: { $search: keyword },
-        //     });
-        //     res.composer.success(users);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async getBundles(req: Request, res: Response) {
-        // const { startAfter } = req.query;
-        // let { limit = LIMIT_PAGING } = req.query;
-        // limit = Math.min(limit, LIMIT_PAGING);
-        // const { userid } = req.params;
-        // const queryCommand = {
-        //     isDeleted: false,
-        //     files: { $exists: true, $ne: <any>[] },
-        //     user: ObjectID.createFromHexString(userid),
-        //     privacy: PrivacyType.PUBLIC,
-        //     ...(startAfter && { _id: { $lt: ObjectID.createFromHexString(startAfter) } }),
-        // };
-        // try {
-        //     const bundles =
-        //         await this.shouldFilterData(req)
-        //             ? []
-        //             : await this.bundleService.find(queryCommand, true, +limit);
-        //     res.composer.success(bundles);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async getFollowing(req: Request, res: Response) {
-        // const { userid } = req.params;
-        // const user = await this.userService.findOne({
-        //     _id: ObjectID.createFromHexString(userid),
-        // });
-        // try {
-        //     const followingUsers = (await this.shouldFilterData(req))
-        //         ? []
-        //         : await this.userService.find({ _id: { $in: user.following } });
-        //     res.composer.success(followingUsers);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
-    }
-
-    async getFollower(req: Request, res: Response) {
-        // const { userid } = req.params;
-        // const user = await this.userService.findOne({
-        //     _id: ObjectID.createFromHexString(userid),
-        // });
-        // try {
-        //     const followingUsers = (await this.shouldFilterData(req))
-        //         ? []
-        //         : await this.userService.find({ _id: { $in: user.followers } });
-        //     res.composer.success(followingUsers);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
+        } catch (error) { }
     }
 
     async findLeetcodeUser(req: Request, res: Response) {

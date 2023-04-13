@@ -5,6 +5,5 @@ dist/
 .git/
 uploads/
 static/images
-.env/
-./.env
 .env
+src/serviceAccount.json

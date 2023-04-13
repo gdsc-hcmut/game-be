@@ -4,10 +4,10 @@ import _ from 'lodash';
 import User, { USER_ROLES } from '../models/user.model';
 import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
-import { AuthService, TransactionService } from '../services';
+import { AuthService, TransactionService, UserService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
-import { TokenDocument } from '../models/token.model';
+import Token, { TokenDocument } from '../models/token.model';
 import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
@@ -18,90 +18,26 @@ export class AuthController extends Controller {
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
+        @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
     ) {
         super();
-
-        // Confing child routes
-        this.router.post('/login', this.login.bind(this));
-        this.router.get(
-            '/google',
-            passport.authenticate('google', {
-                scope: ['email', 'profile'],
-            }),
-        );
-        this.router.get(
-            '/google/redirect',
-            passport.authenticate('google', {
-                scope: ['email', 'profile'],
-            }),
-            async (req, res) => {
-                let user = req.user as UserDocument;
-                let token = await this.authService.generateTokenUsingUsername(
-                    user._id,
-                    user.googleId,
-                    user.email,
-                    user.roles,
-                );
-                if (process.env.ENV != 'dev') {
-                    res.redirect(`https://game.gdsc.app/login?token=${token}`);
-                }
-                if (
-                    _.includes(
-                        USER_WHITE_LIST.map((e) => e.email),
-                        user.email,
-                    )
-                ) {
-                    res.redirect(
-                        `https://dev.game.gdsc.app/login?token=${token}`,
-                    );
-                } else res.redirect(`https://fessior.com/notpermission`);
-            },
-        );
-        // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
+        this.router.post('/login', this.login.bind(this));
         this.router.post('/discordconnect', this.discordConnect.bind(this));
         this.router.post('/verify', this.verify.bind(this));
         this.router.post('/code', this.code.bind(this));
         this.router.get('/syncnewmodal', this.syncNewModal.bind(this));
         this.router.post('/unconnectdiscord', this.unConnectDiscord.bind(this));
         this.router.post('/transgcoin', this.transGcoinFromDiscord.bind(this));
-        this.router.get('/ping', (req, res) => {
-            res.send('Success');
-        });
-        // this.router.post('/logout', AuthService.authenticate, this.logout);
-        this.router.post(
-            '/recover-password-request',
-            this.recoverPasswordRequest.bind(this),
-        );
-        this.router.post('/recover-password', this.recoverPassword.bind(this));
     }
 
     async login(req: Request, res: Response) {
-        const { username, password, accessToken } = req.body;
-        let token = '';
-
         try {
-            // token = await this.authService.generateTokenUsingUsername(
-            //     username,
-            //     password,
-            //     req.useragent.source,
-            // );
-
-            res.composer.success({ hi: 123 });
+            res.composer.success(req.user as UserDocument);
         } catch (error) {
             console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
-
-    async recoverPasswordRequest(req: Request, res: Response) {
-        const { email: rawEmail } = req.body;
-        const email = _.trim(rawEmail).toLowerCase().toString();
-
-        try {
-        } catch (error) {
             res.composer.badRequest(error.message);
         }
     }
@@ -293,20 +229,6 @@ export class AuthController extends Controller {
             }
 
             res.composer.success({ verifyCode: user.verifyDiscordCode });
-        } catch (error) {
-            res.composer.badRequest(error.message);
-        }
-    }
-
-    async recoverPassword(req: Request, res: Response) {
-        const { password, recoverPasswordCode } = req.body;
-
-        try {
-            await this.authService.recoverPassword(
-                recoverPasswordCode,
-                password,
-            );
-            res.composer.success('Password recovered');
         } catch (error) {
             res.composer.badRequest(error.message);
         }

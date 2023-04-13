@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import crypto from 'crypto';
 import { PASSWORD_SCERET_KEY } from '../config';
+import { Request } from '../types';
 const CHARACTERS =
     '01234defghijkl56789NOPQRSTUVWXYZabcmnoABCDEFGHIJKLMpqrstuvwxyz';
 
@@ -68,4 +69,19 @@ export function encodeObjectId(
 export function hashingPassword(password: string) {
     let hashedPassword = PASSWORD_SCERET_KEY + password;
     return crypto.createHash('sha256').update(hashedPassword).digest('hex');
+}
+
+const bearerRegex = /(\S+)\s+(\S+)/;
+
+
+export function getBearerTokenFromAuthHeader(request: Request) {
+    const value = request?.headers?.authorization;
+    if (!value || typeof value != 'string') return null;
+
+    const authParams = value.match(bearerRegex);
+    if (authParams && authParams[1].toLowerCase() == 'bearer') {
+        return authParams[2];
+    }
+
+    return null;
 }

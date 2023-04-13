@@ -87,7 +87,6 @@ Promise.all([
         SERVICE_PORT,
         [
             applyHttpResponseComposer,
-            container.get<AuthService>(ServiceType.Auth).applyMiddleware(),
         ],
     );
     container.get<SocketService>(ServiceType.Socket).initialize(app.io);

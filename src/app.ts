@@ -44,7 +44,7 @@ class App {
         this.app.use('/static', express.static(STATIC_DIR));
 
         middlewares.forEach((m) => this.app.use(m));
-        this.app.use(passport.session());
+        // this.app.use(passport.session());
         this.app.use(
             cookieSession({
                 maxAge: 24 * 60 * 60 * 1000,
