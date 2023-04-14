@@ -74,14 +74,14 @@ export function hashingPassword(password: string) {
 const bearerRegex = /(\S+)\s+(\S+)/;
 
 
-export function getBearerTokenFromAuthHeader(request: Request) {
-    const value = request?.headers?.authorization;
-    if (!value || typeof value != 'string') return null;
+export function getBearerTokenFromAuthHeader(request: Request): string {
+    const value: string = request?.headers?.authorization;
+    if (!value || typeof value != 'string') return undefined;
 
     const authParams = value.match(bearerRegex);
     if (authParams && authParams[1].toLowerCase() == 'bearer') {
         return authParams[2];
     }
 
-    return null;
+    return undefined;
 }

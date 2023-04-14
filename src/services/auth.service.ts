@@ -9,7 +9,7 @@ import {
 } from 'passport-jwt';
 import jwt from 'jwt-simple';
 import { NextFunction } from 'express';
-import _ from 'lodash';
+import _, { iteratee } from 'lodash';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
 // import { Collection, ObjectID, ObjectId } from 'mongodb';
@@ -49,7 +49,7 @@ const serviceAccount = JSON.stringify(serviceAccountJSON);
 export class AuthService {
     @lazyInject(ServiceType.User) private userService: UserService;
     private app: admin.app.App;
-    private auth: admin.auth.Auth;
+    private firebaseAdminAuth: admin.auth.Auth;
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService,
     ) {
@@ -60,48 +60,32 @@ export class AuthService {
             credential: admin.credential.cert(JSON.parse(serviceAccount)),
         });
 
-        this.auth = getAuth(this.app);
+        this.firebaseAdminAuth = getAuth(this.app);
         console.log('[Firebase] Connected')
     }
 
     authenticate(block = true) {
         return async (req: Request, res: Response, next: NextFunction) => {
+            console.log('Private Request', req.baseUrl);
             try {
                 const idToken = getBearerTokenFromAuthHeader(req);
 
-                if (!idToken) throw Error("Invalid Token");
-
-                const idTokenPayload = await this.auth.verifyIdToken(idToken)
+                const idTokenPayload = await this.firebaseAdminAuth.verifyIdToken(idToken)
                     .catch(() => {
                         res.composer.unauthorized();
-                        return;
                     }) as DecodedIdToken;
 
-                // TODO: Check email verified and phone number
-                // TODO: Session
+                if (!idTokenPayload) return;
 
                 if (process.env.ENV == 'dev' && !_.includes(
                     USER_WHITE_LIST.map((e) => e.email),
                     idTokenPayload.email,
-                )) res.redirect(`https://fessior.com/notpermission`);
-
-                let user: UserDocument = await this.userService.findOne({ email: idTokenPayload.email });
-
-                if (!user) {
-                    user = new User({
-                        name: idTokenPayload?.name || idTokenPayload?.email,
-                        email: idTokenPayload.email,
-                        picture: idTokenPayload.picture,
-                        phone: idTokenPayload.phone_number,
-                        roles: USER_ROLES.USER,
-                    });
-
-                    if (idTokenPayload.firebase?.identities["google.com"]?.length > 0) {
-                        user.googleId = idTokenPayload.firebase?.identities["google.com"][0];
-                    }
-
-                    user.save();
+                )) {
+                    res.redirect(`https://fessior.com/notpermission`);
+                    return;
                 }
+
+                const user = await this.getUserFromToken(idTokenPayload);
 
                 let tokenMeta: TokenDocument = await Token.findOne({ userId: user._id });
 
@@ -121,5 +105,41 @@ export class AuthService {
                 res.composer.badRequest(err);
             }
         };
+    }
+
+    async getUserFromToken(idTokenPayload: DecodedIdToken) {
+        try {
+            let user: UserDocument = await User.findOne({ email: idTokenPayload.email });
+            let saveUser: boolean = false;
+
+            if (!user) {
+                user = new User({
+                    name: idTokenPayload?.name || idTokenPayload?.email,
+                    email: idTokenPayload.email,
+                    picture: idTokenPayload.picture,
+                    phone: idTokenPayload.phone_number,
+                    roles: USER_ROLES.USER,
+                });
+                saveUser = true;
+            }
+
+            if (idTokenPayload.firebase?.identities["google.com"]?.length > 0) {
+                user.googleId = idTokenPayload.firebase?.identities["google.com"][0];
+                saveUser = true;
+            }
+
+            if (!user.firebaseId) {
+                user.firebaseId = idTokenPayload.uid;
+                saveUser = true;
+            }
+
+            if (saveUser) {
+                await user.save();
+            }
+
+            return user;
+        } catch (err) {
+            console.log('error update user', err);
+        }
     }
 }

@@ -153,27 +153,9 @@ export class SocketService {
         const wrapMiddlewareForSocketIo =
             (middleware: any) => (socket: any, next: any) =>
                 middleware(socket.request, {}, next);
-        this.socketIOServer.use(
-            wrapMiddlewareForSocketIo(passport.initialize()),
-        );
         this.socketIOServer.use((socket: any, next: any) => {
-            // passport.authenticate(
-            //     'jwt',
-            //     (err, tokenMeta: TokenDocument, info, x, y) => {
-            //         if (err || !tokenMeta)
-            //             return next(new Error('Authentication error'));
-            //         socket.userId = tokenMeta.userId;
-            //         next();
-            //     },
-            // )(socket.request, {}, next);
+
         });
         this.socketIOServer.on('connection', this.onConnection);
     };
 }
-
-// export const ServerEventSystem = {
-//     initialize,
-//     notifyUser,
-//     notifyUpdate,
-//     tracking,
-// };
