@@ -74,7 +74,7 @@ export function hashingPassword(password: string) {
 const bearerRegex = /(\S+)\s+(\S+)/;
 
 
-export function getBearerTokenFromAuthHeader(request: Request): string {
+export function getBearerTokenFromRequest(request: Request): string {
     const value: string = request?.headers?.authorization;
     if (!value || typeof value != 'string') return undefined;
 

@@ -76,6 +76,7 @@ class ClientUser {
 
     //#region game flip
     async createNewSessionGame(socketId: any) {
+        console.log('socketId', socketId);
         let newSession = await this.gameService.createGameSessionWithUserLogin(
             this.userId,
         );
@@ -133,7 +134,7 @@ class ClientUser {
                         message:
                             'You have pass first 20 level and claim reward from Club Day',
                     });
-                } catch (err) {}
+                } catch (err) { }
         } else {
             gameSession.save();
         }
@@ -305,8 +306,7 @@ class ClientUser {
                     SYSTEM_ACCOUNT_ID,
                     new Types.ObjectId(this.userId),
                     this.sockets[socketId].scoreQuiz / 10,
-                    `You got ${
-                        this.sockets[socketId].scoreQuiz / 10
+                    `You got ${this.sockets[socketId].scoreQuiz / 10
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
@@ -365,8 +365,7 @@ class ClientUser {
                 SYSTEM_ACCOUNT_ID,
                 new Types.ObjectId(this.userId),
                 this.sockets[socketId].scoreQuiz / 10,
-                `You got ${
-                    this.sockets[socketId].scoreQuiz / 10
+                `You got ${this.sockets[socketId].scoreQuiz / 10
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
@@ -391,7 +390,7 @@ class ClientUser {
         const defaults: SocketInfo = {
             socket: socket,
             socketId: socket.id,
-            sessionId: 'string',
+            sessionId: null,
             levelQuiz: 0,
             scoreQuiz: 0,
             isQuizStart: false,

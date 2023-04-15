@@ -27,6 +27,9 @@ import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
 import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
+import { getBearerTokenFromRequest } from '../lib/helper';
+import { DecodedIdToken } from 'firebase-admin/auth';
+import { UserDocument } from '../models/user.model';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -153,8 +156,20 @@ export class SocketService {
         const wrapMiddlewareForSocketIo =
             (middleware: any) => (socket: any, next: any) =>
                 middleware(socket.request, {}, next);
-        this.socketIOServer.use((socket: any, next: any) => {
-
+        this.socketIOServer.use((socket: CustomSocket, next: any) => {
+            console.log('try to auth', socket.userId);
+            (async () => {
+                try {
+                    const idToken: string = getBearerTokenFromRequest(socket.request as Request)
+                    const payload: DecodedIdToken = await this.authService.verifyToken(idToken);
+                    const user: UserDocument = await this.authService.getUserFromTokenPayload(payload);
+                    socket.userId = user._id;
+                    next();
+                    console.log('check auth', socket.userId);
+                } catch (err) {
+                    next(err);
+                }
+            })();
         });
         this.socketIOServer.on('connection', this.onConnection);
     };

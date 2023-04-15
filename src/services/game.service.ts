@@ -34,7 +34,7 @@ export class GameService {
 
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Mail) private mailService: MailService,
-    ) {}
+    ) { }
 
     async createGameSessionWithoutUser(): Promise<GameSessionDocument> {
         let levelInfo: LevelInfo = levels[INIT_LEVEL];
@@ -87,6 +87,7 @@ export class GameService {
     }
 
     async endSessionGame(sessionId: any): Promise<Number> {
+        console.log('sessiontId', sessionId);
         let gameSession = await GameSession.findById(sessionId);
 
         if (gameSession.finishAt) return;

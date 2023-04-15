@@ -38,10 +38,10 @@ import { FacebookAPI } from '../apis/facebook';
 import { ZaloZPI } from '../apis/zalo';
 // import { MailService } from '.';
 import { lazyInject } from '../container';
-import { getBearerTokenFromAuthHeader, hashingPassword } from '../lib/helper';
 import admin from 'firebase-admin';
 import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
 import serviceAccountJSON from '../serviceAccount.json';
+import { getBearerTokenFromRequest } from '../lib/helper';
 
 const serviceAccount = JSON.stringify(serviceAccountJSON);
 
@@ -68,9 +68,9 @@ export class AuthService {
         return async (req: Request, res: Response, next: NextFunction) => {
             console.log('Private Request', req.baseUrl);
             try {
-                const idToken = getBearerTokenFromAuthHeader(req);
+                const idToken: string = getBearerTokenFromRequest(req);
 
-                const idTokenPayload = await this.firebaseAdminAuth.verifyIdToken(idToken)
+                const idTokenPayload = await this.verifyToken(idToken)
                     .catch(() => {
                         res.composer.unauthorized();
                     }) as DecodedIdToken;
@@ -85,7 +85,7 @@ export class AuthService {
                     return;
                 }
 
-                const user = await this.getUserFromToken(idTokenPayload);
+                const user: UserDocument = await this.getUserFromTokenPayload(idTokenPayload);
 
                 let tokenMeta: TokenDocument = await Token.findOne({ userId: user._id });
 
@@ -107,7 +107,11 @@ export class AuthService {
         };
     }
 
-    async getUserFromToken(idTokenPayload: DecodedIdToken) {
+    async verifyToken(token: string) {
+        return await this.firebaseAdminAuth.verifyIdToken(token);
+    }
+
+    async getUserFromTokenPayload(idTokenPayload: DecodedIdToken) {
         try {
             let user: UserDocument = await User.findOne({ email: idTokenPayload.email });
             let saveUser: boolean = false;
