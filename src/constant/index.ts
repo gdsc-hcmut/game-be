@@ -1,4 +1,6 @@
-export const OLD_RECIPIENTS = [
+import { Address } from 'mailtrap';
+
+export const OLD_RECIPIENTS: Address[] = [
     {
         email: 'duc.nv291@gmail.com',
     },
@@ -64,7 +66,7 @@ export const OLD_RECIPIENTS = [
     },
 ];
 
-export const NEW_RECIPIENTS = [
+export const NEW_RECIPIENTS: Address[] = [
     {
         email: 'duc.nv291@gmail.com',
     },
@@ -154,7 +156,7 @@ export const NEW_RECIPIENTS = [
     },
 ];
 
-export const DUC_EMAILS = [
+export const DUC_EMAILS: Address[] = [
     {
         email: 'duc.nv291@gmail.com',
     },

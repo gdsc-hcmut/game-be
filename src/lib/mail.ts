@@ -1,4 +1,4 @@
-import { MailtrapClient } from 'mailtrap';
+import { MailtrapClient, Address } from 'mailtrap';
 import {
     NEW_RECIPIENTS,
     OLD_RECIPIENTS,
@@ -32,7 +32,51 @@ const sendMailtrap = (html?: string) => {
         .then(console.log, console.error);
 };
 
-export { sendMailtrap };
+const sendToOne = (address: Address, html?: string) => {
+    client
+        .send({
+            from: sender,
+            to: [address],
+            subject: `Test sending email for GIC web at ${getDate()}`,
+            text: 'Test email',
+            html: html,
+            category: 'Send to one',
+        })
+        .then(console.log, console.error);
+};
+
+const sendToMany = (addresses: Address[], html?: string) => {
+    client
+        .send({
+            from: sender,
+            to: addresses,
+            subject: `Test sending email for GIC web at ${getDate()}`,
+            text: 'Test email',
+            html: html,
+            category: 'Send to many',
+        })
+        .then(console.log, console.error);
+};
+
+const sendToUserAndCc = (
+    address: Address,
+    ccList: Address[],
+    html?: string,
+) => {
+    client
+        .send({
+            from: sender,
+            to: [address],
+            cc: ccList,
+            subject: `Test sending email for GIC web at ${getDate()}`,
+            text: 'Test email',
+            html: html,
+            category: 'Send to many',
+        })
+        .then(console.log, console.error);
+};
+
+export { sendMailtrap, sendToOne, sendToMany, sendToUserAndCc };
 
 // Usage:
 // sendMailtrap(HTML_TEMPLATE('test'));
