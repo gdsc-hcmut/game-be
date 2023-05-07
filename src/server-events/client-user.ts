@@ -333,9 +333,9 @@ class ClientUser {
     let fake = _.sample([true, false]);
     this.sockets[socketId].isQuizTrue = !fake;
 
-    // this.sockets[socketId].quizTimeout = setTimeout(() => {
-    //     this.endQuizTimeout(socketId, connectedUser);
-    // }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
+    this.sockets[socketId].quizTimeout = setTimeout(() => {
+      this.endQuizTimeout(socketId, connectedUser);
+    }, this.calQuestionTimeWithLevel(this.sockets[socketId].levelQuiz) + 1500);
 
     this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
       level: this.sockets[socketId].levelQuiz,
@@ -354,7 +354,7 @@ class ClientUser {
     if (!this.sockets[socketId].isQuizStart) {
       return;
     }
-    // clearTimeout(this.sockets[socketId].quizTimeout);
+    clearTimeout(this.sockets[socketId].quizTimeout);
     this.sockets[socketId].socket.emit(EventTypes.END_QUIZ, {
       ranking: this.MathQuizRanking,
     });
