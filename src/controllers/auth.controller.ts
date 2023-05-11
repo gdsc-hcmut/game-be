@@ -11,6 +11,7 @@ import { TokenDocument } from '../models/token.model';
 import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST, WhitelistDomain } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
+import LoginHistoryModel from '../models/login-history.model';
 
 @injectable()
 export class AuthController extends Controller {
@@ -46,6 +47,15 @@ export class AuthController extends Controller {
                     user.roles,
                 );
                 let redirectDomain: WhitelistDomain = req.query.domain as WhitelistDomain ?? WhitelistDomain.game;
+                
+                // track login information
+                await LoginHistoryModel.create({
+                    userId: user._id,
+                    email: user.email,
+                    loginAt: Date.now(),
+                    domain: redirectDomain
+                })
+
                 if (process.env.ENV != 'dev') {
                     res.redirect(`https://${redirectDomain}/login?token=${token}`);
                 }
