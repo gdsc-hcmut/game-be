@@ -53,13 +53,13 @@ export class AuthController extends Controller {
                         (req?.query?.domain as WhitelistDomain) ??
                         WhitelistDomain.game;
 
-                    // track login information
-                    await LoginHistoryModel.create({
-                        userId: new Types.ObjectId(user._id),
-                        email: user.email,
-                        loginAt: Date.now(),
-                        domain: redirectDomain,
-                    });
+                    // // track login information
+                    // await LoginHistoryModel.create({
+                    //     userId: new Types.ObjectId(user._id),
+                    //     email: user.email,
+                    //     loginAt: Date.now(),
+                    //     domain: redirectDomain,
+                    // });
 
                     if (process.env.ENV != 'dev') {
                         res.redirect(
