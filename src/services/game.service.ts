@@ -87,9 +87,9 @@ export class GameService {
         return gameSession;
     }
 
-    async endSessionGame(sessionId: any): Promise<Number> {
+    async endSessionGame(sessionId: Types.ObjectId): Promise<Number> {
         let gameSession = await GameSession.findById(sessionId);
-
+        if (!gameSession) return;
         if (gameSession.finishAt) return;
 
         gameSession.finishAt = Date.now();
