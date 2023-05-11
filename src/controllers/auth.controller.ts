@@ -8,9 +8,10 @@ import { AuthService, TransactionService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
-import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST } from '../config';
+import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST, WhitelistDomain } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
+
 @injectable()
 export class AuthController extends Controller {
     public readonly router = Router();
@@ -44,8 +45,9 @@ export class AuthController extends Controller {
                     user.email,
                     user.roles,
                 );
+                let redirectDomain: WhitelistDomain = req.query.domain as WhitelistDomain ?? WhitelistDomain.game;
                 if (process.env.ENV != 'dev') {
-                    res.redirect(`https://game.gdsc.app/login?token=${token}`);
+                    res.redirect(`https://${redirectDomain}/login?token=${token}`);
                 }
                 if (
                     _.includes(
@@ -54,7 +56,7 @@ export class AuthController extends Controller {
                     )
                 ) {
                     res.redirect(
-                        `https://dev.game.gdsc.app/login?token=${token}`,
+                        `https://dev.${redirectDomain}/login?token=${token}`,
                     );
                 } else res.redirect(`https://fessior.com/notpermission`);
             },
