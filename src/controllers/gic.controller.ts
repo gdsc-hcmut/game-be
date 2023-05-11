@@ -10,6 +10,7 @@ import { NoFileCompression } from "../lib/file-compression/strategies";
 import { ContestRegStatus } from "../models/gic/contest-registration.model";
 import { sendToMany } from "../lib/mail";
 import { HTML_TEMPLATE } from "../constant";
+import { toNumber } from "lodash";
 
 @injectable()
 export class GICController extends Controller {
@@ -34,6 +35,8 @@ export class GICController extends Controller {
             this.unregisterContest.bind(this)
         )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
+        this.router.post("/day/:day/register", this.registerDay.bind(this))
+        this.router.post("/day/:day/unregister", this.unregisterDay.bind(this))
     }
     
     async registerContest(req: Request, res: Response) {
@@ -105,5 +108,19 @@ export class GICController extends Controller {
             console.log(error)
             res.composer.badRequest(error.message)
         }
+    }
+    
+    async registerDay(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const day = toNumber(req.params)
+            
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async unregisterDay(req: Request, res: Response) {
     }
 }

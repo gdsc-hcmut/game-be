@@ -5,6 +5,7 @@ import { ServiceType } from '../types';
 import { FileUploadService } from './file-upload.service';
 import { FileCompressionStrategy } from '../lib/file-compression/strategies';
 import GICContestRegModel, { ContestRegStatus } from '../models/gic/contest-registration.model';
+import DayRegModel, { DayRegStatus } from '../models/gic/day-registration.model';
 
 @injectable()
 export class GICService {
@@ -38,12 +39,25 @@ export class GICService {
     }
     
     async userHasRegisteredContest(userId: Types.ObjectId) {
-        return (await this.findContestRegistrationRecord(userId))
-            .filter(c => c.status === ContestRegStatus.REGISTERED)
-            .length > 0
+        return await GICContestRegModel.findOne({
+            registeredBy: userId,
+            status: ContestRegStatus.REGISTERED
+        }) != null
     }
     
     async findOneContestRegAndUpdate(x: any, y: any) {
         return GICContestRegModel.findOneAndUpdate(x, y)
+    }
+    
+    async findDayRegistrationRecord(userId: Types.ObjectId) {
+        return DayRegModel.find({ registeredBy: userId })
+    }
+    
+    async userHasRegisteredDay(userId: Types.ObjectId, day: number) {
+        return await DayRegModel.findOne({
+            registeredBy: userId,
+            day: day,
+            status: DayRegStatus.REGISTERED
+        }) != null
     }
 }
