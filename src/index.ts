@@ -31,6 +31,7 @@ import { SocketService } from './server-events';
 import { GICController } from './controllers/gic.controller';
 import { FileUploadService } from './services/file-upload.service';
 import { CacheService } from './services/cache.service';
+import { GICService } from './services/gic.service';
 
 // Binding service
 container
@@ -80,6 +81,10 @@ container
 container
     .bind<CacheService>(ServiceType.Cache)
     .to(CacheService)
+    .inSingletonScope();
+container
+    .bind<GICService>(ServiceType.GIC)
+    .to(GICService)
     .inSingletonScope();
 // Initialize service first
 Promise.all([
