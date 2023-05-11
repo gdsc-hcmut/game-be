@@ -30,6 +30,10 @@ export class AuthController extends Controller {
         this.router.post('/login', this.login.bind(this));
         this.router.get(
             '/google',
+            (req, res, next) => {
+                req.session.lastQuery = req.query;
+                return next();
+            },
             passport.authenticate('google', {
                 scope: ['email', 'profile'],
             }),
@@ -50,7 +54,7 @@ export class AuthController extends Controller {
                             user.roles,
                         );
                     let redirectDomain: WhitelistDomain =
-                        (req?.query?.domain as WhitelistDomain) ??
+                        (req?.session?.lastQuery?.domain as WhitelistDomain) ??
                         WhitelistDomain.game;
 
                     // track login information

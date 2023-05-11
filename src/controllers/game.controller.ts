@@ -96,7 +96,9 @@ export class GameController extends Controller {
         try {
             const { sessionId } = req.params;
 
-            let newSession = await this.gameService.getSessionById(sessionId);
+            let newSession = await this.gameService.getSessionById(
+                new Types.ObjectId(sessionId),
+            );
             res.composer.success(newSession);
         } catch (error) {
             console.log(error);
@@ -126,7 +128,7 @@ export class GameController extends Controller {
             const { sessionId } = req.params;
 
             let newSession = await this.gameService.nextLevelWithoutLogin(
-                sessionId,
+                new Types.ObjectId(sessionId),
             );
             res.composer.success(newSession);
         } catch (error) {
