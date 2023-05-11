@@ -26,6 +26,7 @@ import GameSession, {
 } from '../models/game_session.modal';
 import levels from '../game/levels.json';
 import { generateGameField } from '../game/game-logic';
+import { Types } from 'mongoose';
 
 let INIT_LEVEL = 0;
 @injectable()
@@ -168,13 +169,15 @@ export class GameService {
         return gameSession;
     }
 
-    async getSessionById(sessionId: string): Promise<GameSessionDocument> {
+    async getSessionById(
+        sessionId: Types.ObjectId,
+    ): Promise<GameSessionDocument> {
         let newGameSession = await GameSession.findById(sessionId);
         return newGameSession;
     }
 
     async nextLevelWithoutLogin(
-        sessionId: string,
+        sessionId: Types.ObjectId,
     ): Promise<GameSessionDocument> {
         let newGameSession = await GameSession.findById(sessionId);
         if (newGameSession.userId) {

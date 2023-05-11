@@ -18,7 +18,7 @@ const MAX_CHAPTER = 50;
 export interface SocketInfo {
     socket: CustomSocket;
     socketId: string;
-    sessionId: string;
+    sessionId: Types.ObjectId;
     levelQuiz: number;
     scoreQuiz: number;
     isQuizStart: boolean;
@@ -391,7 +391,7 @@ class ClientUser {
         const defaults: SocketInfo = {
             socket: socket,
             socketId: socket.id,
-            sessionId: 'string',
+            sessionId: new Types.ObjectId(),
             levelQuiz: 0,
             scoreQuiz: 0,
             isQuizStart: false,
@@ -415,12 +415,12 @@ class ClientUser {
     async onDisconnect(socket: any, reason: any) {
         console.log('Disconnect from: ', socket.id);
         console.log('reason: ', reason);
-        // console.log('User data: ', this.userData.username);
-        // if (this.sockets[socket.id].sessionId)
-        //   await this.gameService.endSessionGame(
-        //     this.sockets[socket.id].sessionId,
-        //   );
-        // delete this.sockets[socket.id];
+        console.log('User data: ', this.userData.username);
+        if (this.sockets[socket.id].sessionId)
+            await this.gameService.endSessionGame(
+                this.sockets[socket.id].sessionId,
+            );
+        delete this.sockets[socket.id];
     }
 }
 
