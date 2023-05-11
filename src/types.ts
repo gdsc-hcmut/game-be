@@ -24,7 +24,8 @@ export const ServiceType = {
     Discord: Symbol.for('DiscordService'),
     
     FileUpload: Symbol.for("FileUploadService"),
-    Cache: Symbol.for("CacheService")
+    Cache: Symbol.for("CacheService"),
+    GIC: Symbol.for("GICService")
 };
 
 export enum PrivacyType {
