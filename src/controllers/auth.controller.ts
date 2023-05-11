@@ -65,6 +65,7 @@ export class AuthController extends Controller {
                         res.redirect(
                             `https://${redirectDomain}/login?token=${token}`,
                         );
+                        return;
                     }
                     if (
                         _.includes(
