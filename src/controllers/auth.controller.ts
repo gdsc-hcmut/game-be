@@ -8,7 +8,12 @@ import { AuthService, TransactionService } from '../services';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
-import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST, WhitelistDomain } from '../config';
+import {
+    Domain,
+    SYSTEM_ACCOUNT_ID,
+    USER_WHITE_LIST,
+    WhitelistDomain,
+} from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
 import LoginHistoryModel from '../models/login-history.model';
@@ -54,8 +59,10 @@ export class AuthController extends Controller {
                             user.roles,
                         );
                     let redirectDomain: WhitelistDomain =
-                        (req?.session?.lastQuery?.domain as WhitelistDomain) ??
-                        WhitelistDomain.game;
+                        WhitelistDomain[
+                            (req?.session?.lastQuery?.domain as Domain) ??
+                                'game'
+                        ];
                     console.log(req.session.lastQuery);
 
                     // track login information

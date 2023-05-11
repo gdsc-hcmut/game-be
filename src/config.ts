@@ -33,9 +33,11 @@ const DB_PORT = IS_PRODUCTION ? 27017 : 27071;
 const DB_USERNAME = 'dbBugs';
 const DB_PASSWORD = '2W8F5Ewr';
 
+export type Domain = 'gic' | 'game';
+
 export enum WhitelistDomain {
     'gic' = 'gdsc.app',
-    'game' = 'game.gdsc.app'
+    'game' = 'game.gdsc.app',
 }
 
 export const USER_WHITE_LIST: Array<{ email: string }> = [
