@@ -46,7 +46,7 @@ export class AuthController extends Controller {
                     user.email,
                     user.roles,
                 );
-                let redirectDomain: WhitelistDomain = req.query.domain as WhitelistDomain ?? WhitelistDomain.game;
+                let redirectDomain: WhitelistDomain = req?.query?.domain as WhitelistDomain ?? WhitelistDomain.game;
                 
                 // track login information
                 await LoginHistoryModel.create({
