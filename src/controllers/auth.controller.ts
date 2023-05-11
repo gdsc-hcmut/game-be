@@ -39,36 +39,45 @@ export class AuthController extends Controller {
                 scope: ['email', 'profile'],
             }),
             async (req, res) => {
-                let user = req.user as UserDocument;
-                let token = await this.authService.generateTokenUsingUsername(
-                    user._id,
-                    user.googleId,
-                    user.email,
-                    user.roles,
-                );
-                let redirectDomain: WhitelistDomain = req?.query?.domain as WhitelistDomain ?? WhitelistDomain.game;
-                
-                // track login information
-                await LoginHistoryModel.create({
-                    userId: user._id,
-                    email: user.email,
-                    loginAt: Date.now(),
-                    domain: redirectDomain
-                })
+                try {
+                    let user = req.user as UserDocument;
+                    let token =
+                        await this.authService.generateTokenUsingUsername(
+                            user._id,
+                            user.googleId,
+                            user.email,
+                            user.roles,
+                        );
+                    let redirectDomain: WhitelistDomain =
+                        (req?.query?.domain as WhitelistDomain) ??
+                        WhitelistDomain.game;
 
-                if (process.env.ENV != 'dev') {
-                    res.redirect(`https://${redirectDomain}/login?token=${token}`);
+                    // track login information
+                    await LoginHistoryModel.create({
+                        userId: user._id,
+                        email: user.email,
+                        loginAt: Date.now(),
+                        domain: redirectDomain,
+                    });
+
+                    if (process.env.ENV != 'dev') {
+                        res.redirect(
+                            `https://${redirectDomain}/login?token=${token}`,
+                        );
+                    }
+                    if (
+                        _.includes(
+                            USER_WHITE_LIST.map((e) => e.email),
+                            user.email,
+                        )
+                    ) {
+                        res.redirect(
+                            `https://dev.${redirectDomain}/login?token=${token}`,
+                        );
+                    } else res.redirect(`https://fessior.com/notpermission`);
+                } catch (err) {
+                    res.send(err);
                 }
-                if (
-                    _.includes(
-                        USER_WHITE_LIST.map((e) => e.email),
-                        user.email,
-                    )
-                ) {
-                    res.redirect(
-                        `https://dev.${redirectDomain}/login?token=${token}`,
-                    );
-                } else res.redirect(`https://fessior.com/notpermission`);
             },
         );
         // Force authenticate all routes
