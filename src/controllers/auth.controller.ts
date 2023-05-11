@@ -12,6 +12,7 @@ import { SYSTEM_ACCOUNT_ID, USER_WHITE_LIST, WhitelistDomain } from '../config';
 import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
 import LoginHistoryModel from '../models/login-history.model';
+import { Types } from 'mongoose';
 
 @injectable()
 export class AuthController extends Controller {
@@ -54,7 +55,7 @@ export class AuthController extends Controller {
 
                     // track login information
                     await LoginHistoryModel.create({
-                        userId: user._id,
+                        userId: new Types.ObjectId(user._id),
                         email: user.email,
                         loginAt: Date.now(),
                         domain: redirectDomain,
