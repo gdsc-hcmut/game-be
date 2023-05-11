@@ -22,6 +22,9 @@ export const ServiceType = {
     Order: Symbol.for('OrderService'),
     ClubDay: Symbol.for('ClubDayService'),
     Discord: Symbol.for('DiscordService'),
+    
+    FileUpload: Symbol.for("FileUploadService"),
+    Cache: Symbol.for("CacheService")
 };
 
 export enum PrivacyType {
@@ -37,3 +40,10 @@ export enum HttpMethod {
     PATCH = 'PATCH',
     DELETE = 'DELETE',
 }
+
+export type DownloadFileInfo = {
+    originalName: string;
+    refName: string;
+    mimetype: string;
+    buffer: Buffer;
+};

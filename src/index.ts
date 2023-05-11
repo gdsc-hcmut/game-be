@@ -28,6 +28,9 @@ import {
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
+import { GICController } from './controllers/gic.controller';
+import { FileUploadService } from './services/file-upload.service';
+import { CacheService } from './services/cache.service';
 
 // Binding service
 container
@@ -70,6 +73,14 @@ container
     .bind<DiscordService>(ServiceType.Discord)
     .to(DiscordService)
     .inSingletonScope();
+container
+    .bind<FileUploadService>(ServiceType.FileUpload)
+    .to(FileUploadService)
+    .inSingletonScope();
+container
+    .bind<CacheService>(ServiceType.Cache)
+    .to(CacheService)
+    .inSingletonScope();
 // Initialize service first
 Promise.all([
     container.get<DatabaseService>(ServiceType.Database).initialize(),
@@ -83,6 +94,7 @@ Promise.all([
             container.resolve<MarketplaceController>(MarketplaceController),
             container.resolve<ClubDayController>(ClubDayController),
             container.resolve<DiscordController>(DiscordController),
+            container.resolve<GICController>(GICController),
         ],
         SERVICE_PORT,
         [
