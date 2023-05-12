@@ -2,15 +2,15 @@ import { injectable, inject } from "inversify";
 import { Controller } from "./controller";
 import { Router } from "express";
 import { Request, Response, ServiceType } from "../types";
-import { AuthService } from "../services";
+import { AuthService, UserService } from "../services";
 import { fileUploader } from "../upload-storage";
 import { Types } from "mongoose";
 import { GICService } from "../services/gic.service";
 import { NoFileCompression } from "../lib/file-compression/strategies";
 import { ContestRegStatus } from "../models/gic/contest-registration.model";
-import { sendToMany } from "../lib/mail";
+import { sendToMany, sendToOne } from "../lib/mail";
 import { HTML_TEMPLATE } from "../constant";
-import { toNumber } from "lodash";
+import { DayRegStatus } from "../models/gic/day-registration.model";
 
 @injectable()
 export class GICController extends Controller {
@@ -20,6 +20,7 @@ export class GICController extends Controller {
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.GIC) private gicService: GICService,
+        @inject(ServiceType.User) private userService: UserService,
     ) {
         super();
         
@@ -68,9 +69,9 @@ export class GICController extends Controller {
             )
             
             // send confirmation email
-            sendToMany(members.map((m: any) => ({
-                email: m.email
-            })), HTML_TEMPLATE())
+            const user = await this.userService.findById(userId)
+            sendToOne({ email: user.email }, HTML_TEMPLATE())
+
             res.composer.success(result)
         } catch(error) {
             console.log(error)
@@ -85,7 +86,7 @@ export class GICController extends Controller {
                 throw new Error(`You aren't registered for the contest`)
             }
             await this.gicService.findOneContestRegAndUpdate(
-                { registeredBy: userId },
+                { registeredBy: userId, status: ContestRegStatus.REGISTERED },
                 { status: ContestRegStatus.CANCELLED }
             )
             res.composer.success(`Successfully unregistered from contest`)
@@ -113,8 +114,21 @@ export class GICController extends Controller {
     async registerDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const day = toNumber(req.params)
-            
+            const day = parseInt(req.params.day)
+            if (!(1 <= day && day <= 5)) {
+                throw new Error(`Can only register for days 1 through 5`)
+            }
+
+            if (await this.gicService.userHasRegisteredDay(userId, day)) {
+                throw new Error(`You have already registered for day ${day} of GIC`)
+            }
+            const result = await this.gicService.registerDay(userId, day)
+
+            // send confirmation email
+            const user = await this.userService.findById(userId)
+            sendToOne({ email: user.email }, HTML_TEMPLATE())
+
+            res.composer.success(result)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
@@ -122,5 +136,24 @@ export class GICController extends Controller {
     }
     
     async unregisterDay(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const day = parseInt(req.params.day)
+            if (!(1 <= day && day <= 5)) {
+                throw new Error(`Can only register for days 1 through 5`)
+            }
+            
+            if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
+                throw new Error(`You aren't currently registered for day ${day} of GICk`)
+            }
+            const result = await this.gicService.findOneDayRegAndUpdate(
+                { registeredBy: userId, status: DayRegStatus.REGISTERED },
+                { status: DayRegStatus.CANCELLED }
+            )
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
 }

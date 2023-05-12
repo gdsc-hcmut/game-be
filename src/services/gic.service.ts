@@ -49,6 +49,15 @@ export class GICService {
         return GICContestRegModel.findOneAndUpdate(x, y)
     }
     
+    async registerDay(userId: Types.ObjectId, day: number) {
+        return await DayRegModel.create({
+            registeredBy: userId,
+            registeredAt: Date.now(),
+            day: day,
+            status: DayRegStatus.REGISTERED
+        })
+    }
+    
     async findDayRegistrationRecord(userId: Types.ObjectId) {
         return DayRegModel.find({ registeredBy: userId })
     }
@@ -59,5 +68,9 @@ export class GICService {
             day: day,
             status: DayRegStatus.REGISTERED
         }) != null
+    }
+    
+    async findOneDayRegAndUpdate(x: any, y: any) {
+        return DayRegModel.findOneAndUpdate(x, y)
     }
 }
