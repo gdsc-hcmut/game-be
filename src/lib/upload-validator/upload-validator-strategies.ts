@@ -10,7 +10,7 @@ export class NoUploadValidation implements UploadValidatorStrategy {
 
 export class UploadIdeaDescriptionValidation implements UploadValidatorStrategy {
     validate(files: Express.Multer.File[]): void {
-        if (files.length != 1) {
+        if (!files || files.length != 1) {
             throw new Error(
                 `You must upload exactly one file for this operation`
             );

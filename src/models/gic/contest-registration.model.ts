@@ -9,6 +9,7 @@ export type GICContestRegDocument = Document & {
     registeredBy: Types.ObjectId
     registeredAt: number
     status: ContestRegStatus
+    ideaDescription: Types.ObjectId
     members: { // first person is leader
         name: string
         email: string
@@ -21,6 +22,7 @@ const GICContestRegSchema = new Schema<GICContestRegDocument>({
     registeredBy: { type: Schema.Types.ObjectId, ref: "users" },
     registeredAt: Number,
     status: { type: String, enum: ContestRegStatus },
+    ideaDescription: { type: Schema.Types.ObjectId, ref: "attachments" },
     members: [{
         name: String,
         email: String,

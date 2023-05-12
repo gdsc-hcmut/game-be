@@ -32,6 +32,7 @@ import { GICController } from './controllers/gic.controller';
 import { FileUploadService } from './services/file-upload.service';
 import { CacheService } from './services/cache.service';
 import { GICService } from './services/gic.service';
+import { MailService } from './services/mail.service';
 
 // Binding service
 container
@@ -86,6 +87,11 @@ container
     .bind<GICService>(ServiceType.GIC)
     .to(GICService)
     .inSingletonScope();
+container
+    .bind<MailService>(ServiceType.Mail)
+    .to(MailService)
+    .inSingletonScope();
+
 // Initialize service first
 Promise.all([
     container.get<DatabaseService>(ServiceType.Database).initialize(),

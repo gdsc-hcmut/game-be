@@ -8,9 +8,12 @@ import { Types } from "mongoose";
 import { GICService } from "../services/gic.service";
 import { NoFileCompression } from "../lib/file-compression/strategies";
 import { ContestRegStatus } from "../models/gic/contest-registration.model";
-import { sendToMany, sendToOne } from "../lib/mail";
+import { sendToOne } from "../lib/mail";
 import { HTML_TEMPLATE } from "../constant";
 import { DayRegStatus } from "../models/gic/day-registration.model";
+import { UploadValidator } from "../lib/upload-validator/upload-validator"
+import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
+import { MailService } from "../services/mail.service";
 
 @injectable()
 export class GICController extends Controller {
@@ -21,6 +24,7 @@ export class GICController extends Controller {
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.GIC) private gicService: GICService,
         @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.Mail) private mailService: MailService
     ) {
         super();
         
@@ -51,16 +55,19 @@ export class GICController extends Controller {
                 throw new Error(`A team can consist of at most 3 people`)
             }
             
-            for (const [i, mem] of members) {
+            for (const [i, mem] of members.entries()) {
                 if (!mem[`name`]) throw new Error(`Member ${i + 1} missing fullname`)
                 if (!mem[`email`]) throw new Error(`Member ${i + 1} missing email`)
                 if (!mem[`school`]) throw new Error(`Member ${i + 1} missing school`)
                 if (!mem[`major`]) throw new Error(`Member ${i + 1} missing major`)
             }
             
-            if (!this.gicService.userHasRegisteredContest(userId)) {
+            if (this.gicService.userHasRegisteredContest(userId)) {
                 throw new Error(`User have already registered for a contest`)
             }
+            
+            new UploadValidator(new UploadIdeaDescriptionValidation()).validate(req.files as Express.Multer.File[])
+
             const result = await this.gicService.registerContest(
                 userId,
                 members,
@@ -82,7 +89,7 @@ export class GICController extends Controller {
     async unregisterContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            if (!this.gicService.userHasRegisteredContest(userId)) {
+            if (this.gicService.userHasRegisteredContest(userId)) {
                 throw new Error(`You aren't registered for the contest`)
             }
             await this.gicService.findOneContestRegAndUpdate(
@@ -126,7 +133,8 @@ export class GICController extends Controller {
 
             // send confirmation email
             const user = await this.userService.findById(userId)
-            sendToOne({ email: user.email }, HTML_TEMPLATE())
+            console.log(user.email)
+            await this.mailService.sendToOne(user.email, "Hello", "123")
 
             res.composer.success(result)
         } catch(error) {
@@ -144,7 +152,7 @@ export class GICController extends Controller {
             }
             
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
-                throw new Error(`You aren't currently registered for day ${day} of GICk`)
+                throw new Error(`You aren't currently registered for day ${day} of GIC`)
             }
             const result = await this.gicService.findOneDayRegAndUpdate(
                 { registeredBy: userId, status: DayRegStatus.REGISTERED },

@@ -29,6 +29,7 @@ export class GICService {
         return await GICContestRegModel.create({
             registeredBy: userId,
             registeredAt: currentTime,
+            ideaDescription: uploadedFiles[0]._id,
             status: ContestRegStatus.REGISTERED,
             members: data
         })

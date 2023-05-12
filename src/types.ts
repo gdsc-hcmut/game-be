@@ -25,7 +25,8 @@ export const ServiceType = {
     
     FileUpload: Symbol.for("FileUploadService"),
     Cache: Symbol.for("CacheService"),
-    GIC: Symbol.for("GICService")
+    GIC: Symbol.for("GICService"),
+    Mail: Symbol.for("Mail")
 };
 
 export enum PrivacyType {
