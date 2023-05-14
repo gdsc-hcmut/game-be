@@ -48,8 +48,7 @@ export class GICController extends Controller {
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            console.log(req.body.members)
-            const { members } = JSON.parse(req.body)
+            const members = JSON.parse(req.body.members)
             if (!members) {
                 throw new Error(`Missing members field`)
             }
@@ -64,7 +63,7 @@ export class GICController extends Controller {
                 if (!mem[`major`]) throw new Error(`Member ${i + 1} missing major`)
             }
             
-            if (this.gicService.userHasRegisteredContest(userId)) {
+            if (await this.gicService.userHasRegisteredContest(userId)) {
                 throw new Error(`User have already registered for a contest`)
             }
             
@@ -90,7 +89,7 @@ export class GICController extends Controller {
     async unregisterContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            if (this.gicService.userHasRegisteredContest(userId)) {
+            if (!(await this.gicService.userHasRegisteredContest(userId))) {
                 throw new Error(`You aren't registered for the contest`)
             }
             await this.gicService.findOneContestRegAndUpdate(

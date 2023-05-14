@@ -15,7 +15,7 @@ export class UploadIdeaDescriptionValidation implements UploadValidatorStrategy 
                 `You must upload exactly one file for this operation`
             );
         }
-        if (files[0].mimetype != "application.pdf") {
+        if (files[0].mimetype != "application/pdf") {
             throw new Error(`The specified file must be of type 'pdf'`)
         }
     }
