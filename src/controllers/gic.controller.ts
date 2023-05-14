@@ -48,8 +48,8 @@ export class GICController extends Controller {
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const { members } = JSON.parse(req.body)
             console.log(req.body.members)
+            const { members } = JSON.parse(req.body)
             if (!members) {
                 throw new Error(`Missing members field`)
             }
