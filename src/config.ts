@@ -58,6 +58,8 @@ export const USER_WHITE_LIST: Array<{ email: string }> = [
     { email: 'minh.tranduy2209@hcmut.edu.vn' },
     { email: 'gdscchatapp@gmail.com' },
     { email: 'duc.nv291@gmail.com' },
+    { email: 'ngoquochieu1211@gmai.com' },
+    { email: 'qtrung.tran2004@gmail.com' },
 ];
 
 export const DB_NAME = 'bugs';
