@@ -49,6 +49,7 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const { members } = JSON.parse(req.body)
+            console.log(req.body.members)
             if (!members) {
                 throw new Error(`Missing members field`)
             }
