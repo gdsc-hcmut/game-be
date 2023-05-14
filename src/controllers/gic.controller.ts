@@ -14,6 +14,7 @@ import { DayRegStatus } from "../models/gic/day-registration.model";
 import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
+import { NEW_RECIPIENTS } from "../constant/index"
 
 @injectable()
 export class GICController extends Controller {
@@ -77,7 +78,6 @@ export class GICController extends Controller {
             
             // send confirmation email
             const user = await this.userService.findById(userId)
-            sendToOne({ email: user.email }, HTML_TEMPLATE())
 
             res.composer.success(result)
         } catch(error) {
@@ -133,8 +133,6 @@ export class GICController extends Controller {
 
             // send confirmation email
             const user = await this.userService.findById(userId)
-            console.log(user.email)
-            await this.mailService.sendToOne(user.email, "Hello", "123")
 
             res.composer.success(result)
         } catch(error) {

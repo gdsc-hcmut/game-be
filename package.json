@@ -20,6 +20,7 @@
         "gendata:dev": "cross-env NODE_ENV=test nodemon --watch . --exec 'yarn gendata'"
     },
     "dependencies": {
+        "@google-cloud/local-auth": "^2.1.0",
         "@types/cookie-session": "^2.0.44",
         "adm-zip": "^0.4.13",
         "async-lock": "^1.4.0",
@@ -35,7 +36,7 @@
         "firebase-admin": "^11.8.0",
         "formidable": "^1.2.1",
         "fs-extra": "^8.1.0",
-        "googleapis": "^118.0.0",
+        "googleapis": "^105.0.0",
         "inversify": "^5.0.1",
         "inversify-inject-decorators": "^3.1.0",
         "jwt-simple": "^0.5.6",
@@ -53,6 +54,7 @@
         "passport": "^0.4.1",
         "passport-google-oauth20": "^2.0.0",
         "passport-jwt": "^4.0.0",
+        "path": "^0.12.7",
         "redis": "^4.6.6",
         "reflect-metadata": "^0.1.13",
         "request-ip": "^2.1.3",

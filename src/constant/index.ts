@@ -171,7 +171,7 @@ export const DUC_EMAILS: Address[] = [
     },
 ];
 
-export const HTML_TEMPLATE = (text?: string) => {
+export const HTML_TEMPLATE = (name: string) => {
     return `
 <!DOCTYPE html>
 <html lang="en">
