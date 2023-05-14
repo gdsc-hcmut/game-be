@@ -13,4 +13,5 @@ export const EventTypes = {
     END_QUIZ: 'END_QUIZ',
     QUIZ_TIMEOUT: 'QUIZ_TIMEOUT',
     MATH_QUIZ_RANKING: 'MATH_QUIZ_RANKING',
+    GIC_REWARD: 'GIC_REWARD',
 };

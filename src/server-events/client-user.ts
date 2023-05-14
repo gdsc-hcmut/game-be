@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { EventTypes } from './event-types';
 import { ObjectId } from 'mongodb';
-import { GameService, TransactionService } from '../services';
+import { GameService, ItemService, TransactionService } from '../services';
 import { ClubDayService, UserService } from '../services';
 
 import levels from '../game/levels.json';
@@ -13,6 +13,7 @@ import { UserDocument, USER_ROLES } from '../models/user.model';
 import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
+import { ItemDocument } from '../models/item.model';
 const MAX_CHAPTER = 50;
 
 export interface SocketInfo {
@@ -31,6 +32,25 @@ type SocketMapType = {
     [socketId: string]: SocketInfo;
 };
 
+type GicItemName = '1' | '2' | '3';
+
+function createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
+    let item: ItemDocument = {
+        ownerId: userId,
+        name: itemName,
+        imgUrl: `https://firebasestorage.googleapis.com/v0/b/gic-web-dev.appspot.com/o/characterPieces%2F${itemName}.png?alt=media`,
+        description: `This is a magical item in GicReward call ${itemName}`,
+        currentPrice: 0,
+        isReceived: false,
+        receivedAt: false,
+        receivedNote: '',
+        isRequestToReceiveItem: false,
+        requestToReceiveItemAt: 0,
+        collectionName: 'GicReward',
+    } as ItemDocument;
+    return item;
+}
+
 class ClientUser {
     private sockets: SocketMapType;
     private userId: any;
@@ -40,6 +60,7 @@ class ClientUser {
     private userService: UserService;
     private userData: UserDocument;
     private transactionService: TransactionService;
+    private itemService: ItemService;
 
     constructor(
         userId: string,
@@ -47,6 +68,7 @@ class ClientUser {
         clubDayService: ClubDayService,
         userService: UserService,
         transactionService: TransactionService,
+        itemService: ItemService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -56,6 +78,7 @@ class ClientUser {
         this.MathQuizRanking = [];
         this.userService = userService;
         this.transactionService = transactionService;
+        this.itemService = itemService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -370,6 +393,7 @@ class ClientUser {
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
+                this.sendGICReward(socketId, this.userId, '1');
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
@@ -403,6 +427,17 @@ class ClientUser {
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
             this.onDisconnect(socket, reason),
         );
+    }
+
+    async sendGICReward(
+        socketId: string,
+        userId: Types.ObjectId,
+        itemName: GicItemName,
+    ) {
+        const item = await this.itemService.createNewItem(
+            createGicRewardItem(userId, itemName),
+        );
+        this.sockets[socketId].socket.emit(EventTypes.GIC_REWARD, item);
     }
 
     notifyClient(data: any) {

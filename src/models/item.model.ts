@@ -2,7 +2,12 @@ import mongoose, { Document, Types } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-export type Collection = 'Sticker' | 'Keychain' | 'Bracelet' | 'Tote';
+export type Collection =
+    | 'Sticker'
+    | 'Keychain'
+    | 'Bracelet'
+    | 'Tote'
+    | 'GicReward';
 
 export type PriceHistory = {
     email: string;

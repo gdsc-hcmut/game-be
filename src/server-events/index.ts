@@ -21,6 +21,7 @@ import {
     GameService,
     TransactionService,
     UserService,
+    ItemService,
     // MQTTService,
 } from '../services';
 import { JWT_SECRET } from '../config';
@@ -61,6 +62,8 @@ export class SocketService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
+        @inject(ServiceType.Item)
+        private itemService: ItemService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -94,6 +97,7 @@ export class SocketService {
                 this.clubDayService,
                 this.userService,
                 this.transactionService,
+                this.itemService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
