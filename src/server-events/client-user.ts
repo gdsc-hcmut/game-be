@@ -333,6 +333,7 @@ class ClientUser {
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
+                    this.sendGICReward(socketId, this.userId, '1');
                     Object.keys(connectedUser).map(
                         (userKey: any, index: any) => {
                             Object.keys(connectedUser[userKey].sockets).map(
