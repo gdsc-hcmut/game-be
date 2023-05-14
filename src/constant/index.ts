@@ -171,7 +171,7 @@ export const DUC_EMAILS: Address[] = [
     },
 ];
 
-export const HTML_TEMPLATE = (name: string) => {
+export const contestRegistrationMail = (name: string) => {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -245,7 +245,7 @@ export const HTML_TEMPLATE = (name: string) => {
 						<img src="https://i.ibb.co/yY8CXSR/Frame-1.png" alt="" />
 					</div>
 					<div class="content">
-						<p>Dear <span class="bold"></span>,</p>
+						<p>Dear <span class="bold">${name}</span>,</p>
 						<p>
 							I hope this email finds you well. I wanted to invite you out for
 							<span class="text-red">a cup of coffee</span> sometime this week.

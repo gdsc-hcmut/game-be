@@ -45,6 +45,7 @@ export class MailService {
 
         let waitTime = 1000 + randInt(0, 1001)
         for (let i = 0; i < this.NUM_RETRY; i++) {
+            console.log(`Attempt ${i + 1} to send mail to ${email}`)
             try {
                 await this.gmail.users.messages.send({
                     userId: 'me',
@@ -52,10 +53,10 @@ export class MailService {
                         raw: encodedMessage
                     }
                 })
+                break
             } catch(error) {
                 // wait and try again
-                console.log(`Retrying send mail to ${email}`)
-                threadSleep(waitTime)
+                await threadSleep(waitTime)
                 waitTime = Math.min(2 * waitTime, this.MAXIMUM_BACKOFF_TIME) + randInt(0, 1001)
             }
         }

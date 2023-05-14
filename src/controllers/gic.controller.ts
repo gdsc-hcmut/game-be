@@ -8,13 +8,11 @@ import { Types } from "mongoose";
 import { GICService } from "../services/gic.service";
 import { NoFileCompression } from "../lib/file-compression/strategies";
 import { ContestRegStatus } from "../models/gic/contest-registration.model";
-import { sendToOne } from "../lib/mail";
-import { HTML_TEMPLATE } from "../constant";
 import { DayRegStatus } from "../models/gic/day-registration.model";
 import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
-import { NEW_RECIPIENTS } from "../constant/index"
+import { contestRegistrationMail } from "../constant";
 
 @injectable()
 export class GICController extends Controller {
@@ -36,7 +34,7 @@ export class GICController extends Controller {
             this.registerContest.bind(this)
         )
         this.router.post(
-            `/contest/unregister`,
+            `/contest/:registrationId/unregister`,
             authService.authenticate(),
             this.unregisterContest.bind(this)
         )
@@ -64,10 +62,6 @@ export class GICController extends Controller {
                 if (!mem[`major`]) throw new Error(`Member ${i + 1} missing major`)
             }
             
-            if (await this.gicService.userHasRegisteredContest(userId)) {
-                throw new Error(`User have already registered for a contest`)
-            }
-            
             new UploadValidator(new UploadIdeaDescriptionValidation()).validate(req.files as Express.Multer.File[])
 
             const result = await this.gicService.registerContest(
@@ -79,6 +73,11 @@ export class GICController extends Controller {
             
             // send confirmation email
             const user = await this.userService.findById(userId)
+            this.mailService.sendToOne(
+                user.email,
+                "GIC Registration Successful",
+                contestRegistrationMail(user.name)
+            )
 
             res.composer.success(result)
         } catch(error) {
@@ -90,14 +89,16 @@ export class GICController extends Controller {
     async unregisterContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            if (!(await this.gicService.userHasRegisteredContest(userId))) {
-                throw new Error(`You aren't registered for the contest`)
-            }
-            await this.gicService.findOneContestRegAndUpdate(
-                { registeredBy: userId, status: ContestRegStatus.REGISTERED },
+            const regId = new Types.ObjectId(req.params.registrationId)
+            const reg = await this.gicService.findOneContestRegAndUpdate(
+                { _id: regId, registeredBy: userId, status: ContestRegStatus.REGISTERED },
                 { status: ContestRegStatus.CANCELLED }
             )
-            res.composer.success(`Successfully unregistered from contest`)
+            if (!reg) {
+                throw new Error(`Registration not found`)
+            } else {
+                res.composer.success(`Successfully cancelled registration`)
+            }
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
