@@ -45,7 +45,7 @@ export class MailService {
 
         let waitTime = 1000 + randInt(0, 1001)
         for (let i = 0; i < this.NUM_RETRY; i++) {
-            console.log(`Attempt ${i + 1} to send mail to ${email}`)
+            console.log(`Attempt ${i + 1} to send mail to ${email} (Subject: ${subject})`)
             try {
                 await this.gmail.users.messages.send({
                     userId: 'me',
@@ -60,7 +60,7 @@ export class MailService {
                 waitTime = Math.min(2 * waitTime, this.MAXIMUM_BACKOFF_TIME) + randInt(0, 1001)
             }
         }
-        console.log(`Successfully sent mail to ${email}`)
+        console.log(`Successfully sent mail to ${email} (Subject: ${subject})`)
     }
     
     async sendToMany(emails: string[], subject: string, message: string, contentType: string = 'text/html') {

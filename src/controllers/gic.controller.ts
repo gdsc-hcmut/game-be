@@ -75,7 +75,7 @@ export class GICController extends Controller {
             const user = await this.userService.findById(userId)
             this.mailService.sendToOne(
                 user.email,
-                "GIC Registration Successful",
+                "[GDSC Idea Contest] Idea Registration Successful",
                 contestRegistrationMail(user.name)
             )
 
@@ -135,6 +135,11 @@ export class GICController extends Controller {
 
             // send confirmation email
             const user = await this.userService.findById(userId)
+            this.mailService.sendToOne(
+                user.email,
+                "[GDSC Idea Contest] Event Registration Successful",
+                contestRegistrationMail(user.name)
+            )
 
             res.composer.success(result)
         } catch(error) {
