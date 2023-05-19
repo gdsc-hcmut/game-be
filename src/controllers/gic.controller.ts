@@ -41,6 +41,7 @@ export class GICController extends Controller {
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
         this.router.post("/day/:day/register", this.registerDay.bind(this))
         this.router.post("/day/:day/unregister", this.unregisterDay.bind(this))
+        this.router.get(`/day/myregistration`, this.getRegisteredDay.bind(this))
     }
     
     async registerContest(req: Request, res: Response) {
@@ -73,11 +74,11 @@ export class GICController extends Controller {
             
             // send confirmation email
             const user = await this.userService.findById(userId)
-            this.mailService.sendToOne(
-                user.email,
-                "[GDSC Idea Contest] Idea Registration Successful",
-                contestRegistrationMail(user.name)
-            )
+            // this.mailService.sendToOne(
+            //     user.email,
+            //     "[GDSC Idea Contest] Idea Registration Successful",
+            //     contestRegistrationMail(user.name)
+            // )
 
             res.composer.success(result)
         } catch(error) {
@@ -112,8 +113,7 @@ export class GICController extends Controller {
             const ans = (await this.gicService.findContestRegistrationRecord(userId))
                 .filter(c => c.status === ContestRegStatus.REGISTERED)
             
-            console.assert(ans.length <= 1)
-            res.composer.success(ans.length === 0 ? {} : ans[0])
+            res.composer.success(ans)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
@@ -135,11 +135,11 @@ export class GICController extends Controller {
 
             // send confirmation email
             const user = await this.userService.findById(userId)
-            this.mailService.sendToOne(
-                user.email,
-                "[GDSC Idea Contest] Event Registration Successful",
-                contestRegistrationMail(user.name)
-            )
+            // this.mailService.sendToOne(
+            //     user.email,
+            //     "[GDSC Idea Contest] Event Registration Successful",
+            //     contestRegistrationMail(user.name)
+            // )
 
             res.composer.success(result)
         } catch(error) {
@@ -164,6 +164,20 @@ export class GICController extends Controller {
                 { status: DayRegStatus.CANCELLED }
             )
             res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async getRegisteredDay(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            
+            const ans = (await this.gicService.findDayRegistrationRecord(userId))
+                .filter(d => d.status === DayRegStatus.REGISTERED)
+                
+            res.composer.success(ans)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
