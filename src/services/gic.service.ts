@@ -53,6 +53,10 @@ export class GICService {
             })) != null
         );
     }
+    
+    async findContestRegById(id: Types.ObjectId) {
+        return await GICContestRegModel.findById(id)
+    }
 
     async findOneContestRegAndUpdate(x: any, y: any) {
         return GICContestRegModel.findOneAndUpdate(x, y);
@@ -83,5 +87,9 @@ export class GICService {
 
     async findOneDayRegAndUpdate(x: any, y: any) {
         return DayRegModel.findOneAndUpdate(x, y);
+    }
+    
+    async findDayRegById(id: Types.ObjectId) {
+        return await DayRegModel.findById(id)
     }
 }

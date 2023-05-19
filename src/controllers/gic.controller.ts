@@ -13,6 +13,8 @@ import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
 import { contestRegistrationMail } from "../constant";
+import { USER_ROLES } from "../models/user.model";
+import { FileUploadService } from "../services/file-upload.service";
 
 @injectable()
 export class GICController extends Controller {
@@ -23,7 +25,8 @@ export class GICController extends Controller {
         @inject(ServiceType.Auth) private authService: AuthService,
         @inject(ServiceType.GIC) private gicService: GICService,
         @inject(ServiceType.User) private userService: UserService,
-        @inject(ServiceType.Mail) private mailService: MailService
+        @inject(ServiceType.Mail) private mailService: MailService,
+        @inject(ServiceType.FileUpload) private fileUploadService: FileUploadService
     ) {
         super();
         
@@ -39,10 +42,16 @@ export class GICController extends Controller {
             this.unregisterContest.bind(this)
         )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
+        this.router.get(`/contest/:registrationId`, this.getIdeaById.bind(this))
+        this.router.get(`/contest/:registrationId/download`, this.downloadIdeaDescription.bind(this))
+
         this.router.post("/day/:day/register", this.registerDay.bind(this))
         this.router.post("/day/:day/unregister", this.unregisterDay.bind(this))
         this.router.get(`/day/myregistration`, this.getRegisteredDay.bind(this))
+        this.router.get(`/day/:registrationId`, this.getDayRegistrationById.bind(this))
     }
+    
+    // API'S FOR CONTEST
     
     async registerContest(req: Request, res: Response) {
         try {
@@ -120,6 +129,63 @@ export class GICController extends Controller {
         }
     }
     
+    async getIdeaById(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const userRoles = req.tokenMeta.roles
+            const regId = new Types.ObjectId(req.params.registrationId)
+            
+            const reg = await this.gicService.findContestRegById(regId)
+            if (!reg) {
+                throw new Error(`Contest registration not found`)
+            }
+            if (
+                reg.registeredBy != userId &&
+                !userRoles.includes(USER_ROLES.SYSTEM) &&
+                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
+            ) {
+                throw new Error(`You don't have permission to view this`)
+            }
+            res.composer.success(reg)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async downloadIdeaDescription(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const userRoles = req.tokenMeta.roles
+            const regId = new Types.ObjectId(req.params.registrationId)
+            
+            const reg = await this.gicService.findContestRegById(regId)
+            if (!reg) {
+                throw new Error(`Contest registration not found`)
+            }
+            if (
+                reg.registeredBy != userId &&
+                !userRoles.includes(USER_ROLES.SYSTEM) &&
+                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
+            ) {
+                throw new Error(`You don't have permission to download this file`)
+            }
+            
+            const file = await this.fileUploadService.downloadFile(reg.ideaDescription)
+            res.setHeader(
+                "Content-Disposition",
+                `attachment; filename=${file.originalName}`
+            );
+            res.setHeader("Content-Type", `${file.mimetype}`);
+            res.end(file.buffer);
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    // API'S FOR DAY
+    
     async registerDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
@@ -178,6 +244,30 @@ export class GICController extends Controller {
                 .filter(d => d.status === DayRegStatus.REGISTERED)
                 
             res.composer.success(ans)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async getDayRegistrationById(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const userRoles = req.tokenMeta.roles
+            const regId = new Types.ObjectId(req.params.registrationId)
+            
+            const reg = await this.gicService.findDayRegById(regId)
+            if (!reg) {
+                throw new Error(`Day registration not found`)
+            }
+            if (
+                reg.registeredBy != userId &&
+                !userRoles.includes(USER_ROLES.SYSTEM) &&
+                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
+            ) {
+                throw new Error(`You don't have permission to view this`)
+            }
+            res.composer.success(reg)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
