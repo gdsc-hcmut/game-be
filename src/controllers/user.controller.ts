@@ -135,13 +135,13 @@ export class UserController extends Controller {
     async resetAllScore() {
         try {
             await this.userService.resetPrivate();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerResetDaily() {
         try {
             await this.userService.resetAvailableCoin();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async triggerLeaderboard() {
@@ -217,7 +217,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-        } catch (error) {}
+        } catch (error) { }
     }
 
     async verifyAccountRequest(req: Request, res: Response) {

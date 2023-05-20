@@ -7,7 +7,7 @@ import { ClubDayController } from './clubday.controller';
 
 import { Controller } from './controller';
 import { DiscordController } from './discord.controller';
-
+import { GICController } from './gic.controller';
 export {
     Controller,
     AuthController,
@@ -17,4 +17,5 @@ export {
     MarketplaceController,
     ClubDayController,
     DiscordController,
+    GICController,
 };

@@ -15,6 +15,8 @@ import { MailService } from "../services/mail.service";
 import { contestRegistrationMail } from "../constant";
 import { USER_ROLES } from "../models/user.model";
 import { FileUploadService } from "../services/file-upload.service";
+import { PassThrough } from 'stream';
+import QRCode from 'qrcode';
 
 @injectable()
 export class GICController extends Controller {
@@ -30,18 +32,20 @@ export class GICController extends Controller {
     ) {
         super();
 
-        this.router.get(`/contest/qr`, this.getQrCode.bind(this))
-        // this.router.post(
-        //     `/contest/register`,
-        //     authService.authenticate(),
-        //     fileUploader.any(),
-        //     this.registerContest.bind(this)
-        // )
-        // this.router.post(
-        //     `/contest/unregister`,
-        //     authService.authenticate(),
-        //     this.unregisterContest.bind(this)
-        // )
+        this.router.get(`/qr/:content`, this.getQrCode.bind(this))
+
+        this.router.all('*', this.authService.authenticate(false));
+        this.router.post(
+            `/contest/register`,
+            authService.authenticate(),
+            fileUploader.any(),
+            this.registerContest.bind(this)
+        )
+        this.router.post(
+            `/contest/unregister`,
+            authService.authenticate(),
+            this.unregisterContest.bind(this)
+        )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
         this.router.get(`/contest/download`, this.downloadIdeaDescription.bind(this))
 
@@ -54,10 +58,19 @@ export class GICController extends Controller {
 
     async getQrCode(req: Request, res: Response) {
         try {
-            const data = await contestRegistrationMail("hello");
-            res.send(data);
-        } catch (Err) {
-
+            const content = req.params.content;
+            const qrStream = new PassThrough();
+            const result = await QRCode.toFileStream(qrStream, content,
+                {
+                    type: 'png',
+                    width: 400,
+                    margin: 0,
+                    errorCorrectionLevel: 'H'
+                }
+            );
+            qrStream.pipe(res);
+        } catch (err) {
+            console.log(err);
         }
     }
     // API'S FOR CONTEST

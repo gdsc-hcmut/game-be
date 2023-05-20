@@ -24,11 +24,11 @@ import {
     MarketplaceController,
     ClubDayController,
     DiscordController,
+    GICController
 } from './controllers';
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
-import { GICController } from './controllers/gic.controller';
 import { FileUploadService } from './services/file-upload.service';
 import { CacheService } from './services/cache.service';
 import { GICService } from './services/gic.service';
@@ -101,11 +101,11 @@ Promise.all([
             container.resolve<AuthController>(AuthController),
             container.resolve<UserController>(UserController),
             container.resolve<GameController>(GameController),
+            container.resolve<GICController>(GICController),
             container.resolve<ItemController>(ItemController),
             container.resolve<MarketplaceController>(MarketplaceController),
             container.resolve<ClubDayController>(ClubDayController),
             container.resolve<DiscordController>(DiscordController),
-            container.resolve<GICController>(GICController),
         ],
         SERVICE_PORT,
         [
