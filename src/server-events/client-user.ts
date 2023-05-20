@@ -16,6 +16,71 @@ import expressionToSVG from '../game/math-quiz/expressionToSVG';
 import { ItemDocument } from '../models/item.model';
 const MAX_CHAPTER = 50;
 
+export let itemName: GicItemName[] = [
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    'KEYCHAIN1',
+    'KEYCHAIN2',
+    'KEYCHAIN3',
+    'KEYCHAIN4',
+    'CUP1',
+    'CUP2',
+    'CUP3',
+    'CUP4',
+    'FIGURE1',
+    'FIGURE2',
+    'FIGURE3',
+    'FIGURE4',
+    'TOTE1',
+    'TOTE2',
+    'TOTE3',
+    'TOTE4',
+    'FLASK1',
+    'FLASK2',
+    'FLASK3',
+    'FLASK4',
+    'MIRROR R',
+    'MIRROR SR',
+];
+
+function random(num: number) {
+    return Math.floor(Math.random() * num);
+}
+
 export interface SocketInfo {
     socket: CustomSocket;
     socketId: string;
@@ -32,7 +97,65 @@ type SocketMapType = {
     [socketId: string]: SocketInfo;
 };
 
-type GicItemName = '1' | '2' | '3';
+type GicItemName =
+    | '0'
+    | '1'
+    | '2'
+    | '3'
+    | '4'
+    | '5'
+    | '6'
+    | '7'
+    | '8'
+    | '9'
+    | 'A'
+    | 'B'
+    | 'C'
+    | 'D'
+    | 'E'
+    | 'F'
+    | 'G'
+    | 'H'
+    | 'I'
+    | 'J'
+    | 'K'
+    | 'L'
+    | 'M'
+    | 'N'
+    | 'O'
+    | 'P'
+    | 'Q'
+    | 'R'
+    | 'S'
+    | 'T'
+    | 'U'
+    | 'V'
+    | 'W'
+    | 'X'
+    | 'Y'
+    | 'Z'
+    | 'KEYCHAIN1'
+    | 'KEYCHAIN2'
+    | 'KEYCHAIN3'
+    | 'KEYCHAIN4'
+    | 'CUP1'
+    | 'CUP2'
+    | 'CUP3'
+    | 'CUP4'
+    | 'FIGURE1'
+    | 'FIGURE2'
+    | 'FIGURE3'
+    | 'FIGURE4'
+    | 'TOTE1'
+    | 'TOTE2'
+    | 'TOTE3'
+    | 'TOTE4'
+    | 'FLASK1'
+    | 'FLASK2'
+    | 'FLASK3'
+    | 'FLASK4'
+    | 'MIRROR R'
+    | 'MIRROR SR';
 
 function createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
     let item: ItemDocument = {
@@ -333,7 +456,11 @@ class ClientUser {
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
-                    this.sendGICReward(socketId, this.userId, '1');
+                    this.sendGICReward(
+                        socketId,
+                        this.userId,
+                        itemName[random(58)],
+                    );
                     Object.keys(connectedUser).map(
                         (userKey: any, index: any) => {
                             Object.keys(connectedUser[userKey].sockets).map(
@@ -394,7 +521,7 @@ class ClientUser {
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
-                this.sendGICReward(socketId, this.userId, '1');
+                this.sendGICReward(socketId, this.userId, itemName[random(58)]);
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
