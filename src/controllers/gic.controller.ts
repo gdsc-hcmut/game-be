@@ -37,18 +37,18 @@ export class GICController extends Controller {
             this.registerContest.bind(this)
         )
         this.router.post(
-            `/contest/:registrationId/unregister`,
+            `/contest/unregister/:registrationId`,
             authService.authenticate(),
             this.unregisterContest.bind(this)
         )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
-        this.router.get(`/contest/:registrationId`, this.getIdeaById.bind(this))
-        this.router.get(`/contest/:registrationId/download`, this.downloadIdeaDescription.bind(this))
+        this.router.get(`/contest/get/:registrationId`, this.getIdeaById.bind(this))
+        this.router.get(`/contest/download/:registrationId`, this.downloadIdeaDescription.bind(this))
 
-        this.router.post("/day/:day/register", this.registerDay.bind(this))
-        this.router.post("/day/:day/unregister", this.unregisterDay.bind(this))
+        this.router.post("/day/register/:day", this.registerDay.bind(this))
+        this.router.post("/day/unregister/:day", this.unregisterDay.bind(this))
         this.router.get(`/day/myregistration`, this.getRegisteredDay.bind(this))
-        this.router.get(`/day/:registrationId`, this.getDayRegistrationById.bind(this))
+        this.router.get(`/day/get/:registrationId`, this.getDayRegistrationById.bind(this))
     }
     
     // API'S FOR CONTEST

@@ -245,12 +245,9 @@ export const contestRegistrationMail = (name: string) => {
 						<img src="https://i.ibb.co/yY8CXSR/Frame-1.png" alt="" />
 					</div>
 					<div class="content">
-						<p>Dear <span class="bold">${name}</span>,</p>
+						<p>Hi <span class="bold">${name}</span>,</p>
 						<p>
-							I hope this email finds you well. I wanted to invite you out for
-							<span class="text-red">a cup of coffee</span> sometime this week.
-							It would be great to catch up with you and hear how everything has
-							been going.
+                            Thanks for registering your idea
 						</p>
 						<p>
 							There's a new café that just opened up downtown that I've been
