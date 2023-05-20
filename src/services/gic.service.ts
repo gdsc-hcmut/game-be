@@ -22,7 +22,8 @@ export class GICService {
 
     async registerContest(
         userId: Types.ObjectId,
-        data: any[],
+        ideaName: string,
+        members: any[],
         files: Express.Multer.File[],
         compresionStrategy: FileCompressionStrategy,
     ) {
@@ -36,13 +37,18 @@ export class GICService {
             registeredBy: userId,
             registeredAt: currentTime,
             ideaDescription: uploadedFiles[0]._id,
+            ideaName: ideaName,
             status: ContestRegStatus.REGISTERED,
-            members: data,
+            members: members,
         });
     }
 
     async findContestRegistrationRecord(userId: Types.ObjectId) {
         return GICContestRegModel.find({ registeredBy: userId });
+    }
+    
+    async findcCurrentContestRegistration(userId: Types.ObjectId) {
+        return GICContestRegModel.findOne({ registeredBy: userId, status: ContestRegStatus.REGISTERED })
     }
 
     async userHasRegisteredContest(userId: Types.ObjectId) {

@@ -37,13 +37,12 @@ export class GICController extends Controller {
             this.registerContest.bind(this)
         )
         this.router.post(
-            `/contest/unregister/:registrationId`,
+            `/contest/unregister`,
             authService.authenticate(),
             this.unregisterContest.bind(this)
         )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
-        this.router.get(`/contest/get/:registrationId`, this.getIdeaById.bind(this))
-        this.router.get(`/contest/download/:registrationId`, this.downloadIdeaDescription.bind(this))
+        this.router.get(`/contest/download`, this.downloadIdeaDescription.bind(this))
 
         this.router.post("/day/register/:day", this.registerDay.bind(this))
         this.router.post("/day/unregister/:day", this.unregisterDay.bind(this))
@@ -56,8 +55,12 @@ export class GICController extends Controller {
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            console.log(req.body.members)
+            const user = await this.userService.findById(userId)
             const members = JSON.parse(req.body.members)
+            const { ideaName } = req.body
+            if (!ideaName) {
+                throw new Error(`Idea name is missing`)
+            }
             if (!members) {
                 throw new Error(`Missing members field`)
             }
@@ -65,24 +68,34 @@ export class GICController extends Controller {
                 throw new Error(`A team can consist of at most 3 people`)
             }
             
+            let leaderPresent = false
             for (const [i, mem] of members.entries()) {
                 if (!mem[`name`]) throw new Error(`Member ${i + 1} missing fullname`)
                 if (!mem[`email`]) throw new Error(`Member ${i + 1} missing email`)
                 if (!mem[`school`]) throw new Error(`Member ${i + 1} missing school`)
                 if (!mem[`major`]) throw new Error(`Member ${i + 1} missing major`)
+                mem[`confirmed`] = mem[`email`] === user.email
+                leaderPresent = leaderPresent || mem[`confirmed`]
+            }
+            if (!leaderPresent) {
+                throw new Error(`Team doesn't contain yourself`)
             }
             
             new UploadValidator(new UploadIdeaDescriptionValidation()).validate(req.files as Express.Multer.File[])
+            
+            if (await this.gicService.userHasRegisteredContest(userId)) {
+                throw new Error(`You have already already registered your idea`)
+            }
 
             const result = await this.gicService.registerContest(
                 userId,
+                ideaName,
                 members,
                 req.files as Express.Multer.File[],
                 new NoFileCompression()
             )
             
-            // send confirmation email
-            const user = await this.userService.findById(userId)
+            // TODO: send confirmation email, different for the person who registered and others
             // this.mailService.sendToOne(
             //     user.email,
             //     "[GDSC Idea Contest] Idea Registration Successful",
@@ -99,16 +112,14 @@ export class GICController extends Controller {
     async unregisterContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const regId = new Types.ObjectId(req.params.registrationId)
             const reg = await this.gicService.findOneContestRegAndUpdate(
-                { _id: regId, registeredBy: userId, status: ContestRegStatus.REGISTERED },
+                { registeredBy: userId, status: ContestRegStatus.REGISTERED },
                 { status: ContestRegStatus.CANCELLED }
             )
             if (!reg) {
                 throw new Error(`Registration not found`)
-            } else {
-                res.composer.success(`Successfully cancelled registration`)
             }
+            res.composer.success(reg)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
@@ -119,56 +130,21 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             
-            const ans = (await this.gicService.findContestRegistrationRecord(userId))
-                .filter(c => c.status === ContestRegStatus.REGISTERED)
-            
-            res.composer.success(ans)
+            const ans = await this.gicService.findcCurrentContestRegistration(userId)
+            res.composer.success(!ans ? {} : ans)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
-    async getIdeaById(req: Request, res: Response) {
-        try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const userRoles = req.tokenMeta.roles
-            const regId = new Types.ObjectId(req.params.registrationId)
-            
-            const reg = await this.gicService.findContestRegById(regId)
-            if (!reg) {
-                throw new Error(`Contest registration not found`)
-            }
-            if (
-                reg.registeredBy != userId &&
-                !userRoles.includes(USER_ROLES.SYSTEM) &&
-                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
-            ) {
-                throw new Error(`You don't have permission to view this`)
-            }
-            res.composer.success(reg)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
-        }
-    }
-    
+
     async downloadIdeaDescription(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const userRoles = req.tokenMeta.roles
-            const regId = new Types.ObjectId(req.params.registrationId)
-            
-            const reg = await this.gicService.findContestRegById(regId)
+
+            const reg = await this.gicService.findcCurrentContestRegistration(userId)
             if (!reg) {
                 throw new Error(`Contest registration not found`)
-            }
-            if (
-                reg.registeredBy != userId &&
-                !userRoles.includes(USER_ROLES.SYSTEM) &&
-                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
-            ) {
-                throw new Error(`You don't have permission to download this file`)
             }
             
             const file = await this.fileUploadService.downloadFile(reg.ideaDescription)
@@ -261,7 +237,7 @@ export class GICController extends Controller {
                 throw new Error(`Day registration not found`)
             }
             if (
-                reg.registeredBy != userId &&
+                !userId.equals(reg.registeredBy) &&
                 !userRoles.includes(USER_ROLES.SYSTEM) &&
                 !userRoles.includes(USER_ROLES.SUPER_ADMIN)
             ) {

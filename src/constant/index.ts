@@ -247,7 +247,7 @@ export const contestRegistrationMail = (name: string) => {
 					<div class="content">
 						<p>Hi <span class="bold">${name}</span>,</p>
 						<p>
-                            Thanks for registering your idea
+                            
 						</p>
 						<p>
 							There's a new café that just opened up downtown that I've been
