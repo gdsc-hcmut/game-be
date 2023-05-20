@@ -130,11 +130,8 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             
-            const ans = (await this.gicService.findContestRegistrationRecord(userId))
-                .filter(c => c.status === ContestRegStatus.REGISTERED)
-            console.assert(ans.length <= 1)
-            
-            res.composer.success(ans.length === 0 ? {} : ans[1])
+            const ans = await this.gicService.findcCurrentContestRegistration(userId)
+            res.composer.success(!ans ? {} : ans)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
@@ -144,19 +141,10 @@ export class GICController extends Controller {
     async downloadIdeaDescription(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const userRoles = req.tokenMeta.roles
-            
-            const reg = (await this.gicService.findContestRegistrationRecord(userId))
-                .filter(c => c.status === ContestRegStatus.REGISTERED)[0]
+
+            const reg = await this.gicService.findcCurrentContestRegistration(userId)
             if (!reg) {
                 throw new Error(`Contest registration not found`)
-            }
-            if (
-                !userId.equals(reg.registeredBy) &&
-                !userRoles.includes(USER_ROLES.SYSTEM) &&
-                !userRoles.includes(USER_ROLES.SUPER_ADMIN)
-            ) {
-                throw new Error(`You don't have permission to download this file`)
             }
             
             const file = await this.fileUploadService.downloadFile(reg.ideaDescription)

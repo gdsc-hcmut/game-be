@@ -46,6 +46,10 @@ export class GICService {
     async findContestRegistrationRecord(userId: Types.ObjectId) {
         return GICContestRegModel.find({ registeredBy: userId });
     }
+    
+    async findcCurrentContestRegistration(userId: Types.ObjectId) {
+        return GICContestRegModel.findOne({ registeredBy: userId, status: ContestRegStatus.REGISTERED })
+    }
 
     async userHasRegisteredContest(userId: Types.ObjectId) {
         return (
