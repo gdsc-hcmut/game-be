@@ -140,7 +140,7 @@ export class GICController extends Controller {
                 throw new Error(`Contest registration not found`)
             }
             if (
-                reg.registeredBy != userId &&
+                !userId.equals(reg.registeredBy) &&
                 !userRoles.includes(USER_ROLES.SYSTEM) &&
                 !userRoles.includes(USER_ROLES.SUPER_ADMIN)
             ) {
@@ -164,7 +164,7 @@ export class GICController extends Controller {
                 throw new Error(`Contest registration not found`)
             }
             if (
-                reg.registeredBy != userId &&
+                !userId.equals(reg.registeredBy) &&
                 !userRoles.includes(USER_ROLES.SYSTEM) &&
                 !userRoles.includes(USER_ROLES.SUPER_ADMIN)
             ) {
@@ -261,7 +261,7 @@ export class GICController extends Controller {
                 throw new Error(`Day registration not found`)
             }
             if (
-                reg.registeredBy != userId &&
+                !userId.equals(reg.registeredBy) &&
                 !userRoles.includes(USER_ROLES.SYSTEM) &&
                 !userRoles.includes(USER_ROLES.SUPER_ADMIN)
             ) {
