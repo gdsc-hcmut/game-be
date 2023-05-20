@@ -279,7 +279,7 @@ class ClientUser {
                         message:
                             'You have pass first 20 level and claim reward from Club Day',
                     });
-                } catch (err) {}
+                } catch (err) { }
         } else {
             gameSession.save();
         }
@@ -451,11 +451,11 @@ class ClientUser {
                     SYSTEM_ACCOUNT_ID,
                     new Types.ObjectId(this.userId),
                     this.sockets[socketId].scoreQuiz / 10,
-                    `You got ${
-                        this.sockets[socketId].scoreQuiz / 10
+                    `You got ${this.sockets[socketId].scoreQuiz / 10
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
+
                     this.sendGICReward(
                         socketId,
                         this.userId,
@@ -516,8 +516,7 @@ class ClientUser {
                 SYSTEM_ACCOUNT_ID,
                 new Types.ObjectId(this.userId),
                 this.sockets[socketId].scoreQuiz / 10,
-                `You got ${
-                    this.sockets[socketId].scoreQuiz / 10
+                `You got ${this.sockets[socketId].scoreQuiz / 10
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {

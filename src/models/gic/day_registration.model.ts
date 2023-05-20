@@ -10,13 +10,17 @@ export type DayRegDocument = Document & {
     registeredAt: number
     day: number,
     status: DayRegStatus
+
+    invitedBy: Types.ObjectId
 }
 
 const dayRegSchema = new Schema<DayRegDocument>({
     registeredBy: { type: Schema.Types.ObjectId, ref: "users" },
     registeredAt: Number,
     day: Number,
-    status: { type: String, enum: DayRegStatus }
+    status: { type: String, enum: DayRegStatus },
+
+    invitedBy: { type: Schema.Types.ObjectId, ref: "users" }
 })
 
 const DayRegModel = mongoose.model<DayRegDocument>("day_registrations", dayRegSchema)

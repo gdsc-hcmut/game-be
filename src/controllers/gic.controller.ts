@@ -7,8 +7,8 @@ import { fileUploader } from "../upload-storage";
 import { Types } from "mongoose";
 import { GICService } from "../services/gic.service";
 import { NoFileCompression } from "../lib/file-compression/strategies";
-import { ContestRegStatus } from "../models/gic/contest-registration.model";
-import { DayRegStatus } from "../models/gic/day-registration.model";
+import { ContestRegStatus } from "../models/gic/contest_registration.model";
+import { DayRegDocument, DayRegStatus } from "../models/gic/day_registration.model";
 import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
@@ -118,7 +118,6 @@ export class GICController extends Controller {
                 new NoFileCompression()
             )
 
-            console.log(await contestRegistrationMail(user.name))
             // TODO: send confirmation email, different for the person who registered and others
             this.mailService.sendToOne(
                 user.email,
@@ -197,7 +196,29 @@ export class GICController extends Controller {
             if (await this.gicService.userHasRegisteredDay(userId, day)) {
                 throw new Error(`You have already registered for day ${day} of GIC`)
             }
-            const result = await this.gicService.registerDay(userId, day)
+
+            const inviteIdString = req.query.inviteId as string
+            if (day != 5 && inviteIdString) {
+                throw new Error(`An invite code can only be used on day 5 of GIC`)
+            }
+
+            let result
+            if (inviteIdString) {
+                const inviteId = new Types.ObjectId(inviteIdString)
+                if (!(await this.userService.findById(inviteId))) {
+                    throw new Error(`Invite code invalid`)
+                }
+                result = await this.gicService.registerDay(
+                    userId,
+                    day,
+                    inviteId
+                )
+            } else {
+                result = await this.gicService.registerDay(
+                    userId,
+                    day
+                )
+            }
 
             // send confirmation email
             const user = await this.userService.findById(userId)

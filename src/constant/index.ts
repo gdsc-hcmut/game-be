@@ -247,7 +247,7 @@ export async function contestRegistrationMail(name: string) {
 					</div>
 					<div class="content">
 						<p>Hi <span class="bold">${name}</span>,</p>
-                        <img src="https://dev.api.fessior.com/gic/qr/hello" />
+                        <img src="https://dev.api.fessior.com/gic/qr/${name}" />
 						<p>
 							There's a new café that just opened up downtown that I've been
 							wanting to try, so how about we meet there on Wednesday at 3 PM?
