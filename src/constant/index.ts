@@ -1,4 +1,5 @@
 import { Address } from 'mailtrap';
+import QRCode from 'qrcode';
 
 export const OLD_RECIPIENTS: Address[] = [
     {
@@ -171,8 +172,11 @@ export const DUC_EMAILS: Address[] = [
     },
 ];
 
-export const contestRegistrationMail = (name: string) => {
-    return `
+export async function contestRegistrationMail(name: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        QRCode.toDataURL(name, { type: 'image/png', width: 1000 }, (err, qrcode) => {
+            resolve(qrcode)
+            resolve(`
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -246,9 +250,7 @@ export const contestRegistrationMail = (name: string) => {
 					</div>
 					<div class="content">
 						<p>Hi <span class="bold">${name}</span>,</p>
-						<p>
-                            
-						</p>
+                        <img src="${qrcode}"/>
 						<p>
 							There's a new café that just opened up downtown that I've been
 							wanting to try, so how about we meet there on Wednesday at 3 PM?
@@ -267,5 +269,10 @@ export const contestRegistrationMail = (name: string) => {
 		</div>
 	</body>
 </html>
+            `)
+        })
+
+    })
+    return `
   `;
 };

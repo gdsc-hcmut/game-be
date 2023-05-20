@@ -29,18 +29,19 @@ export class GICController extends Controller {
         @inject(ServiceType.FileUpload) private fileUploadService: FileUploadService
     ) {
         super();
-        
-        this.router.post(
-            `/contest/register`,
-            authService.authenticate(),
-            fileUploader.any(),
-            this.registerContest.bind(this)
-        )
-        this.router.post(
-            `/contest/unregister`,
-            authService.authenticate(),
-            this.unregisterContest.bind(this)
-        )
+
+        this.router.get(`/contest/qr`, this.getQrCode.bind(this))
+        // this.router.post(
+        //     `/contest/register`,
+        //     authService.authenticate(),
+        //     fileUploader.any(),
+        //     this.registerContest.bind(this)
+        // )
+        // this.router.post(
+        //     `/contest/unregister`,
+        //     authService.authenticate(),
+        //     this.unregisterContest.bind(this)
+        // )
         this.router.get(`/contest/myregistration`, this.getRegisteredContest.bind(this))
         this.router.get(`/contest/download`, this.downloadIdeaDescription.bind(this))
 
@@ -49,9 +50,18 @@ export class GICController extends Controller {
         this.router.get(`/day/myregistration`, this.getRegisteredDay.bind(this))
         this.router.get(`/day/get/:registrationId`, this.getDayRegistrationById.bind(this))
     }
-    
+
+
+    async getQrCode(req: Request, res: Response) {
+        try {
+            const data = await contestRegistrationMail("hello");
+            res.send(data);
+        } catch (Err) {
+
+        }
+    }
     // API'S FOR CONTEST
-    
+
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
@@ -67,7 +77,7 @@ export class GICController extends Controller {
             if (members.length > 3) {
                 throw new Error(`A team can consist of at most 3 people`)
             }
-            
+
             let leaderPresent = false
             for (const [i, mem] of members.entries()) {
                 if (!mem[`name`]) throw new Error(`Member ${i + 1} missing fullname`)
@@ -80,9 +90,9 @@ export class GICController extends Controller {
             if (!leaderPresent) {
                 throw new Error(`Team doesn't contain yourself`)
             }
-            
+
             new UploadValidator(new UploadIdeaDescriptionValidation()).validate(req.files as Express.Multer.File[])
-            
+
             if (await this.gicService.userHasRegisteredContest(userId)) {
                 throw new Error(`You have already already registered your idea`)
             }
@@ -94,21 +104,22 @@ export class GICController extends Controller {
                 req.files as Express.Multer.File[],
                 new NoFileCompression()
             )
-            
+
+            console.log(await contestRegistrationMail(user.name))
             // TODO: send confirmation email, different for the person who registered and others
-            // this.mailService.sendToOne(
-            //     user.email,
-            //     "[GDSC Idea Contest] Idea Registration Successful",
-            //     contestRegistrationMail(user.name)
-            // )
+            this.mailService.sendToOne(
+                user.email,
+                "[GDSC Idea Contest] Idea Registration Successful",
+                await contestRegistrationMail(user.name)
+            )
 
             res.composer.success(result)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     async unregisterContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
@@ -120,19 +131,19 @@ export class GICController extends Controller {
                 throw new Error(`Registration not found`)
             }
             res.composer.success(reg)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     async getRegisteredContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            
+
             const ans = await this.gicService.findcCurrentContestRegistration(userId)
             res.composer.success(!ans ? {} : ans)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
@@ -146,7 +157,7 @@ export class GICController extends Controller {
             if (!reg) {
                 throw new Error(`Contest registration not found`)
             }
-            
+
             const file = await this.fileUploadService.downloadFile(reg.ideaDescription)
             res.setHeader(
                 "Content-Disposition",
@@ -154,14 +165,14 @@ export class GICController extends Controller {
             );
             res.setHeader("Content-Type", `${file.mimetype}`);
             res.end(file.buffer);
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     // API'S FOR DAY
-    
+
     async registerDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
@@ -184,12 +195,12 @@ export class GICController extends Controller {
             // )
 
             res.composer.success(result)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     async unregisterDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
@@ -197,7 +208,7 @@ export class GICController extends Controller {
             if (!(1 <= day && day <= 5)) {
                 throw new Error(`Can only register for days 1 through 5`)
             }
-            
+
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
                 throw new Error(`You aren't currently registered for day ${day} of GIC`)
             }
@@ -206,32 +217,32 @@ export class GICController extends Controller {
                 { status: DayRegStatus.CANCELLED }
             )
             res.composer.success(result)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     async getRegisteredDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            
+
             const ans = (await this.gicService.findDayRegistrationRecord(userId))
                 .filter(d => d.status === DayRegStatus.REGISTERED)
-                
+
             res.composer.success(ans)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
     }
-    
+
     async getDayRegistrationById(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const userRoles = req.tokenMeta.roles
             const regId = new Types.ObjectId(req.params.registrationId)
-            
+
             const reg = await this.gicService.findDayRegById(regId)
             if (!reg) {
                 throw new Error(`Day registration not found`)
@@ -244,7 +255,7 @@ export class GICController extends Controller {
                 throw new Error(`You don't have permission to view this`)
             }
             res.composer.success(reg)
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
