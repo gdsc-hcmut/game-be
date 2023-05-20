@@ -22,7 +22,8 @@ export class GICService {
 
     async registerContest(
         userId: Types.ObjectId,
-        data: any[],
+        ideaName: string,
+        members: any[],
         files: Express.Multer.File[],
         compresionStrategy: FileCompressionStrategy,
     ) {
@@ -36,8 +37,9 @@ export class GICService {
             registeredBy: userId,
             registeredAt: currentTime,
             ideaDescription: uploadedFiles[0]._id,
+            ideaName: ideaName,
             status: ContestRegStatus.REGISTERED,
-            members: data,
+            members: members,
         });
     }
 

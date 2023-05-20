@@ -56,8 +56,11 @@ export class GICController extends Controller {
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            console.log(req.body.members)
             const members = JSON.parse(req.body.members)
+            const { ideaName } = req.body
+            if (!ideaName) {
+                throw new Error(`Idea name is missing`)
+            }
             if (!members) {
                 throw new Error(`Missing members field`)
             }
@@ -76,6 +79,7 @@ export class GICController extends Controller {
 
             const result = await this.gicService.registerContest(
                 userId,
+                ideaName,
                 members,
                 req.files as Express.Multer.File[],
                 new NoFileCompression()
