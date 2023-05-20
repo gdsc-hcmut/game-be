@@ -16,6 +16,7 @@ export type GICContestRegDocument = Document & {
         email: string
         school: string
         major: string
+        confirmed: boolean
     }[]
 }
 
@@ -30,6 +31,7 @@ const GICContestRegSchema = new Schema<GICContestRegDocument>({
         email: String,
         school: String,
         major: String,
+        confirmed: Boolean
     }]
 })
 
