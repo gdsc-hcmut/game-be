@@ -45,12 +45,8 @@ export class GICService {
         });
     }
 
-    async findContestRegistrationRecord(userId: Types.ObjectId) {
-        return GICContestRegModel.find({ registeredBy: userId });
-    }
-
-    async findcCurrentContestRegistration(userId: Types.ObjectId) {
-        return GICContestRegModel.findOne({ registeredBy: userId, status: ContestRegStatus.REGISTERED })
+    async findCurrentContestRegistration(userId: Types.ObjectId) {
+        return await GICContestRegModel.findOne({ registeredBy: userId, status: ContestRegStatus.REGISTERED })
     }
 
     async userHasRegisteredContest(userId: Types.ObjectId) {
@@ -62,12 +58,8 @@ export class GICService {
         );
     }
 
-    async findContestRegById(id: Types.ObjectId) {
-        return await GICContestRegModel.findById(id)
-    }
-
     async findOneContestRegAndUpdate(x: any, y: any) {
-        return GICContestRegModel.findOneAndUpdate(x, y);
+        return await GICContestRegModel.findOneAndUpdate(x, y);
     }
 
     // FOR DAY REGISTRATION
@@ -82,8 +74,8 @@ export class GICService {
         });
     }
 
-    async findDayRegistrationRecord(userId: Types.ObjectId) {
-        return DayRegModel.find({ registeredBy: userId });
+    async findDayRegistrations(x: any) {
+        return await DayRegModel.find(x);
     }
 
     async userHasRegisteredDay(userId: Types.ObjectId, day: number) {
@@ -96,8 +88,18 @@ export class GICService {
         );
     }
 
+    async userHasCheckinDay(userId: Types.ObjectId, day: number) {
+        return (
+            (await DayRegModel.findOne({
+                registeredBy: userId,
+                day: day,
+                status: DayRegStatus.CHECKIN,
+            })) != null
+        );
+    }
+
     async findOneDayRegAndUpdate(x: any, y: any) {
-        return DayRegModel.findOneAndUpdate(x, y);
+        return await DayRegModel.findOneAndUpdate(x, y);
     }
 
     async findDayRegById(id: Types.ObjectId) {
