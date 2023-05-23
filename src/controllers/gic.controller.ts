@@ -8,7 +8,7 @@ import { Types } from "mongoose";
 import { GICService } from "../services/gic.service";
 import { NoFileCompression } from "../lib/file-compression/strategies";
 import { ContestRegStatus } from "../models/gic/contest_registration.model";
-import { DayRegDocument, DayRegStatus } from "../models/gic/day_registration.model";
+import DayRegModel, { DayRegDocument, DayRegStatus } from "../models/gic/day_registration.model";
 import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
@@ -51,8 +51,9 @@ export class GICController extends Controller {
 
         this.router.post("/day/register/:day", this.registerDay.bind(this))
         this.router.post("/day/unregister/:day", this.unregisterDay.bind(this))
-        this.router.get(`/day/myregistration`, this.getRegisteredDay.bind(this))
+        this.router.get(`/day/myregistration`, this.getRegisteredDays.bind(this))
         this.router.get(`/day/get/:registrationId`, this.getDayRegistrationById.bind(this))
+        this.router.get(`/day/invitedbyme`, this.getPeopleUserInvited.bind(this))
     }
 
 
@@ -153,7 +154,7 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
 
-            const ans = await this.gicService.findcCurrentContestRegistration(userId)
+            const ans = await this.gicService.findCurrentContestRegistration(userId)
             res.composer.success(!ans ? {} : ans)
         } catch (error) {
             console.log(error)
@@ -165,7 +166,7 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
 
-            const reg = await this.gicService.findcCurrentContestRegistration(userId)
+            const reg = await this.gicService.findCurrentContestRegistration(userId)
             if (!reg) {
                 throw new Error(`Contest registration not found`)
             }
@@ -195,6 +196,10 @@ export class GICController extends Controller {
 
             if (await this.gicService.userHasRegisteredDay(userId, day)) {
                 throw new Error(`You have already registered for day ${day} of GIC`)
+            }
+
+            if (await this.gicService.userHasCheckinDay(userId, day)) {
+                throw new Error(`You have checked in to day ${day} of GIC already`)
             }
 
             const inviteIdString = req.query.inviteId as string
@@ -246,6 +251,9 @@ export class GICController extends Controller {
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
                 throw new Error(`You aren't currently registered for day ${day} of GIC`)
             }
+            if (await this.gicService.userHasCheckinDay(userId, day)) {
+                throw new Error(`You have checked in to day ${day} of GIC already`)
+            }
             const result = await this.gicService.findOneDayRegAndUpdate(
                 { registeredBy: userId, status: DayRegStatus.REGISTERED },
                 { status: DayRegStatus.CANCELLED }
@@ -257,12 +265,15 @@ export class GICController extends Controller {
         }
     }
 
-    async getRegisteredDay(req: Request, res: Response) {
+    async getRegisteredDays(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
 
-            const ans = (await this.gicService.findDayRegistrationRecord(userId))
-                .filter(d => d.status === DayRegStatus.REGISTERED)
+            const ans = await Promise.all(
+                (await this.gicService.findDayRegistrations({ registeredBy: userId }))
+                    .filter(d => d.status === DayRegStatus.REGISTERED || d.status === DayRegStatus.CHECKIN)
+                    .map(d => (async () => await d.populate("invitedBy"))())
+            )
 
             res.composer.success(ans)
         } catch (error) {
@@ -292,6 +303,23 @@ export class GICController extends Controller {
         } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
+        }
+    }
+
+    async getPeopleUserInvited(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const ans = await Promise.all(
+                (await this.gicService.findDayRegistrations({
+                    invitedBy: userId,
+                    status: { $in: [DayRegStatus.REGISTERED, DayRegStatus.CHECKIN] }
+                }))
+                    .map(d => (async () => await d.populate("registeredBy"))())
+            )
+            res.composer.success(ans)
+        } catch (error) {
+            console.log(error)
+            res.composer.badRequest(error)
         }
     }
 }

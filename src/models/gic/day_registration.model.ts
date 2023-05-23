@@ -2,7 +2,8 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 export enum DayRegStatus {
     REGISTERED = "REGISTERED",
-    CANCELLED = "CANCELLED"
+    CANCELLED = "CANCELLED",
+    CHECKIN = "CHECKIN"
 }
 
 export type DayRegDocument = Document & {
@@ -15,12 +16,12 @@ export type DayRegDocument = Document & {
 }
 
 const dayRegSchema = new Schema<DayRegDocument>({
-    registeredBy: { type: Schema.Types.ObjectId, ref: "users" },
+    registeredBy: { type: Schema.Types.ObjectId, ref: "User" },
     registeredAt: Number,
     day: Number,
     status: { type: String, enum: DayRegStatus },
 
-    invitedBy: { type: Schema.Types.ObjectId, ref: "users" }
+    invitedBy: { type: Schema.Types.ObjectId, ref: "User" }
 })
 
 const DayRegModel = mongoose.model<DayRegDocument>("day_registrations", dayRegSchema)

@@ -21,7 +21,7 @@ export type GICContestRegDocument = Document & {
 }
 
 const GICContestRegSchema = new Schema<GICContestRegDocument>({
-    registeredBy: { type: Schema.Types.ObjectId, ref: "users" },
+    registeredBy: { type: Schema.Types.ObjectId, ref: "User" },
     registeredAt: Number,
     status: { type: String, enum: ContestRegStatus },
     ideaDescription: { type: Schema.Types.ObjectId, ref: "attachments" },
