@@ -12,11 +12,11 @@ import DayRegModel, { DayRegDocument, DayRegStatus } from "../models/gic/day_reg
 import { UploadValidator } from "../lib/upload-validator/upload-validator"
 import { UploadIdeaDescriptionValidation } from "../lib/upload-validator/upload-validator-strategies";
 import { MailService } from "../services/mail.service";
-import { contestRegistrationMail } from "../constant";
 import { USER_ROLES } from "../models/user.model";
 import { FileUploadService } from "../services/file-upload.service";
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
+import { CONTEST_REGISTRATION_SUCCESSFUL_EMAIL, DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL, DAY_5_REGISTRATION_SUCCESSFUL_EMAIL } from "../constant";
 
 @injectable()
 export class GICController extends Controller {
@@ -80,7 +80,7 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const user = await this.userService.findById(userId)
-            const members = JSON.parse(req.body.members)
+            const members = JSON.parse(req.body.members) as any[]
             const { ideaName } = req.body
             if (!ideaName) {
                 throw new Error(`Idea name is missing`)
@@ -98,8 +98,8 @@ export class GICController extends Controller {
                 if (!mem[`email`]) throw new Error(`Member ${i + 1} missing email`)
                 if (!mem[`school`]) throw new Error(`Member ${i + 1} missing school`)
                 if (!mem[`major`]) throw new Error(`Member ${i + 1} missing major`)
-                mem[`confirmed`] = mem[`email`] === user.email
-                leaderPresent = leaderPresent || mem[`confirmed`]
+                mem[`confirmed`] = false
+                leaderPresent = leaderPresent || (mem[`email`] === user.email)
             }
             if (!leaderPresent) {
                 throw new Error(`Team doesn't contain yourself`)
@@ -120,11 +120,9 @@ export class GICController extends Controller {
             )
 
             // TODO: send confirmation email, different for the person who registered and others
-            this.mailService.sendToOne(
-                user.email,
-                "[GDSC Idea Contest] Idea Registration Successful",
-                await contestRegistrationMail(user.name)
-            )
+            members.forEach(m => this.mailService.sendToOne(
+                m.email,
+                "[GDSC Idea Contest 2023] Confirm Contest Registration", CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName)))
 
             res.composer.success(result)
         } catch (error) {
@@ -227,11 +225,12 @@ export class GICController extends Controller {
 
             // send confirmation email
             const user = await this.userService.findById(userId)
-            // this.mailService.sendToOne(
-            //     user.email,
-            //     "[GDSC Idea Contest] Event Registration Successful",
-            //     contestRegistrationMail(user.name)
-            // )
+            this.mailService.sendToOne(
+                user.email,
+                `[GDSC Idea Contest 2023] Event Day ${day} Registration Successful`,
+                day != 5 ? DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(user.name, result._id) :
+                    DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(user.name, result._id)
+            )
 
             res.composer.success(result)
         } catch (error) {
