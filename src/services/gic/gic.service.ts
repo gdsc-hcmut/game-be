@@ -136,6 +136,7 @@ export class GICService {
     // Gameeeeeeeee
 
     async sendItemGIC(itemData: ItemDocument) {
+        console.log('Send Item', itemData);
         const item = await this.itemService.createNewItem(itemData);
         return item;
     }
