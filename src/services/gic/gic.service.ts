@@ -246,11 +246,15 @@ export class GICService {
                 result = key;
             acc += rarity[key];
         });
+        console.log('result', result);
 
         let item = gicItems[random(58)];
+        console.log('first item', item);
         while (item.rare != result) {
+            console.log('Random', item, result);
             item = gicItems[random(58)];
         }
+        console.log('Return', item);
         return item.name;
     }
 
