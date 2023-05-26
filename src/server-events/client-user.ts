@@ -14,72 +14,9 @@ import mongoose, { Types } from 'mongoose';
 import { SYSTEM_ACCOUNT_ID } from '../config';
 import expressionToSVG from '../game/math-quiz/expressionToSVG';
 import { ItemDocument } from '../models/item.model';
+import { GICService } from '../services/gic/gic.service';
+import { mathQuizRarity } from '../services/gic/utils';
 const MAX_CHAPTER = 50;
-
-export let itemName: GicItemName[] = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    'KEYCHAIN1',
-    'KEYCHAIN2',
-    'KEYCHAIN3',
-    'KEYCHAIN4',
-    'CUP1',
-    'CUP2',
-    'CUP3',
-    'CUP4',
-    'FIGURE1',
-    'FIGURE2',
-    'FIGURE3',
-    'FIGURE4',
-    'TOTE1',
-    'TOTE2',
-    'TOTE3',
-    'TOTE4',
-    'FLASK1',
-    'FLASK2',
-    'FLASK3',
-    'FLASK4',
-    'MIRROR R',
-    'MIRROR SR',
-];
-
-function random(num: number) {
-    return Math.floor(Math.random() * num);
-}
 
 export interface SocketInfo {
     socket: CustomSocket;
@@ -97,83 +34,6 @@ type SocketMapType = {
     [socketId: string]: SocketInfo;
 };
 
-type GicItemName =
-    | '0'
-    | '1'
-    | '2'
-    | '3'
-    | '4'
-    | '5'
-    | '6'
-    | '7'
-    | '8'
-    | '9'
-    | 'A'
-    | 'B'
-    | 'C'
-    | 'D'
-    | 'E'
-    | 'F'
-    | 'G'
-    | 'H'
-    | 'I'
-    | 'J'
-    | 'K'
-    | 'L'
-    | 'M'
-    | 'N'
-    | 'O'
-    | 'P'
-    | 'Q'
-    | 'R'
-    | 'S'
-    | 'T'
-    | 'U'
-    | 'V'
-    | 'W'
-    | 'X'
-    | 'Y'
-    | 'Z'
-    | 'KEYCHAIN1'
-    | 'KEYCHAIN2'
-    | 'KEYCHAIN3'
-    | 'KEYCHAIN4'
-    | 'CUP1'
-    | 'CUP2'
-    | 'CUP3'
-    | 'CUP4'
-    | 'FIGURE1'
-    | 'FIGURE2'
-    | 'FIGURE3'
-    | 'FIGURE4'
-    | 'TOTE1'
-    | 'TOTE2'
-    | 'TOTE3'
-    | 'TOTE4'
-    | 'FLASK1'
-    | 'FLASK2'
-    | 'FLASK3'
-    | 'FLASK4'
-    | 'MIRROR R'
-    | 'MIRROR SR';
-
-function createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
-    let item: ItemDocument = {
-        ownerId: userId,
-        name: itemName,
-        imgUrl: `https://firebasestorage.googleapis.com/v0/b/gic-web-dev.appspot.com/o/characterPieces%2F${itemName}.png?alt=media`,
-        description: `This is a magical item in GicReward call ${itemName}`,
-        currentPrice: 0,
-        isReceived: false,
-        receivedAt: false,
-        receivedNote: '',
-        isRequestToReceiveItem: false,
-        requestToReceiveItemAt: 0,
-        collectionName: 'GicReward',
-    } as ItemDocument;
-    return item;
-}
-
 class ClientUser {
     private sockets: SocketMapType;
     private userId: any;
@@ -184,6 +44,7 @@ class ClientUser {
     private userData: UserDocument;
     private transactionService: TransactionService;
     private itemService: ItemService;
+    private gicService: GICService;
 
     constructor(
         userId: string,
@@ -192,6 +53,7 @@ class ClientUser {
         userService: UserService,
         transactionService: TransactionService,
         itemService: ItemService,
+        gicService: GICService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -202,6 +64,7 @@ class ClientUser {
         this.userService = userService;
         this.transactionService = transactionService;
         this.itemService = itemService;
+        this.gicService = gicService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -279,7 +142,7 @@ class ClientUser {
                         message:
                             'You have pass first 20 level and claim reward from Club Day',
                     });
-                } catch (err) { }
+                } catch (err) {}
         } else {
             gameSession.save();
         }
@@ -451,15 +314,15 @@ class ClientUser {
                     SYSTEM_ACCOUNT_ID,
                     new Types.ObjectId(this.userId),
                     this.sockets[socketId].scoreQuiz / 10,
-                    `You got ${this.sockets[socketId].scoreQuiz / 10
+                    `You got ${
+                        this.sockets[socketId].scoreQuiz / 10
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
-
-                    this.sendGICReward(
+                    this.sendGICRewardByMathQuiz(
                         socketId,
                         this.userId,
-                        itemName[random(58)],
+                        this.sockets[socketId].scoreQuiz / 10,
                     );
                     Object.keys(connectedUser).map(
                         (userKey: any, index: any) => {
@@ -516,11 +379,16 @@ class ClientUser {
                 SYSTEM_ACCOUNT_ID,
                 new Types.ObjectId(this.userId),
                 this.sockets[socketId].scoreQuiz / 10,
-                `You got ${this.sockets[socketId].scoreQuiz / 10
+                `You got ${
+                    this.sockets[socketId].scoreQuiz / 10
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
-                this.sendGICReward(socketId, this.userId, itemName[random(58)]);
+                this.sendGICRewardByMathQuiz(
+                    socketId,
+                    this.userId,
+                    this.sockets[socketId].scoreQuiz / 10,
+                );
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
@@ -556,13 +424,17 @@ class ClientUser {
         );
     }
 
-    async sendGICReward(
+    async sendGICRewardByMathQuiz(
         socketId: string,
         userId: Types.ObjectId,
-        itemName: GicItemName,
+        score: number,
     ) {
-        const item = await this.itemService.createNewItem(
-            createGicRewardItem(userId, itemName),
+        if (score < 15) return;
+        const item = await this.gicService.sendItemGIC(
+            this.gicService.createGicRewardItem(
+                userId,
+                this.gicService.getRandomItemWithRare(mathQuizRarity),
+            ),
         );
         this.sockets[socketId].socket.emit(EventTypes.GIC_REWARD, item);
     }

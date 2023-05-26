@@ -24,14 +24,14 @@ import {
     MarketplaceController,
     ClubDayController,
     DiscordController,
-    GICController
+    GICController,
 } from './controllers';
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
 import { FileUploadService } from './services/file-upload.service';
 import { CacheService } from './services/cache.service';
-import { GICService } from './services/gic.service';
+import { GICService } from './services/gic/gic.service';
 import { MailService } from './services/mail.service';
 
 // Binding service
@@ -83,10 +83,7 @@ container
     .bind<CacheService>(ServiceType.Cache)
     .to(CacheService)
     .inSingletonScope();
-container
-    .bind<GICService>(ServiceType.GIC)
-    .to(GICService)
-    .inSingletonScope();
+container.bind<GICService>(ServiceType.GIC).to(GICService).inSingletonScope();
 container
     .bind<MailService>(ServiceType.Mail)
     .to(MailService)
