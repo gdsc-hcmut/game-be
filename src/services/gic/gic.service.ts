@@ -242,7 +242,7 @@ export class GICService {
             acc = 0;
 
         Object.keys(rarity).forEach((key: GicRare) => {
-            if (result === null && percent > 100 - rarity[key] - acc)
+            if (result === undefined && percent > 100 - rarity[key] - acc)
                 result = key;
             acc += rarity[key];
         });
