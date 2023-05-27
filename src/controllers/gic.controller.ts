@@ -77,6 +77,15 @@ export class GICController extends Controller {
             `/day/invitedbyme`,
             this.getPeopleUserInvited.bind(this),
         );
+
+        this.router.post(`/gacha`, this.gacha.bind(this));
+        this.router.post(`/gachapack`, this.gachaPack.bind(this));
+
+        this.router.post(
+            `/premiumgacha`,
+            this.downloadIdeaDescription.bind(this),
+        );
+        this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
     }
 
     async getQrCode(req: Request, res: Response) {
@@ -385,6 +394,54 @@ export class GICController extends Controller {
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error);
+        }
+    }
+
+    async gacha(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const item = await this.gicService.gacha(userId);
+            res.composer.success({ item });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async gachaPack(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const items = await this.gicService.gachaPack(userId);
+            res.composer.success({ items });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async premiumGacha(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const item = await this.gicService.premiumGacha(userId);
+            res.composer.success({ item });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async premiumGachaPack(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const items = await this.gicService.premiumGachaPack(userId);
+            res.composer.success({ items });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 }
