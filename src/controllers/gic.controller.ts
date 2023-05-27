@@ -81,10 +81,7 @@ export class GICController extends Controller {
         this.router.post(`/gacha`, this.gacha.bind(this));
         this.router.post(`/gachapack`, this.gachaPack.bind(this));
 
-        this.router.post(
-            `/premiumgacha`,
-            this.downloadIdeaDescription.bind(this),
-        );
+        this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
     }
 
