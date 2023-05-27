@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { IS_PRODUCTION } from "../config";
 
 export function CONTEST_CONFIRMATION_EMAIL(
     receiver: string,
@@ -286,7 +287,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																	dưới.</span
 																>
                                                                 <div>
-																	<a style="display:block;padding:0.75rem 1.25rem;border-radius:0.5rem;color:#fff;text-transform:uppercase;font-size:1rem;text-decoration:none;background-color:#e86357e7;margin:0 auto;text-align:center;width:fit-content;font-family:Arial,sans-serif" href="https://m/${confirmationCode}" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://forms.gle/Ag3ehG4qdW1vWZKJA&amp;source=gmail&amp;ust=1684908126546000&amp;usg=AOvVaw1alecL8PA9aOvd-bNHMvHQ"><b>Confirmation button</b></a>
+																	<a style="display:block;padding:0.75rem 1.25rem;border-radius:0.5rem;color:#fff;text-transform:uppercase;font-size:1rem;text-decoration:none;background-color:#e86357e7;margin:0 auto;text-align:center;width:fit-content;font-family:Arial,sans-serif" href="https://${IS_PRODUCTION ? "dev." : ""}gdsc.app/confirmation/${confirmationCode}" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://forms.gle/Ag3ehG4qdW1vWZKJA&amp;source=gmail&amp;ust=1684908126546000&amp;usg=AOvVaw1alecL8PA9aOvd-bNHMvHQ"><b>Confirmation button</b></a>
 																</div>
 															</p>
 															<p
