@@ -65,10 +65,15 @@ export class GICService {
         });
     }
 
-    async findCurrentContestRegistration(userId: Types.ObjectId) {
+    async findCurrentContestRegistration(email: string) {
         return await GICContestRegModel.findOne({
-            registeredBy: userId,
-            status: ContestRegStatus.REGISTERED,
+            status: { $ne: ContestRegStatus.CANCELLED },
+            members: {
+                $elemMatch: {
+                    email: email,
+                    confirmed: true
+                }
+            }
         });
     }
 
@@ -76,13 +81,21 @@ export class GICService {
         return (
             (await GICContestRegModel.findOne({
                 registeredBy: userId,
-                status: ContestRegStatus.REGISTERED,
+                status: { $ne: ContestRegStatus.CANCELLED }
             })) != null
         );
+    }
+    
+    async emailHasTeam(email: string) {
+        return (await this.findCurrentContestRegistration(email)) != null
     }
 
     async findOneContestRegAndUpdate(x: any, y: any) {
         return await GICContestRegModel.findOneAndUpdate(x, y);
+    }
+    
+    async findContestRegById(id: Types.ObjectId) {
+        return await GICContestRegModel.findById(id)
     }
 
     // FOR DAY REGISTRATION

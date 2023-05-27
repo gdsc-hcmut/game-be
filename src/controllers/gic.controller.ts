@@ -15,15 +15,33 @@ import DayRegModel, {
 import { UploadValidator } from '../lib/upload-validator/upload-validator';
 import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-validator-strategies';
 import { MailService } from '../services/mail.service';
-import { USER_ROLES } from '../models/user.model';
+import User, { USER_ROLES } from '../models/user.model';
 import { FileUploadService } from '../services/file-upload.service';
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
 import {
+    CONTEST_CONFIRMATION_EMAIL,
     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
 } from '../constant';
+import * as crypto from "crypto"
+
+const ENCRYPTION_KEY = "abqheuqo$5llamcb13%p78p#l4Bn561#"
+const ENCRYPTION_IV = "5183666c72eec9e4"
+
+const aes256_encrypt = ((val: string) => {
+    let cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, ENCRYPTION_IV);
+    let encrypted = cipher.update(val, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    return encrypted;
+});
+  
+const aes256_decrypt = ((encrypted: string) => {
+    let decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, ENCRYPTION_IV);
+    let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+    return decrypted + decipher.final("utf8");
+});
 
 @injectable()
 export class GICController extends Controller {
@@ -41,8 +59,9 @@ export class GICController extends Controller {
         super();
 
         this.router.get(`/qr/:content`, this.getQrCode.bind(this));
+        this.router.post(`/contest/confirm`, this.confirmContest.bind(this))
 
-        this.router.all('*', this.authService.authenticate(false));
+        this.router.all('*', this.authService.authenticate());
         this.router.post(
             `/contest/register`,
             authService.authenticate(),
@@ -118,7 +137,7 @@ export class GICController extends Controller {
                 throw new Error(`A team can consist of at most 3 people`);
             }
 
-            let leaderPresent = false;
+            let selfPresent = false;
             for (const [i, mem] of members.entries()) {
                 if (!mem[`name`])
                     throw new Error(`Member ${i + 1} missing fullname`);
@@ -128,10 +147,16 @@ export class GICController extends Controller {
                     throw new Error(`Member ${i + 1} missing school`);
                 if (!mem[`major`])
                     throw new Error(`Member ${i + 1} missing major`);
-                mem[`confirmed`] = false;
-                leaderPresent = leaderPresent || mem[`email`] === user.email;
+                mem[`confirmed`] = mem.email === user.email
+                selfPresent = selfPresent || mem[`confirmed`]
             }
-            if (!leaderPresent) {
+            
+            // all emails must be unique
+            if ((new Set(members.map(x => x.email))).size != members.length) {
+                throw new Error(`Given emails are not unique`)
+            }
+
+            if (!selfPresent) {
                 throw new Error(`Team doesn't contain yourself`);
             }
 
@@ -139,11 +164,21 @@ export class GICController extends Controller {
                 req.files as Express.Multer.File[],
             );
 
-            if (await this.gicService.userHasRegisteredContest(userId)) {
-                throw new Error(
-                    `You have already already registered your idea`,
-                );
-            }
+            // check if any users are already in a contest, or the person registering
+            // has registered another idea
+            await Promise.all(
+                members.map(mem => (async () => {
+                    if (await this.gicService.emailHasTeam(mem.email)) {
+                        throw new Error(`A user on your team already has a team`)
+                    }
+                    if (
+                        mem.email === user.email &&
+                        (await this.gicService.userHasRegisteredContest(userId))
+                    ) {
+                        throw new Error(`You have already registered your idea`)
+                    }
+                })())
+            )
 
             const result = await this.gicService.registerContest(
                 userId,
@@ -154,13 +189,31 @@ export class GICController extends Controller {
             );
 
             // TODO: send confirmation email, different for the person who registered and others
-            members.forEach((m) =>
-                this.mailService.sendToOne(
-                    m.email,
-                    '[GDSC Idea Contest 2023] Confirm Contest Registration',
-                    CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
-                ),
-            );
+            for (const m of members) {
+                if (m.confirmed) {
+                    this.mailService.sendToOne(
+                        m.email,
+                        "[GDSC Idea Contest 2023] Idea Registration Successful",
+                        CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
+                            m.name,
+                            ideaName
+                        )
+                    )
+                } else {
+                    this.mailService.sendToOne(
+                        m.email,
+                        "[GDSC Idea Contest 2023] Confirm Contest Registration",
+                        CONTEST_CONFIRMATION_EMAIL(
+                            m.name,
+                            ideaName,
+                            aes256_encrypt(JSON.stringify({
+                                regId: result._id,
+                                email: m.email
+                            }))
+                        )
+                    )
+                }
+            }
 
             res.composer.success(result);
         } catch (error) {
@@ -177,7 +230,7 @@ export class GICController extends Controller {
                 { status: ContestRegStatus.CANCELLED },
             );
             if (!reg) {
-                throw new Error(`Registration not found`);
+                throw new Error(`Contest registration not found, or your team has already checked in`);
             }
             res.composer.success(reg);
         } catch (error) {
@@ -189,10 +242,9 @@ export class GICController extends Controller {
     async getRegisteredContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const user = await this.userService.findById(userId)
 
-            const ans = await this.gicService.findCurrentContestRegistration(
-                userId,
-            );
+            const ans = await this.gicService.findCurrentContestRegistration(user.email);
             res.composer.success(!ans ? {} : ans);
         } catch (error) {
             console.log(error);
@@ -203,10 +255,9 @@ export class GICController extends Controller {
     async downloadIdeaDescription(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const user = await this.userService.findById(userId)
 
-            const reg = await this.gicService.findCurrentContestRegistration(
-                userId,
-            );
+            const reg = await this.gicService.findCurrentContestRegistration(user.email);
             if (!reg) {
                 throw new Error(`Contest registration not found`);
             }
@@ -223,6 +274,44 @@ export class GICController extends Controller {
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
+        }
+    }
+    
+    async confirmContest(req: Request, res: Response) {
+        try {
+            if (!req.body.code) {
+                throw new Error(`Missing code`)
+            }
+            const data = JSON.parse(aes256_decrypt(req.body.code))
+            if (!data.email || !data.regId) {
+                throw new Error(`Invalid confirmation code`)
+            }
+            const email = data.email as string
+            const regId = new Types.ObjectId(data.regId)
+            
+            const reg = await this.gicService.findContestRegById(regId)
+            if (!reg) {
+                throw new Error(`Registration not found`)
+            }
+            let i = -1;
+            for (let j = 0; j < reg.members.length; j++) {
+                if (reg.members[j].email === email) {
+                    i = j
+                }
+            }
+            if (i === -1) {
+                throw new Error(`You are not in this team`)
+            }
+            if (reg.members[i].confirmed) {
+                throw new Error(`You have already joined this team`)
+            }
+            
+            reg.members[i].confirmed = true
+            await reg.save()
+            res.composer.success(reg)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
         }
     }
 
