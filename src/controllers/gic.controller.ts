@@ -43,6 +43,24 @@ const aes256_decrypt = ((encrypted: string) => {
     return decrypted + decipher.final("utf8");
 });
 
+function blockIfLaterThan(x: number, m: string = `This action has been disabled`) {
+    if (Date.now() > x) {
+        throw new Error(m)
+    }
+}
+
+enum GIC_TIMESTAMPS {
+    DAY_1_START = 1686448800000,
+    DAY_1_END = 1686457500000,
+    DAY_2_START = 1686457500000,
+    DAY_2_END = 1686752100000,
+    DAY_3_START = 1686967200000,
+    DAY_3_END = 1686976200000,
+    DAY_5_START = 1687658400000,
+    DAY_5_END = 1687670100000,
+    IDEA_SUBMISSION_DEADLINE = 1687093200000
+}
+
 @injectable()
 export class GICController extends Controller {
     public readonly router = Router();
@@ -141,6 +159,8 @@ export class GICController extends Controller {
 
     async registerContest(req: Request, res: Response) {
         try {
+            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE)
+
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             
             // block spamming
@@ -248,6 +268,8 @@ export class GICController extends Controller {
 
     async unregisterContest(req: Request, res: Response) {
         try {
+            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE)
+
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const reg = await this.gicService.findOneContestRegAndUpdate(
                 { registeredBy: userId, status: ContestRegStatus.REGISTERED },
@@ -353,6 +375,12 @@ export class GICController extends Controller {
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3 and 5`);
             }
+            
+            // block registering after end time
+            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_END)
+            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_END)
+            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_END)
+            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_END)
 
             // block spamming
             if (true || !IS_PRODUCTION) {
@@ -435,6 +463,12 @@ export class GICController extends Controller {
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3, and 5`);
             }
+            
+            // block unregistering after some date
+            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_START)
+            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_START)
+            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_START)
+            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_START)
 
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
                 throw new Error(
