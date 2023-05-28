@@ -271,7 +271,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/">tại đây</a>. </span
+																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/contestant">tại đây</a>. </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1786,7 +1786,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/">tại đây</a></span
+																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/contestant">tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;
