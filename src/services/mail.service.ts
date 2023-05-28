@@ -14,6 +14,14 @@ export class MailService {
         this.init()
     }
     
+    convertToBase64(m: string) {
+        return Buffer.from(m)
+            .toString('base64')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+    
     async init() {
         this.auth = new google.auth.JWT({
             scopes: [
@@ -32,16 +40,12 @@ export class MailService {
     
     async sendToOne(email: string, subject: string, message: string, contentType: string = `text/html`) {
         const m = `To: ${email}\n` +
-                  `Subject: ${subject}\n` +
-                  `Content-Type: ${contentType}\n` +
+                  `Subject: =?utf-8?B?${this.convertToBase64(subject)}?=\n` +
+                  `Content-Type: ${contentType}; charset="UTF-8"\n` +
                   `\n` +
                   `${message}`
 
-        const encodedMessage = Buffer.from(m)
-            .toString('base64')
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
+        const encodedMessage = this.convertToBase64(m)
 
         let waitTime = 1000 + randInt(0, 1001)
         for (let i = 0; i < this.NUM_RETRY; i++) {

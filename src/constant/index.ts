@@ -2999,11 +2999,11 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
     `
 }
 
-export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
+export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    encodedRegistrationId: string // encoded id of registration document
+    encodedRegistrationId: string, // encoded id of registration document
+    eventName: string
 ) {
-    console.log(encodedRegistrationId)
     return `
     <div dir="ltr">
 	<div
@@ -3248,7 +3248,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>[Event name] </span
+																	>${eventName} </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -3291,7 +3291,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 															</p>
 															<div
 																style="
-																	display: flex;
+                                                                    text-align: center;
 																	justify-content: center;
 																	margin-bottom: 10pt;
 																">
@@ -3660,7 +3660,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																			>. 6 đội được bình chọn đó sẽ trình bày ý
 																			tưởng sau đó các khán giả và giám khảo sẽ
 																			bình chọn cho đội thắng cuộc. Các bạn vẫn
-																			có thể đăng kí trực tiếp tại </span
+																			có thể đăng kí trực tiếp </span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3672,7 +3672,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
+																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/registry">tại đây</a></span
 																		>
 																	</p>
 																</li>
@@ -3709,19 +3709,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>[GDSC game name] </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 400;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>tại </span
+																			>GIC Game</span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3733,7 +3721,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
+																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/campaign"> tại đây</a></span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3759,31 +3747,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				text-decoration: none;
 																			"
 																			>thú vị và là giới hạn</span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 400;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			">
-																			tại website của chúng mình </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(74, 134, 232);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>game.gdsc.app.</span
-																		>
+                                                                        >
 																	</p>
 																</li>
 															</ul>
@@ -4429,7 +4393,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 															</p>
 															<div
 																style="
-																	display: flex;
+                                                                    text-align: center;
 																	justify-content: center;
 																	margin-bottom: 10pt;
 																">
@@ -4646,19 +4610,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>[GDSC game name]</span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 400;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	">
-																	tại </span
+																	>GIC Game</span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -4670,7 +4622,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
+																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/campaign/"> tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -4696,30 +4648,6 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		text-decoration: none;
 																	"
 																	>thú vị và giới hạn</span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 400;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	">
-																	tại website của chúng mình </span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(74, 134, 232);
-																		background-color: transparent;
-																		font-weight: 700;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	"
-																	>game.gdsc.app.</span
 																>
 															</p>
 															<p

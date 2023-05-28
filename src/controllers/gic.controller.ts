@@ -22,7 +22,7 @@ import QRCode from 'qrcode';
 import {
     CONTEST_CONFIRMATION_EMAIL,
     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL,
-    DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL,
+    DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
 } from '../constant';
 import * as crypto from "crypto"
@@ -326,8 +326,8 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const day = parseInt(req.params.day);
-            if (!(1 <= day && day <= 5)) {
-                throw new Error(`Can only register for days 1 through 5`);
+            if (!(1 <= day && day <= 5) || day === 4) {
+                throw new Error(`Can only register for days 1, 2, 3 and 5`);
             }
 
             if (await this.gicService.userHasRegisteredDay(userId, day)) {
@@ -365,20 +365,33 @@ export class GICController extends Controller {
             }
 
             // send confirmation email
+            const EVENT_NAME_LIST = [
+                "Khai mạc GIC",
+                "Seminar 1: Thiết kế ý tưởng",
+                "Seminar 2: Trình bày ý tưởng",
+            ]
+
             const user = await this.userService.findById(userId);
-            this.mailService.sendToOne(
-                user.email,
-                `[GDSC Idea Contest 2023] Event Day ${day} Registration Successful`,
-                day != 5
-                    ? DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
-                          user.name,
-                          aes256_encrypt(result._id.toString())
-                      )
-                    : DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
-                          user.name,
-                          aes256_encrypt(result._id.toString()),
-                      ),
-            );
+            if (day != 5) {
+                this.mailService.sendToOne(
+                    user.email,
+                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]}"`,
+                    DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
+                        user.name,
+                        aes256_encrypt(result._id.toString()),
+                        EVENT_NAME_LIST[day - 1]
+                    )
+                )
+            } else {
+                this.mailService.sendToOne(
+                    user.email,
+                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "Idea Showcase"`,
+                    DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
+                        user.name,
+                        aes256_encrypt(result._id.toString()),
+                    )
+                )
+            }
 
             res.composer.success(result);
         } catch (error) {
@@ -391,8 +404,8 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const day = parseInt(req.params.day);
-            if (!(1 <= day && day <= 5)) {
-                throw new Error(`Can only register for days 1 through 5`);
+            if (!(1 <= day && day <= 5) || day === 4) {
+                throw new Error(`Can only register for days 1, 2, 3, and 5`);
             }
 
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
