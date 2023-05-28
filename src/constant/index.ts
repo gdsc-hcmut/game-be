@@ -991,7 +991,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>23/06</span
+																	>22/06</span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -2475,7 +2475,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>23/06</span
+																	>22/06</span
 																><span
 																	style="
 																		font-size: 12pt;
