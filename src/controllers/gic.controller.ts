@@ -82,6 +82,7 @@ export class GICController extends Controller {
         this.router.all('*', this.authService.authenticate());
         
         this.router.get(`/allmail`, this.getAllMail.bind(this))
+        this.router.get(`/myqr`, this.getMyQr.bind(this))
 
         this.router.post(
             `/contest/register`,
@@ -153,6 +154,18 @@ export class GICController extends Controller {
             qrStream.pipe(res);
         } catch (err) {
             console.log(err);
+        }
+    }
+    
+    async getMyQr(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const data = { userId: userId.toString() }
+            const encoded = aes256_encrypt(JSON.stringify(data))
+            res.composer.success(encoded)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
         }
     }
     // API'S FOR CONTEST
@@ -444,7 +457,7 @@ export class GICController extends Controller {
                     `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "Idea Showcase"`,
                     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
-                        aes256_encrypt(result._id.toString()),
+                        aes256_encrypt(JSON.stringify({ userId: userId.toString })),
                     )
                 )
             }
