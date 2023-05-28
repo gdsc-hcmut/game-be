@@ -271,7 +271,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>[Link]. </span
+																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a>. </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1783,7 +1783,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>[Link]</span
+																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -3001,8 +3001,9 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 
 export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    idForQR: Types.ObjectId // id of the registration record
+    encodedRegistrationId: string // encoded id of registration document
 ) {
+    console.log(encodedRegistrationId)
     return `
     <div dir="ltr">
 	<div
@@ -3295,7 +3296,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																	margin-bottom: 10pt;
 																">
 																<img
-																	src="https://dev.api.fessior.com/gic/qr/${idForQR.toString()}"
+																	src="https://dev.api.fessior.com/gic/qr?content=${encodedRegistrationId}"
 																	style="width: 40%" />
 															</div>
 															<p
@@ -3671,7 +3672,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>[Link].</span
+																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
 																		>
 																	</p>
 																</li>
@@ -3732,7 +3733,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>[Link]</span
+																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -4141,7 +4142,7 @@ export function DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
 
 export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    idForQR: Types.ObjectId
+    encodedRegistrationId: string
 ) {
     return `
     <div dir="ltr">
@@ -4433,7 +4434,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																	margin-bottom: 10pt;
 																">
 																<img
-																	src="https://dev.api.fessior.com/gic/qr/${idForQR.toString()}"
+																	src="https://dev.api.fessior.com/gic/qr?content=${encodedRegistrationId}"
 																	style="width: 40%" />
 															</div>
 															<p
@@ -4669,7 +4670,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>[Link]</span
+																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;

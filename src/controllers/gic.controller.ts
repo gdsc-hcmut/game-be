@@ -58,7 +58,7 @@ export class GICController extends Controller {
     ) {
         super();
 
-        this.router.get(`/qr/:content`, this.getQrCode.bind(this));
+        this.router.get(`/qr`, this.getQrCode.bind(this));
         this.router.post(`/contest/confirm`, this.confirmContest.bind(this))
 
         this.router.all('*', this.authService.authenticate());
@@ -106,7 +106,7 @@ export class GICController extends Controller {
 
     async getQrCode(req: Request, res: Response) {
         try {
-            const content = req.params.content;
+            const content = req.query.content as string;
             const qrStream = new PassThrough();
             const result = await QRCode.toFileStream(qrStream, content, {
                 type: 'png',
@@ -372,11 +372,11 @@ export class GICController extends Controller {
                 day != 5
                     ? DAY_1_4_REGISTRATION_SUCCESSFUL_EMAIL(
                           user.name,
-                          result._id,
+                          aes256_encrypt(result._id.toString())
                       )
                     : DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
                           user.name,
-                          result._id,
+                          aes256_encrypt(result._id.toString()),
                       ),
             );
 
