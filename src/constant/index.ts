@@ -1272,7 +1272,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																			vertical-align: baseline;
 																			white-space: pre-wrap;
 																		"
-																		>Google Developer Student Club</span
+																		>Google Developer Student Club - HCMUT</span
 																	><span
 																		style="
 																			font-size: 13pt;
@@ -1295,8 +1295,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																			font-variant-east-asian: normal;
 																			font-variant-alternates: normal;
 																		"
-																		>Ho Chi Minh City University of
-																		Technology</span
+																		>GDSC Idea Contest</span
 																	>
 																</p>
 																<p
@@ -2757,7 +2756,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																			vertical-align: baseline;
 																			white-space: pre-wrap;
 																		"
-																		>Google Developer Student Club</span
+																		>Google Developer Student Club - HCMUT</span
 																	><span
 																		style="
 																			font-size: 13pt;
@@ -2780,8 +2779,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																			font-variant-east-asian: normal;
 																			font-variant-alternates: normal;
 																		"
-																		>Ho Chi Minh City University of
-																		Technology</span
+																		>GDSC Idea Contest</span
 																	>
 																</p>
 																<p
@@ -3836,7 +3834,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																			font-variant-east-asian: normal;
 																			font-variant-alternates: normal;
 																		"
-																		>Google Developer Student Club</span
+																		>Google Developer Student Club - HCMUT</span
 																	><span
 																		style="
 																			font-size: 13pt;
@@ -3859,8 +3857,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																			font-variant-east-asian: normal;
 																			font-variant-alternates: normal;
 																		"
-																		>Ho Chi Minh City University of
-																		Technology</span
+																		>GDSC Idea Contest</span
 																	>
 																</p>
 																<p
@@ -4739,7 +4736,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																			vertical-align: baseline;
 																			white-space: pre-wrap;
 																		"
-																		>Google Developer Student Club</span
+																		>Google Developer Student Club - HCMUT</span
 																	><span
 																		style="
 																			font-size: 13pt;
@@ -4766,8 +4763,7 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																			vertical-align: baseline;
 																			white-space: pre-wrap;
 																		"
-																		>Ho Chi Minh City University of
-																		Technology</span
+																		>GDSC Idea Contest</span
 																	>
 																</p>
 																<p
