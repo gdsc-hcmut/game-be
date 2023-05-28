@@ -63,6 +63,11 @@ export class AuthController extends Controller {
                             (req?.session?.lastQuery?.domain as Domain) ??
                                 'game'
                         ];
+                    let redirectLink = '';
+                    if (req?.session?.lastQuery?.redirect) {
+                        redirectLink = req?.session?.lastQuery?.redirect;
+                    }
+
                     console.log(req.session.lastQuery);
 
                     // track login information
@@ -74,6 +79,10 @@ export class AuthController extends Controller {
                     });
 
                     if (process.env.ENV != 'dev') {
+                        if (redirectLink && redirectLink != '') {
+                            res.redirect(`${redirectLink}?token=${token}`);
+                            return;
+                        }
                         res.redirect(
                             `https://${redirectDomain}/login?token=${token}`,
                         );
@@ -85,6 +94,10 @@ export class AuthController extends Controller {
                             user.email,
                         )
                     ) {
+                        if (redirectLink && redirectLink != '') {
+                            res.redirect(`${redirectLink}?token=${token}`);
+                            return;
+                        }
                         res.redirect(
                             `https://dev.${redirectDomain}/login?token=${token}`,
                         );
