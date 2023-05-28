@@ -193,7 +193,7 @@ export class GICController extends Controller {
                 if (m.confirmed) {
                     this.mailService.sendToOne(
                         m.email,
-                        "[GDSC Idea Contest 2023] Idea Registration Successful",
+                        "[GDSC Idea Contest 2023] Đăng ký dự thi thành công",
                         CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
                             m.name,
                             ideaName
@@ -202,7 +202,7 @@ export class GICController extends Controller {
                 } else {
                     this.mailService.sendToOne(
                         m.email,
-                        "[GDSC Idea Contest 2023] Confirm Contest Registration",
+                        "[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi",
                         CONTEST_CONFIRMATION_EMAIL(
                             m.name,
                             ideaName,
