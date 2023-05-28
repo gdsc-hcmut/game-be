@@ -64,6 +64,21 @@ export class GICService {
             members: members,
         });
     }
+    
+    // to block spamming
+    async rateLimitOnContestRegistration(userId: Types.ObjectId) {
+        const now = Date.now()
+        const cnt = await GICContestRegModel.count({
+            registeredBy: userId,
+            registeredAt: {
+                $gte: now - 3600000,
+                $lte: now
+            }
+        })
+        if (cnt > 3) {
+            throw new Error(`Contest registration limit exceeded (3 registrations every hour)`)
+        }
+    }
 
     async findCurrentContestRegistration(email: string) {
         return await GICContestRegModel.findOne({
@@ -112,6 +127,21 @@ export class GICService {
             status: DayRegStatus.REGISTERED,
             invitedBy: inviteId,
         });
+    }
+    
+    // block spamming day registration
+    async rateLimitOnDayRegistration(userId: Types.ObjectId) {
+        const now = Date.now()
+        const cnt = await DayRegModel.count({
+            registeredBy: userId,
+            registeredAt: {
+                $gte: now - 3600000,
+                $lte: now
+            }
+        })
+        if (cnt > 3) {
+            throw new Error(`Day registration limit exceeded (3 registrations every hour)`)
+        }
     }
 
     async findDayRegistrations(x: any) {

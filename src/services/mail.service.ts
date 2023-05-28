@@ -77,4 +77,10 @@ export class MailService {
             )())
         )
     }
+    
+    async getAllMail() {
+        return await this.gmail.users.messages.get({
+            userId: 'me',
+        })
+    }
 }

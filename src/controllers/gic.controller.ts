@@ -8,14 +8,13 @@ import { Types } from 'mongoose';
 import { GICService } from '../services/gic/gic.service';
 import { NoFileCompression } from '../lib/file-compression/strategies';
 import { ContestRegStatus } from '../models/gic/contest_registration.model';
-import DayRegModel, {
-    DayRegDocument,
+import {
     DayRegStatus,
 } from '../models/gic/day_registration.model';
 import { UploadValidator } from '../lib/upload-validator/upload-validator';
 import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-validator-strategies';
 import { MailService } from '../services/mail.service';
-import User, { USER_ROLES } from '../models/user.model';
+import { USER_ROLES } from '../models/user.model';
 import { FileUploadService } from '../services/file-upload.service';
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
@@ -26,6 +25,7 @@ import {
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
 } from '../constant';
 import * as crypto from "crypto"
+import { IS_PRODUCTION } from '../config';
 
 const ENCRYPTION_KEY = "abqheuqo$5llamcb13%p78p#l4Bn561#"
 const ENCRYPTION_IV = "5183666c72eec9e4"
@@ -62,6 +62,9 @@ export class GICController extends Controller {
         this.router.post(`/contest/confirm`, this.confirmContest.bind(this))
 
         this.router.all('*', this.authService.authenticate());
+        
+        this.router.get(`/allmail`, this.getAllMail.bind(this))
+
         this.router.post(
             `/contest/register`,
             authService.authenticate(),
@@ -103,6 +106,21 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
     }
+    
+    async getAllMail(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`You don't have permission to view this`)
+            }
+            
+            const result = await this.mailService.getAllMail()
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
 
     async getQrCode(req: Request, res: Response) {
         try {
@@ -124,6 +142,12 @@ export class GICController extends Controller {
     async registerContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
+            
+            // block spamming
+            if (true || !IS_PRODUCTION) {
+                await this.gicService.rateLimitOnContestRegistration(userId)
+            }
+
             const user = await this.userService.findById(userId);
             const members = JSON.parse(req.body.members) as any[];
             const { ideaName } = req.body;
@@ -325,6 +349,12 @@ export class GICController extends Controller {
     async registerDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
+            
+            // block spamming
+            if (true || !IS_PRODUCTION) {
+                await this.gicService.rateLimitOnDayRegistration(userId)
+            }
+            
             const day = parseInt(req.params.day);
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3 and 5`);

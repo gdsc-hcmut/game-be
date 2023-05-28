@@ -17,6 +17,7 @@ export enum USER_ROLES {
     USER = 'USER',
     GAME_BOT = 'GAME_BOT',
     SUPER_ADMIN = 'SUPER_ADMIN',
+    GIC_ADMIN = 'GIC_ADMIN',
 }
 
 const Schema = mongoose.Schema;
