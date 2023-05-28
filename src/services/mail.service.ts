@@ -39,7 +39,8 @@ export class MailService {
     }
     
     async sendToOne(email: string, subject: string, message: string, contentType: string = `text/html`) {
-        const m = `To: ${email}\n` +
+        const m = `From: GDSC Idea Contest <admin@fessior.com>\n` +
+                  `To: ${email}\n` +
                   `Subject: =?utf-8?B?${this.convertToBase64(subject)}?=\n` +
                   `Content-Type: ${contentType}; charset="UTF-8"\n` +
                   `\n` +
