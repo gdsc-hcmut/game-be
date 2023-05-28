@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
-import { IS_PRODUCTION } from "../config";
+import { Types } from 'mongoose';
+import { IS_PRODUCTION } from '../config';
 
 export function CONTEST_CONFIRMATION_EMAIL(
     receiver: string,
     teamName: string,
-    confirmationCode: string
+    confirmationCode: string,
 ) {
     return `
     <div dir="ltr">
@@ -271,7 +271,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a>. </span
+																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/">tại đây</a>. </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -287,7 +287,11 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																	dưới.</span
 																>
                                                                 <div>
-																	<a style="display:block;padding:0.75rem 1.25rem;border-radius:0.5rem;color:#fff;text-transform:uppercase;font-size:1rem;text-decoration:none;background-color:#e86357e7;margin:0 auto;text-align:center;width:fit-content;font-family:Arial,sans-serif" href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/confirmation?code=${confirmationCode}" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://forms.gle/Ag3ehG4qdW1vWZKJA&amp;source=gmail&amp;ust=1684908126546000&amp;usg=AOvVaw1alecL8PA9aOvd-bNHMvHQ"><b>Xác nhận đăng ký</b></a>
+																	<a style="display:block;padding:0.75rem 1.25rem;border-radius:0.5rem;color:#fff;text-transform:uppercase;font-size:1rem;text-decoration:none;background-color:#e86357e7;margin:0 auto;text-align:center;width:fit-content;font-family:Arial,sans-serif" href="https://${
+                                                                        IS_PRODUCTION
+                                                                            ? ''
+                                                                            : 'dev.'
+                                                                    }gdsc.app/confirmation?code=${confirmationCode}" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://forms.gle/Ag3ehG4qdW1vWZKJA&amp;source=gmail&amp;ust=1684908126546000&amp;usg=AOvVaw1alecL8PA9aOvd-bNHMvHQ"><b>Xác nhận đăng ký</b></a>
 																</div>
 															</p>
 															<p
@@ -1510,7 +1514,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 	</div>
 	<br />
 </div>
-    `
+    `;
 }
 
 export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
@@ -1782,7 +1786,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/">tại đây</a></span
+																	><a href="https://${IS_PRODUCTION ? '' : 'dev.'}gdsc.app/">tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -2994,14 +2998,14 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 	</div>
 	<br />
 </div>
-    `
+    `;
 }
 
 export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
     eventName: string,
     eventTime: string,
-    eventDescription: string
+    eventDescription: string,
 ) {
     return `
     <div dir="ltr">
@@ -3629,8 +3633,8 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. 6 đội được bình chọn đó sẽ trình bày ý
-																			tưởng sau đó các khán giả và giám khảo sẽ
+																			>. 6 đội được bình chọn sẽ trình bày ý
+																			tưởng. Khán giả và giám khảo sẽ
 																			bình chọn cho đội thắng cuộc. Các bạn vẫn
 																			có thể đăng kí trực tiếp </span
 																		><span
@@ -3644,7 +3648,11 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/registry">tại đây</a></span
+																			><a href="https://${
+                                                                                IS_PRODUCTION
+                                                                                    ? ''
+                                                                                    : 'dev.'
+                                                                            }gdsc.app/registry">tại đây</a></span
 																		>
 																	</p>
 																</li>
@@ -3693,7 +3701,11 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/campaign"> tại đây</a></span
+																			><a href="https://${
+                                                                                IS_PRODUCTION
+                                                                                    ? ''
+                                                                                    : 'dev.'
+                                                                            }gdsc.app/campaign"> tại đây</a></span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -4072,12 +4084,12 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 	</div>
 	<br />
 </div>
-    `
+    `;
 }
 
 export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    encodedRegistrationId: string
+    encodedRegistrationId: string,
 ) {
     return `
     <div dir="ltr">
@@ -4593,7 +4605,11 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	><a href="https://${IS_PRODUCTION ? "" : "dev."}gdsc.app/campaign/"> tại đây</a></span
+																	><a href="https://${
+                                                                        IS_PRODUCTION
+                                                                            ? ''
+                                                                            : 'dev.'
+                                                                    }gdsc.app/campaign/"> tại đây</a></span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -4986,5 +5002,5 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 	</div>
 	<br />
 </div>
-    `
+    `;
 }
