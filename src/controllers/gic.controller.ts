@@ -164,7 +164,7 @@ export class GICController extends Controller {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             
             // block spamming
-            if (true || !IS_PRODUCTION) {
+            if (IS_PRODUCTION) {
                 await this.gicService.rateLimitOnContestRegistration(userId)
             }
 
@@ -383,7 +383,7 @@ export class GICController extends Controller {
             else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_END)
 
             // block spamming
-            if (true || !IS_PRODUCTION) {
+            if (IS_PRODUCTION) {
                 await this.gicService.rateLimitOnDayRegistration(userId, day)
             }
 
