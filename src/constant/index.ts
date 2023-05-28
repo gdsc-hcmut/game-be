@@ -3001,7 +3001,6 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 
 export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    encodedRegistrationId: string, // encoded id of registration document
     eventName: string
 ) {
     return `
@@ -3273,32 +3272,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																		text-decoration: none;
 																	"
 																	>GDSC Idea Contest: THiNK 2023. </span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 400;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	"
-																	>Đây sẽ là mã QR code dùng để checkin sự kiện
-																	cũng như tham gia các hoạt động của chuỗi cuộc
-																	thi.</span
 																>
-															</p>
-															<div
-																style="
-                                                                    text-align: center;
-																	justify-content: center;
-																	margin-bottom: 10pt;
-																">
-																<img
-																	src="https://dev.api.fessior.com/gic/qr?content=${encodedRegistrationId}"
-																	style="width: 40%" />
-															</div>
 															<p
 																dir="ltr"
 																style="

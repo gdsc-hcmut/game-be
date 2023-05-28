@@ -378,7 +378,6 @@ export class GICController extends Controller {
                     `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]}"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
-                        aes256_encrypt(result._id.toString()),
                         EVENT_NAME_LIST[day - 1]
                     )
                 )
