@@ -917,7 +917,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID:</span
+																			>ID: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
@@ -954,7 +954,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password:</span
+																			>Password: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
@@ -2401,7 +2401,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID:</span
+																			>ID: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
@@ -2438,7 +2438,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password:</span
+																			>Password: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
@@ -3475,7 +3475,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID:</span
+																			>ID: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
@@ -3512,7 +3512,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password:</span
+																			>Password: Sẽ được cập nhật sau</span
 																		>
 																	</p>
 																</li>
