@@ -34,7 +34,7 @@ export class AuthController extends Controller {
         // Confing child routes
         this.router.post('/login', this.login.bind(this));
         this.router.get(
-            '/google',
+            '/google?disallow_webview=true',
             (req, res, next) => {
                 req.session.lastQuery = req.query;
                 return next();
