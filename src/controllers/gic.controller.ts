@@ -349,15 +349,14 @@ export class GICController extends Controller {
     async registerDay(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            
-            // block spamming
-            if (true || !IS_PRODUCTION) {
-                await this.gicService.rateLimitOnDayRegistration(userId)
-            }
-            
             const day = parseInt(req.params.day);
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3 and 5`);
+            }
+
+            // block spamming
+            if (true || !IS_PRODUCTION) {
+                await this.gicService.rateLimitOnDayRegistration(userId, day)
             }
 
             if (await this.gicService.userHasRegisteredDay(userId, day)) {

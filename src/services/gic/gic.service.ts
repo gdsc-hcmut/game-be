@@ -130,10 +130,11 @@ export class GICService {
     }
     
     // block spamming day registration
-    async rateLimitOnDayRegistration(userId: Types.ObjectId) {
+    async rateLimitOnDayRegistration(userId: Types.ObjectId, day: number) {
         const now = Date.now()
         const cnt = await DayRegModel.count({
             registeredBy: userId,
+            day: day,
             registeredAt: {
                 $gte: now - 3600000,
                 $lte: now
