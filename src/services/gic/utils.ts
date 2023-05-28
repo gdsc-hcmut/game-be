@@ -171,8 +171,8 @@ export const gachaRarity: GicRarity = {
     C: 0,
     UC: 45,
     R: 30,
-    SR: 20,
-    SSR: 5,
+    SR: 24.5,
+    SSR: 0.5,
     LIMITED: 0,
     MSR: 0,
     MSSR: 0,
@@ -181,10 +181,10 @@ export const gachaRarity: GicRarity = {
 export const premiumGachaRarity: GicRarity = {
     // Premium Gacha
     C: 0,
-    UC: 40,
+    UC: 45,
     R: 25,
-    SR: 25,
-    SSR: 10,
+    SR: 28,
+    SSR: 2,
     LIMITED: 0,
     MSR: 0,
     MSSR: 0,
@@ -255,4 +255,3 @@ export type GicItemName =
     | 'FLASK4'
     | 'MIRROR R'
     | 'MIRROR SR';
-
