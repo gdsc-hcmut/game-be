@@ -64,19 +64,21 @@ export class GICService {
             members: members,
         });
     }
-    
+
     // to block spamming
     async rateLimitOnContestRegistration(userId: Types.ObjectId) {
-        const now = Date.now()
+        const now = Date.now();
         const cnt = await GICContestRegModel.count({
             registeredBy: userId,
             registeredAt: {
                 $gte: now - 3600000,
-                $lte: now
-            }
-        })
+                $lte: now,
+            },
+        });
         if (cnt > 3) {
-            throw new Error(`Contest registration limit exceeded (3 registrations every hour)`)
+            throw new Error(
+                `Contest registration limit exceeded (3 registrations every hour)`,
+            );
         }
     }
 
@@ -86,9 +88,9 @@ export class GICService {
             members: {
                 $elemMatch: {
                     email: email,
-                    confirmed: true
-                }
-            }
+                    confirmed: true,
+                },
+            },
         });
     }
 
@@ -96,21 +98,21 @@ export class GICService {
         return (
             (await GICContestRegModel.findOne({
                 registeredBy: userId,
-                status: { $ne: ContestRegStatus.CANCELLED }
+                status: { $ne: ContestRegStatus.CANCELLED },
             })) != null
         );
     }
-    
+
     async emailHasTeam(email: string) {
-        return (await this.findCurrentContestRegistration(email)) != null
+        return (await this.findCurrentContestRegistration(email)) != null;
     }
 
     async findOneContestRegAndUpdate(x: any, y: any) {
         return await GICContestRegModel.findOneAndUpdate(x, y);
     }
-    
+
     async findContestRegById(id: Types.ObjectId) {
-        return await GICContestRegModel.findById(id)
+        return await GICContestRegModel.findById(id);
     }
 
     // FOR DAY REGISTRATION
@@ -128,20 +130,22 @@ export class GICService {
             invitedBy: inviteId,
         });
     }
-    
+
     // block spamming day registration
     async rateLimitOnDayRegistration(userId: Types.ObjectId, day: number) {
-        const now = Date.now()
+        const now = Date.now();
         const cnt = await DayRegModel.count({
             registeredBy: userId,
             day: day,
             registeredAt: {
                 $gte: now - 3600000,
-                $lte: now
-            }
-        })
+                $lte: now,
+            },
+        });
         if (cnt > 3) {
-            throw new Error(`Day registration limit exceeded (3 registrations every hour)`)
+            throw new Error(
+                `Day registration limit exceeded (3 registrations every hour)`,
+            );
         }
     }
 
@@ -307,7 +311,7 @@ export class GICService {
             ownerId: userId,
             name: itemName,
             imgUrl: `https://firebasestorage.googleapis.com/v0/b/gic-web-dev.appspot.com/o/characterPieces%2F${itemName}.png?alt=media`,
-            description: `This is a magical item in GicReward call ${itemName}`,
+            description: `This is a magical item in GicReward called ${itemName}`,
             currentPrice: 0,
             isReceived: false,
             receivedAt: false,
