@@ -288,6 +288,11 @@ export class GICController extends Controller {
             }
             const email = data.email as string
             const regId = new Types.ObjectId(data.regId)
+            console.log(`Confirming ${email} ${regId.toString()}`)
+            
+            if (await this.gicService.emailHasTeam(email)) {
+                throw new Error(`You have already registered to a team`)
+            }
             
             const reg = await this.gicService.findContestRegById(regId)
             if (!reg) {
