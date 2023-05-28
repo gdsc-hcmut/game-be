@@ -652,7 +652,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Ngày 23/06: </span
+																			>Ngày 22/06: </span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -2136,7 +2136,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Ngày 23/06: </span
+																			>Ngày 22/06: </span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -2999,7 +2999,9 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 
 export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
-    eventName: string
+    eventName: string,
+    eventTime: string,
+    eventDescription: string
 ) {
     return `
     <div dir="ltr">
@@ -3358,7 +3360,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>GIC Opening day</span
+																			>${eventName}</span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3382,7 +3384,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>(Online 09:00 - 11:25)</span
+																			>(${eventTime})</span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3394,9 +3396,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Nội dung và ý tưởng cũng như mục tiêu
-																			của cuộc thi sẽ được phổ biến cho các thí
-																			sinh.</span
+																			>. ${eventDescription}</span
 																		>
 																	</p>
 																</li>

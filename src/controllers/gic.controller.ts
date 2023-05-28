@@ -436,9 +436,19 @@ export class GICController extends Controller {
 
             // send confirmation email
             const EVENT_NAME_LIST = [
-                "Khai mạc GIC",
-                "Seminar 1: Thiết kế ý tưởng",
-                "Seminar 2: Trình bày ý tưởng",
+                "GIC Opening Day",
+                "Seminar 1: Designing Your Idea",
+                "Seminar 2: Presenting Your Idea",
+            ]
+            const EVENT_TIME_LIST = [
+                "Online 09:30 - 12:00",
+                "Online 19:00 - 21:15",
+                "Online 09:00 - 11:30"
+            ]
+            const EVENT_DESCRIPTION_LIST = [
+                "Nội dung và ý tưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh",
+                "Diễn giả sẽ phổ biến thể lệ của cuộc thi cũng như sẽ chia sẻ quy trình làm việc hiệu quả của các dự án công nghệ trong việc lên ý tưởng thông qua Zoom",
+                "Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm sẽ được diễn giả của sự kiện trình bày thông qua Zoom"
             ]
 
             const user = await this.userService.findById(userId);
@@ -448,7 +458,9 @@ export class GICController extends Controller {
                     `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]}"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
-                        EVENT_NAME_LIST[day - 1]
+                        EVENT_NAME_LIST[day - 1],
+                        EVENT_TIME_LIST[day - 1],
+                        EVENT_DESCRIPTION_LIST[day - 1]
                     )
                 )
             } else {
