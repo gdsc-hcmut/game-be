@@ -135,13 +135,13 @@ export class AuthService {
                     req.tokenMeta = tokenMeta;
 
                     if (block && _.isEmpty(tokenMeta)) {
-                        res.composer.unauthorized();
                         if (isLogPing)
                             PingHistoryModel.create({
                                 userId: '',
                                 pingAt: Date.now(),
                                 domain: WhitelistDomain.gic,
                             });
+                        res.composer.unauthorized();
                         return;
                     }
                     if (isLogPing)
