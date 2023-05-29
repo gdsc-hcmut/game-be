@@ -137,7 +137,6 @@ export class AuthService {
                     if (block && _.isEmpty(tokenMeta)) {
                         if (isLogPing)
                             PingHistoryModel.create({
-                                userId: '',
                                 pingAt: Date.now(),
                                 domain: WhitelistDomain.gic,
                             });
