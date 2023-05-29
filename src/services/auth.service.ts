@@ -15,7 +15,11 @@ import moment from 'moment';
 // import { Collection, ObjectID, ObjectId } from 'mongodb';
 import mongoose, { Types } from 'mongoose';
 import passportGoogle from 'passport-google-oauth20';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config';
+import {
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    WhitelistDomain,
+} from '../config';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
 import { parseTokenMeta } from '../models/token.model';
 const GoogleStrategy = passportGoogle.Strategy;
@@ -135,14 +139,14 @@ export class AuthService {
                         PingHistoryModel.create({
                             userId: '',
                             pingAt: Date.now(),
-                            domain: 'gdsc',
+                            domain: WhitelistDomain.gic,
                         });
                         return;
                     }
                     PingHistoryModel.create({
                         userId: new Types.ObjectId(tokenMeta?.userId),
                         pingAt: Date.now(),
-                        domain: 'gdsc',
+                        domain: WhitelistDomain.gic,
                     });
 
                     next();
