@@ -128,7 +128,7 @@ export class AuthService {
         }
     }
 
-    authenticate(block = true) {
+    authenticate(block = true, isLogPing = false) {
         return (req: Request, res: Response, next: NextFunction) => {
             try {
                 passport.authenticate('jwt', async (err, tokenMeta, info) => {
@@ -136,18 +136,20 @@ export class AuthService {
 
                     if (block && _.isEmpty(tokenMeta)) {
                         res.composer.unauthorized();
+                        if (isLogPing)
+                            PingHistoryModel.create({
+                                userId: '',
+                                pingAt: Date.now(),
+                                domain: WhitelistDomain.gic,
+                            });
+                        return;
+                    }
+                    if (isLogPing)
                         PingHistoryModel.create({
-                            userId: '',
+                            userId: new Types.ObjectId(tokenMeta?.userId),
                             pingAt: Date.now(),
                             domain: WhitelistDomain.gic,
                         });
-                        return;
-                    }
-                    PingHistoryModel.create({
-                        userId: new Types.ObjectId(tokenMeta?.userId),
-                        pingAt: Date.now(),
-                        domain: WhitelistDomain.gic,
-                    });
 
                     next();
                 })(req, res, next);

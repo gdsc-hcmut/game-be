@@ -108,6 +108,13 @@ export class AuthController extends Controller {
                 }
             },
         );
+        this.router.get(
+            '/ping',
+            this.authService.authenticate(true, false),
+            (req, res) => {
+                res.send('Success');
+            },
+        );
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
         this.router.post('/discordconnect', this.discordConnect.bind(this));
@@ -116,9 +123,6 @@ export class AuthController extends Controller {
         this.router.get('/syncnewmodal', this.syncNewModal.bind(this));
         this.router.post('/unconnectdiscord', this.unConnectDiscord.bind(this));
         this.router.post('/transgcoin', this.transGcoinFromDiscord.bind(this));
-        this.router.get('/ping', (req, res) => {
-            res.send('Success');
-        });
         // this.router.post('/logout', AuthService.authenticate, this.logout);
         this.router.post(
             '/recover-password-request',
