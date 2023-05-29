@@ -110,7 +110,7 @@ export class AuthController extends Controller {
         );
         this.router.get(
             '/ping',
-            this.authService.authenticate(true, false),
+            this.authService.authenticate(true, true),
             (req, res) => {
                 res.send('Success');
             },
