@@ -18,6 +18,7 @@ import DiscordBattle from '../models/discord_battle';
 import DiscordActivity from '../models/discord_activity';
 import LoginHistoryModel from '../models/login-history.model';
 import { Types } from 'mongoose';
+import PingHistoryModel from '../models/user-ping.model';
 
 @injectable()
 export class AuthController extends Controller {

@@ -13,7 +13,7 @@ import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
 // import { Collection, ObjectID, ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import passportGoogle from 'passport-google-oauth20';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
@@ -39,6 +39,7 @@ import { ZaloZPI } from '../apis/zalo';
 // import { MailService } from '.';
 import { lazyInject } from '../container';
 import { hashingPassword } from '../lib/helper';
+import PingHistoryModel from '../models/user-ping.model';
 @injectable()
 export class AuthService {
     @lazyInject(ServiceType.User) private userService: UserService;
@@ -128,10 +129,21 @@ export class AuthService {
             try {
                 passport.authenticate('jwt', async (err, tokenMeta, info) => {
                     req.tokenMeta = tokenMeta;
+
                     if (block && _.isEmpty(tokenMeta)) {
                         res.composer.unauthorized();
+                        PingHistoryModel.create({
+                            userId: '',
+                            pingAt: Date.now(),
+                            domain: 'gdsc',
+                        });
                         return;
                     }
+                    PingHistoryModel.create({
+                        userId: new Types.ObjectId(tokenMeta?.userId),
+                        pingAt: Date.now(),
+                        domain: 'gdsc',
+                    });
 
                     next();
                 })(req, res, next);
