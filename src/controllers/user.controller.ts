@@ -58,12 +58,13 @@ export class UserController extends Controller {
             '/triggerleaderboard',
             this.triggerLeaderboard.bind(this),
         );
+        this.router.post('/create', this.createUser.bind(this));
         this.router.get('/transaction', this.getUserTransaction.bind(this));
         this.router.get('/', this.getUsers.bind(this));
         this.router.get('/me', this.getMe.bind(this));
         this.router.patch('/me', this.updatePrivate.bind(this));
         this.router.get('/balance', this.getUserBalance.bind(this));
-        this.router.patch('/balance', this.increaseBalance.bind(this)); // TODO: Test only
+        // this.router.patch('/balance', this.increaseBalance.bind(this)); // TODO: Test only
         this.router.get('/search', this.getByKeyword.bind(this));
         this.router.get('/:username', this.getByUsername.bind(this));
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
@@ -108,17 +109,25 @@ export class UserController extends Controller {
     // }
 
     async createUser(req: Request, res: Response) {
-        // const user: UserDocument = _.pick(req.body, [
-        //     'username',
-        //     'password',
-        // ]) as any;
-        // try {
-        //     const createdUser = await this.userService.create(user);
-        //     // await this.userService.verifyAccountRequest(createdUser.email);
-        //     res.composer.success(createdUser._id);
-        // } catch (error) {
-        //     res.composer.badRequest(error.message);
-        // }
+        if (!_.includes(req.tokenMeta.roles, USER_ROLES.SYSTEM)) {
+            throw Error('You are not system');
+        }
+        try {
+            const createdUser = await this.userService.create({
+                email: req.body.email,
+                googleId: '',
+                balance: 0,
+                highestScoreMathQuiz: 0,
+                picture: req.body.picture,
+                name: req.body.name,
+                availableReceiving: 1000,
+                roles: [USER_ROLES.USER],
+            });
+            // await this.userService.verifyAccountRequest(createdUser.email);
+            res.composer.success(createdUser._id);
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
     }
 
     async getUserTransaction(req: Request, res: Response) {
@@ -135,13 +144,13 @@ export class UserController extends Controller {
     async resetAllScore() {
         try {
             await this.userService.resetPrivate();
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async triggerResetDaily() {
         try {
             await this.userService.resetAvailableCoin();
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async triggerLeaderboard() {
@@ -217,7 +226,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async verifyAccountRequest(req: Request, res: Response) {

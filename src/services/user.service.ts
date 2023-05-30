@@ -47,11 +47,6 @@ export class UserService {
     // }
 
     async create(user: any): Promise<UserDocument> {
-        if (_.isEmpty(user.password) || _.isEmpty(user.username)) {
-            throw new ErrorUserInvalid('Missing input fields');
-        }
-
-        user.password = await bcrypt.hash(user.password, HASH_ROUNDS);
         const addedUser = await this.userCollection.insertOne(user);
 
         return addedUser.ops[0];
