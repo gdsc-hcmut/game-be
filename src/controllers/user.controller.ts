@@ -104,25 +104,27 @@ export class UserController extends Controller {
 
         const randomPoint = (time: string) =>
             scheduleJob(time, async () => {
-                let usersList = IS_PRODUCTION
-                    ? []
-                    : [
-                          '647590c4287db5254fabbc40',
-                          '647592a0287db5254fabbc43',
-                          '647594c2287db5254fabbc46',
-                          '647594cc287db5254fabbc49',
-                          '647594da287db5254fabbc4c',
-                      ];
-                let userId =
-                    usersList[randomIntFromInterval(0, usersList.length)];
-                const user = await this.userService.findById(
-                    new Types.ObjectId(userId),
-                );
-                user.highestScoreMathQuiz = randomIntFromInterval(
-                    user.highestScoreMathQuiz,
-                    90,
-                );
-                user.save();
+                try {
+                    let usersList = IS_PRODUCTION
+                        ? []
+                        : [
+                              '647590c4287db5254fabbc40',
+                              '647592a0287db5254fabbc43',
+                              '647594c2287db5254fabbc46',
+                              '647594cc287db5254fabbc49',
+                              '647594da287db5254fabbc4c',
+                          ];
+                    let userId =
+                        usersList[randomIntFromInterval(0, usersList.length)];
+                    const user = await this.userService.findById(
+                        new Types.ObjectId(userId),
+                    );
+                    user.highestScoreMathQuiz = randomIntFromInterval(
+                        user.highestScoreMathQuiz,
+                        90,
+                    );
+                    user.save();
+                } catch (err) {}
             });
 
         randomPoint('0 * * * * *');
