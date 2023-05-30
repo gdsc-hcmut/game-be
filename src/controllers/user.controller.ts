@@ -122,10 +122,23 @@ export class UserController extends Controller {
                         const user = await this.userService.findById(
                             new Types.ObjectId(userId),
                         );
-                        user.highestScoreMathQuiz = randomIntFromInterval(
-                            user.highestScoreMathQuiz,
-                            90,
-                        );
+                        if (user.highestScoreMathQuiz < 50) {
+                            user.highestScoreMathQuiz = randomIntFromInterval(
+                                user.highestScoreMathQuiz,
+                                50,
+                            );
+                        } else if (user.highestScoreMathQuiz < 70) {
+                            user.highestScoreMathQuiz = randomIntFromInterval(
+                                user.highestScoreMathQuiz,
+                                70,
+                            );
+                        } else {
+                            user.highestScoreMathQuiz = randomIntFromInterval(
+                                user.highestScoreMathQuiz,
+                                90,
+                            );
+                        }
+
                         user.save();
                     } catch (err) {}
                 }, randomIntFromInterval(1, 100) * 1000);
