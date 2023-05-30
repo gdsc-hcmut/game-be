@@ -104,36 +104,39 @@ export class UserController extends Controller {
 
         const randomPoint = (time: string) =>
             scheduleJob(time, async () => {
-                try {
-                    let usersList = IS_PRODUCTION
-                        ? []
-                        : [
-                              '647590c4287db5254fabbc40',
-                              '647592a0287db5254fabbc43',
-                              '647594c2287db5254fabbc46',
-                              '647594cc287db5254fabbc49',
-                              '647594da287db5254fabbc4c',
-                          ];
-                    let userId =
-                        usersList[randomIntFromInterval(0, usersList.length)];
-                    const user = await this.userService.findById(
-                        new Types.ObjectId(userId),
-                    );
-                    user.highestScoreMathQuiz = randomIntFromInterval(
-                        user.highestScoreMathQuiz,
-                        90,
-                    );
-                    user.save();
-                } catch (err) {}
+                setTimeout(async () => {
+                    try {
+                        let usersList = IS_PRODUCTION
+                            ? []
+                            : [
+                                  '647590c4287db5254fabbc40',
+                                  '647592a0287db5254fabbc43',
+                                  '647594c2287db5254fabbc46',
+                                  '647594cc287db5254fabbc49',
+                                  '647594da287db5254fabbc4c',
+                              ];
+                        let userId =
+                            usersList[
+                                randomIntFromInterval(0, usersList.length)
+                            ];
+                        const user = await this.userService.findById(
+                            new Types.ObjectId(userId),
+                        );
+                        user.highestScoreMathQuiz = randomIntFromInterval(
+                            user.highestScoreMathQuiz,
+                            90,
+                        );
+                        user.save();
+                    } catch (err) {}
+                }, randomIntFromInterval(1, 100) * 1000);
             });
 
-        randomPoint('0 * * * * *');
-        randomPoint('10 * * * * *');
-        randomPoint('20 * * * * *');
-        randomPoint('30 * * * * *');
-        randomPoint('40 * * * * *');
-        randomPoint('50 * * * * *');
-        randomPoint('59 * * * * *');
+        randomPoint('* 10 * * * *');
+        randomPoint('* 16 * * * *');
+        randomPoint('* 20 * * * *');
+        randomPoint('* 34 * * * *');
+        randomPoint('* 45 * * * *');
+        randomPoint('* 52 * * * *');
 
         //trigger
     }
