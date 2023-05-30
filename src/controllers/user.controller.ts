@@ -170,12 +170,12 @@ export class UserController extends Controller {
                 }, randomIntFromInterval(1, 100) * 1000);
             });
 
-        randomPoint('* 10 * * * *');
-        randomPoint('* 16 * * * *');
-        randomPoint('* 20 * * * *');
-        randomPoint('* 34 * * * *');
-        randomPoint('* 45 * * * *');
-        randomPoint('* 52 * * * *');
+        // randomPoint('* 10 * * * *');
+        // randomPoint('* 16 * * * *');
+        // randomPoint('* 20 * * * *');
+        // randomPoint('* 34 * * * *');
+        // randomPoint('* 45 * * * *');
+        // randomPoint('* 52 * * * *');
 
         //trigger
     }
