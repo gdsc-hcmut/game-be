@@ -47,9 +47,9 @@ export class UserService {
     // }
 
     async create(user: any): Promise<UserDocument> {
-        const addedUser = await this.userCollection.insertOne(user);
-
-        return addedUser.ops[0];
+        const addedUser = new User(user);
+        addedUser.save();
+        return addedUser;
     }
 
     async verifyAccountRequest(email: string) {
