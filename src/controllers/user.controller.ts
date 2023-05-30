@@ -14,7 +14,12 @@ import {
     GameService,
 } from '../services';
 import { ObjectID, ObjectId } from 'mongodb';
-import { EMAIL_SENDER, LIMIT_PAGING, SYSTEM_ACCOUNT_ID } from '../config';
+import {
+    EMAIL_SENDER,
+    IS_PRODUCTION,
+    LIMIT_PAGING,
+    SYSTEM_ACCOUNT_ID,
+} from '../config';
 import { Bundle } from '../models/bundle.model';
 import { LeetCode } from 'leetcode-query';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
@@ -23,6 +28,7 @@ import { Types } from 'mongoose';
 import { scheduleJob } from 'node-schedule';
 import Leaderboard from '../models/leaderboard.model';
 import DiscordActivity from '../models/discord_activity';
+import { randomIntFromInterval } from '../lib/helper';
 
 @injectable()
 export class UserController extends Controller {
@@ -95,6 +101,38 @@ export class UserController extends Controller {
             await DiscordActivity.find().updateMany({ isDaily: false });
             console.log('The answer to life, the universe, and everything!');
         });
+
+        const randomPoint = (time: string) =>
+            scheduleJob(time, async () => {
+                let usersList = IS_PRODUCTION
+                    ? []
+                    : [
+                          '647590c4287db5254fabbc40',
+                          '647592a0287db5254fabbc43',
+                          '647594c2287db5254fabbc46',
+                          '647594cc287db5254fabbc49',
+                          '647594da287db5254fabbc4c',
+                      ];
+                let userId =
+                    usersList[randomIntFromInterval(0, usersList.length)];
+                const user = await this.userService.findById(
+                    new Types.ObjectId(userId),
+                );
+                user.highestScoreMathQuiz = randomIntFromInterval(
+                    user.highestScoreMathQuiz,
+                    90,
+                );
+                user.save();
+            });
+
+        randomPoint('0 * * * * *');
+        randomPoint('10 * * * * *');
+        randomPoint('20 * * * * *');
+        randomPoint('30 * * * * *');
+        randomPoint('40 * * * * *');
+        randomPoint('50 * * * * *');
+        randomPoint('59 * * * * *');
+
         //trigger
     }
 
