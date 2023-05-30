@@ -109,10 +109,10 @@ export class UserController extends Controller {
     // }
 
     async createUser(req: Request, res: Response) {
-        if (!_.includes(req.tokenMeta.roles, USER_ROLES.SYSTEM)) {
-            throw Error('You are not system');
-        }
         try {
+            if (!_.includes(req.tokenMeta.roles, USER_ROLES.SYSTEM)) {
+                throw Error('You are not system');
+            }
             const createdUser = await this.userService.create({
                 email: req.body.email,
                 googleId: '',
