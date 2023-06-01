@@ -422,6 +422,9 @@ export class GICController extends Controller {
             let result;
             if (inviteIdString) {
                 const inviteId = new Types.ObjectId(inviteIdString);
+                if (inviteId.equals(userId)) {
+                    throw new Error(`Cannot invite yourself...`)
+                }
                 if (!(await this.userService.findById(inviteId))) {
                     throw new Error(`Invite code invalid`);
                 }
