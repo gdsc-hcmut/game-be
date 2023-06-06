@@ -444,14 +444,14 @@ export class GICController extends Controller {
                 "Seminar 2: Presenting Your Idea",
             ]
             const EVENT_TIME_LIST = [
-                "Online 09:30 - 12:00",
+                "Online 09:00 - 12:25",
                 "Online 19:00 - 21:15",
                 "Online 09:00 - 11:30"
             ]
             const EVENT_DESCRIPTION_LIST = [
-                "Nội dung và ý tưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh",
-                "Diễn giả sẽ phổ biến thể lệ của cuộc thi cũng như sẽ chia sẻ quy trình làm việc hiệu quả của các dự án công nghệ trong việc lên ý tưởng thông qua Zoom",
-                "Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm sẽ được diễn giả của sự kiện trình bày thông qua Zoom"
+                "Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh. Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện, đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.",
+                "Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp, những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.",
+                "Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar."
             ]
 
             const user = await this.userService.findById(userId);

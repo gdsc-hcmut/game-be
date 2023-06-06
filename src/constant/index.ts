@@ -405,9 +405,9 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Nội dung và ý tưởng cũng như mục tiêu
-																			của cuộc thi sẽ được phổ biến cho các thí
-																			sinh.</span
+																			>. Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh.
+                                                                            Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện,
+                                                                            đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.</span
 																		>
 																	</p>
 																</li>
@@ -492,22 +492,9 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Diễn giả sẽ phổ biến thể lệ của cuộc
-																			thi cũng như sẽ chia sẻ quy trình làm việc
-																			hiệu quả của các dự án công nghệ trong
-																			việc lên ý tưởng thông qua </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>Zoom</span
+																			>. Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp,
+                                                                            những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả
+                                                                            từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.</span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -604,22 +591,9 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Những kỹ năng cần thiết để trình bày ý
-																			tưởng và chuyên nghiệp hoá sản phẩm sẽ
-																			được diễn giả của sự kiện trình bày thông
-																			qua </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>Zoom.</span
+																			>. Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái,
+                                                                            nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn
+                                                                            sẽ được trau dồi từ hoạt động seminar.</span
 																		>
 																	</p>
 																</li>
@@ -921,7 +895,44 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID: Sẽ được cập nhật sau</span
+																			>ID: 404 092 4271</span
+																		>
+																	</p>
+																</li>
+																<li
+																	dir="ltr"
+																	style="
+																		list-style-type: disc;
+																		font-size: 12pt;
+																		font-family: Arial;
+																		color: rgb(0, 0, 0);
+																		background-color: transparent;
+																		font-weight: 700;
+																		font-style: normal;
+																		font-variant: normal;
+																		text-decoration: none;
+																	">
+																	<p
+																		dir="ltr"
+																		style="
+																			line-height: 1.872;
+																			background-color: rgb(255, 255, 255);
+																			margin-top: 0pt;
+																			margin-bottom: 0pt;
+																		"
+																		role="presentation">
+																		<span
+																			style="
+																				font-size: 12pt;
+																				font-family: Arial;
+																				color: rgb(0, 0, 0);
+																				background-color: transparent;
+																				font-weight: 700;
+																				font-style: normal;
+																				font-variant: normal;
+																				text-decoration: none;
+																			"
+																			>Password: g6azej</span
 																		>
 																	</p>
 																</li>
@@ -958,7 +969,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password: Sẽ được cập nhật sau</span
+																			>Link: https://us02web.zoom.us/j/4040924271?pwd=cnhpZ0hNaThOL2JaYld0Unc3Zkxsdz09</span
 																		>
 																	</p>
 																</li>
@@ -983,7 +994,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>Với hai sự kiện ngày </span
+																	>Với hai sự kiện </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -995,7 +1006,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>22/06</span
+																	>GIC Internal Presentation </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1007,7 +1018,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	">
-																	và </span
+																	(22/06) và </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1019,7 +1030,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>25/05</span
+																	>GIC Idea Showcase </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1031,7 +1042,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	">
-																	sẽ được tổ chức tại</span
+																	(25/06) sẽ được tổ chức tại</span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1044,7 +1055,7 @@ export function CONTEST_CONFIRMATION_EMAIL(
 																		text-decoration: none;
 																	">
 																	Nhà văn hóa sinh viên Đại học Quốc gia
-																	TP.HCM</span
+																	TP. HCM</span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -1889,9 +1900,9 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Nội dung và ý tưởng cũng như mục tiêu
-																			của cuộc thi sẽ được phổ biến cho các thí
-																			sinh.</span
+																			>. Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh.
+                                                                            Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện,
+                                                                            đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.</span
 																		>
 																	</p>
 																</li>
@@ -1976,34 +1987,10 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Diễn giả sẽ phổ biến thể lệ của cuộc
-																			thi cũng như sẽ chia sẻ quy trình làm việc
-																			hiệu quả của các dự án công nghệ trong
-																			việc lên ý tưởng thông qua </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>Zoom</span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 400;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>.</span
+																			>. Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp,
+                                                                            những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó,
+                                                                            diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong
+                                                                            việc thiết kế nên những giải pháp thiết thực.</span
 																		>
 																	</p>
 																</li>
@@ -2088,22 +2075,9 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Những kỹ năng cần thiết để trình bày ý
-																			tưởng và chuyên nghiệp hoá sản phẩm sẽ
-																			được diễn giả của sự kiện trình bày thông
-																			qua </span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
-																			>Zoom.</span
+																			>. Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp
+                                                                            hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide...
+                                                                            sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar.</span
 																		>
 																	</p>
 																</li>
@@ -2405,7 +2379,44 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID: Sẽ được cập nhật sau</span
+																			>ID: 404 092 4271</span
+																		>
+																	</p>
+																</li>
+																<li
+																	dir="ltr"
+																	style="
+																		list-style-type: disc;
+																		font-size: 12pt;
+																		font-family: Arial;
+																		color: rgb(0, 0, 0);
+																		background-color: transparent;
+																		font-weight: 700;
+																		font-style: normal;
+																		font-variant: normal;
+																		text-decoration: none;
+																	">
+																	<p
+																		dir="ltr"
+																		style="
+																			line-height: 1.872;
+																			background-color: rgb(255, 255, 255);
+																			margin-top: 0pt;
+																			margin-bottom: 0pt;
+																		"
+																		role="presentation">
+																		<span
+																			style="
+																				font-size: 12pt;
+																				font-family: Arial;
+																				color: rgb(0, 0, 0);
+																				background-color: transparent;
+																				font-weight: 700;
+																				font-style: normal;
+																				font-variant: normal;
+																				text-decoration: none;
+																			"
+																			>Password: g6azej</span
 																		>
 																	</p>
 																</li>
@@ -2442,7 +2453,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password: Sẽ được cập nhật sau</span
+																			>Link: https://us02web.zoom.us/j/4040924271?pwd=cnhpZ0hNaThOL2JaYld0Unc3Zkxsdz09</span
 																		>
 																	</p>
 																</li>
@@ -2467,7 +2478,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>Với hai sự kiện ngày </span
+																	>Với hai sự kiện </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -2479,7 +2490,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>22/06</span
+																	>GIC Internal Presentation </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -2491,7 +2502,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	">
-																	và </span
+																	(22/06) và </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -2503,7 +2514,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>25/05</span
+																	>GIC Idea Showcase (25/06) </span
 																><span
 																	style="
 																		font-size: 12pt;
@@ -3479,7 +3490,44 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>ID: Sẽ được cập nhật sau</span
+																			>ID: 404 092 4271</span
+																		>
+																	</p>
+																</li>
+																<li
+																	dir="ltr"
+																	style="
+																		list-style-type: disc;
+																		font-size: 12pt;
+																		font-family: Arial;
+																		color: rgb(0, 0, 0);
+																		background-color: transparent;
+																		font-weight: 700;
+																		font-style: normal;
+																		font-variant: normal;
+																		text-decoration: none;
+																	">
+																	<p
+																		dir="ltr"
+																		style="
+																			line-height: 1.872;
+																			background-color: rgb(255, 255, 255);
+																			margin-top: 0pt;
+																			margin-bottom: 0pt;
+																		"
+																		role="presentation">
+																		<span
+																			style="
+																				font-size: 12pt;
+																				font-family: Arial;
+																				color: rgb(0, 0, 0);
+																				background-color: transparent;
+																				font-weight: 700;
+																				font-style: normal;
+																				font-variant: normal;
+																				text-decoration: none;
+																			"
+																			>Password: g6azej</span
 																		>
 																	</p>
 																</li>
@@ -3516,7 +3564,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Password: Sẽ được cập nhật sau</span
+																			>Link: https://us02web.zoom.us/j/4040924271?pwd=cnhpZ0hNaThOL2JaYld0Unc3Zkxsdz09</span
 																		>
 																	</p>
 																</li>
@@ -3689,23 +3737,11 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>GIC Game</span
-																		><span
-																			style="
-																				font-size: 12pt;
-																				font-family: Arial;
-																				color: rgb(0, 0, 0);
-																				background-color: transparent;
-																				font-weight: 700;
-																				font-style: normal;
-																				font-variant: normal;
-																				text-decoration: none;
-																			"
 																			><a href="https://${
                                                                                 IS_PRODUCTION
                                                                                     ? ''
                                                                                     : 'dev.'
-                                                                            }gdsc.app/campaign"> tại đây</a></span
+                                                                            }gdsc.app/campaign"> GIC Journey</a></span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3717,8 +3753,10 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>. Một trò chơi giúp bạn kiếm những mảnh
-																			ghép để tạo nên những phần quà </span
+																			>: Một chuỗi các nhiệm vụ thú vị sẽ được mở trong thời gian
+                                                                            diễn ra sự kiện. Khi hoàn thành các thử thách, các bạn sẽ nhận được các
+                                                                            mảnh ghép hoặc GCoins để tham gia quay trúng thưởng các mảnh này.
+                                                                            Thu thập được đủ số mảnh theo yêu cầu, người chơi sẽ được đổi các </span
 																		><span
 																			style="
 																				font-size: 12pt;
@@ -3730,8 +3768,20 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>thú vị và là giới hạn</span
-                                                                        >
+																			>phần quà giới hạn </span
+                                                                        ><span
+																			style="
+																				font-size: 12pt;
+																				font-family: Arial;
+																				color: rgb(0, 0, 0);
+																				background-color: transparent;
+																				font-weight: 400;
+																				font-style: normal;
+																				font-variant: normal;
+																				text-decoration: none;
+																			"
+																			> đến từ GDSC HCMUT.</span
+																		>
 																	</p>
 																</li>
 															</ul>
@@ -4593,49 +4643,51 @@ export function DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
 																		font-variant: normal;
 																		text-decoration: none;
 																	"
-																	>GIC Game</span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 700;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	"
 																	><a href="https://${
                                                                         IS_PRODUCTION
                                                                             ? ''
                                                                             : 'dev.'
-                                                                    }gdsc.app/campaign/"> tại đây</a></span
+                                                                    }gdsc.app/campaign/"> GIC Journey</a></span
 																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 400;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	"
-																	>. Một trò chơi giúp bạn kiếm những mảnh ghép
-																	để tạo nên những phần quà </span
-																><span
-																	style="
-																		font-size: 12pt;
-																		font-family: Arial;
-																		color: rgb(0, 0, 0);
-																		background-color: transparent;
-																		font-weight: 700;
-																		font-style: normal;
-																		font-variant: normal;
-																		text-decoration: none;
-																	"
-																	>thú vị và giới hạn</span
-																>
+                                                                    style="
+                                                                        font-size: 12pt;
+                                                                        font-family: Arial;
+                                                                        color: rgb(0, 0, 0);
+                                                                        background-color: transparent;
+                                                                        font-weight: 400;
+                                                                        font-style: normal;
+                                                                        font-variant: normal;
+                                                                        text-decoration: none;
+                                                                    "
+                                                                    >. Một chuỗi các nhiệm vụ thú vị sẽ được mở trong thời gian
+                                                                    diễn ra sự kiện. Khi hoàn thành các thử thách, các bạn sẽ nhận được các
+                                                                    mảnh ghép hoặc GCoins để tham gia quay trúng thưởng các mảnh này.
+                                                                    Thu thập được đủ số mảnh theo yêu cầu, người chơi sẽ được đổi các </span
+                                                                ><span
+                                                                    style="
+                                                                        font-size: 12pt;
+                                                                        font-family: Arial;
+                                                                        color: rgb(0, 0, 0);
+                                                                        background-color: transparent;
+                                                                        font-weight: 700;
+                                                                        font-style: normal;
+                                                                        font-variant: normal;
+                                                                        text-decoration: none;
+                                                                    "
+                                                                    >phần quà giới hạn </span
+                                                                ><span
+                                                                    style="
+                                                                        font-size: 12pt;
+                                                                        font-family: Arial;
+                                                                        color: rgb(0, 0, 0);
+                                                                        background-color: transparent;
+                                                                        font-weight: 400;
+                                                                        font-style: normal;
+                                                                        font-variant: normal;
+                                                                        text-decoration: none;
+                                                                    "
+                                                                    > đến từ GDSC HCMUT.</span
+                                                                >
 															</p>
 															<p
 																dir="ltr"
