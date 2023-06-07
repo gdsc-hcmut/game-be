@@ -296,7 +296,10 @@ export class GICController extends Controller {
                 name: (x.registeredBy as any).name,
                 email: (x.registeredBy as any).email
             }))
-            res.composer.success(result)
+            res.composer.success({
+                numberOfRegistrations: result.length,
+                registrations: result
+            })
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
