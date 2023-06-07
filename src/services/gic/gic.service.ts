@@ -181,6 +181,27 @@ export class GICService {
         return await DayRegModel.findById(id);
     }
 
+    async checkin(userId: Types.ObjectId) {
+        let register = await DayRegModel.findOne({
+            registeredBy: userId,
+            day: 5,
+        });
+        if (!register) throw Error('User not register yet');
+        if (register.checkinAt || register.status == DayRegStatus.CHECKIN)
+            throw Error('User already checked in');
+        register.checkinAt = Date.now();
+        await register.save();
+        return register;
+    }
+
+    async findAllCheckin() {
+        let checkins = await DayRegModel.find({
+            day: 5,
+            status: DayRegStatus.CHECKIN,
+        });
+        return checkins;
+    }
+
     // Gameeeeeeeee
 
     async sendItemGIC(itemData: ItemDocument) {

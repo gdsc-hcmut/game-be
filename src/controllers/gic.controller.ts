@@ -8,9 +8,7 @@ import { Types } from 'mongoose';
 import { GICService } from '../services/gic/gic.service';
 import { NoFileCompression } from '../lib/file-compression/strategies';
 import { ContestRegStatus } from '../models/gic/contest_registration.model';
-import {
-    DayRegStatus,
-} from '../models/gic/day_registration.model';
+import { DayRegStatus } from '../models/gic/day_registration.model';
 import { UploadValidator } from '../lib/upload-validator/upload-validator';
 import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-validator-strategies';
 import { MailService } from '../services/mail.service';
@@ -24,28 +22,41 @@ import {
     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
 } from '../constant';
-import * as crypto from "crypto"
+import * as crypto from 'crypto';
 import { IS_PRODUCTION } from '../config';
+import { TokenDocument } from '../models/token.model';
+import _ from 'lodash';
 
-const ENCRYPTION_KEY = "abqheuqo$5llamcb13%p78p#l4Bn561#"
-const ENCRYPTION_IV = "5183666c72eec9e4"
+const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
+const ENCRYPTION_IV = '5183666c72eec9e4';
 
-const aes256_encrypt = ((val: string) => {
-    let cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, ENCRYPTION_IV);
+const aes256_encrypt = (val: string) => {
+    let cipher = crypto.createCipheriv(
+        'aes-256-cbc',
+        ENCRYPTION_KEY,
+        ENCRYPTION_IV,
+    );
     let encrypted = cipher.update(val, 'utf8', 'base64');
     encrypted += cipher.final('base64');
     return encrypted;
-});
-  
-const aes256_decrypt = ((encrypted: string) => {
-    let decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, ENCRYPTION_IV);
-    let decrypted = decipher.update(encrypted, 'base64', 'utf8');
-    return decrypted + decipher.final("utf8");
-});
+};
 
-function blockIfLaterThan(x: number, m: string = `This action has been disabled`) {
+const aes256_decrypt = (encrypted: string) => {
+    let decipher = crypto.createDecipheriv(
+        'aes-256-cbc',
+        ENCRYPTION_KEY,
+        ENCRYPTION_IV,
+    );
+    let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+    return decrypted + decipher.final('utf8');
+};
+
+function blockIfLaterThan(
+    x: number,
+    m: string = `This action has been disabled`,
+) {
     if (Date.now() > x) {
-        throw new Error(m)
+        throw new Error(m);
     }
 }
 
@@ -58,7 +69,7 @@ enum GIC_TIMESTAMPS {
     DAY_3_END = 1686976200000,
     DAY_5_START = 1687658400000,
     DAY_5_END = 1687670100000,
-    IDEA_SUBMISSION_DEADLINE = 1687093200000
+    IDEA_SUBMISSION_DEADLINE = 1687093200000,
 }
 
 @injectable()
@@ -77,12 +88,14 @@ export class GICController extends Controller {
         super();
 
         this.router.get(`/qr`, this.getQrCode.bind(this));
-        this.router.post(`/contest/confirm`, this.confirmContest.bind(this))
+        this.router.post(`/contest/confirm`, this.confirmContest.bind(this));
 
         this.router.all('*', this.authService.authenticate());
-        
-        this.router.get(`/allmail`, this.getAllMail.bind(this))
-        this.router.get(`/myqr`, this.getMyQr.bind(this))
+
+        this.router.get(`/allmail`, this.getAllMail.bind(this));
+        this.router.get(`/myqr`, this.getMyQr.bind(this));
+        this.router.post(`/checkin`, this.checkin.bind(this));
+        this.router.get(`/allcheckin`, this.getAllCheckin.bind(this));
 
         this.router.post(
             `/contest/register`,
@@ -125,19 +138,19 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
     }
-    
+
     async getAllMail(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission to view this`)
+                throw new Error(`You don't have permission to view this`);
             }
-            
-            const result = await this.mailService.getAllMail()
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+
+            const result = await this.mailService.getAllMail();
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -156,29 +169,68 @@ export class GICController extends Controller {
             console.log(err);
         }
     }
-    
+
     async getMyQr(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const data = { userId: userId.toString() }
-            const encoded = aes256_encrypt(JSON.stringify(data))
-            res.composer.success(encoded)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const data = { userId: userId.toString() };
+            const encoded = aes256_encrypt(JSON.stringify(data));
+            res.composer.success(encoded);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
+
+    async checkin(req: Request, res: Response) {
+        try {
+            let { roles } = req.tokenMeta as TokenDocument;
+
+            if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
+                throw Error('Permission Error');
+            }
+            if (!req.body.qrcode) {
+                throw Error('Missing QrCode');
+            }
+            const decodedData = JSON.parse(aes256_decrypt(req.body.qrcode));
+            if (!decodedData.userId) {
+                throw Error('QrCode not valid');
+            }
+            const check = await this.gicService.checkin(decodedData.userId);
+            res.composer.success(check);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getAllCheckin(req: Request, res: Response) {
+        try {
+            let { roles } = req.tokenMeta as TokenDocument;
+
+            if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
+                throw Error('Permission Error');
+            }
+            const checkins = await this.gicService.findAllCheckin();
+
+            res.composer.success(checkins);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
     // API'S FOR CONTEST
 
     async registerContest(req: Request, res: Response) {
         try {
-            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE)
+            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
 
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            
+
             // block spamming
             if (IS_PRODUCTION) {
-                await this.gicService.rateLimitOnContestRegistration(userId)
+                await this.gicService.rateLimitOnContestRegistration(userId);
             }
 
             const user = await this.userService.findById(userId);
@@ -204,13 +256,13 @@ export class GICController extends Controller {
                     throw new Error(`Member ${i + 1} missing school`);
                 if (!mem[`major`])
                     throw new Error(`Member ${i + 1} missing major`);
-                mem[`confirmed`] = mem.email === user.email
-                selfPresent = selfPresent || mem[`confirmed`]
+                mem[`confirmed`] = mem.email === user.email;
+                selfPresent = selfPresent || mem[`confirmed`];
             }
-            
+
             // all emails must be unique
-            if ((new Set(members.map(x => x.email))).size != members.length) {
-                throw new Error(`Given emails are not unique`)
+            if (new Set(members.map((x) => x.email)).size != members.length) {
+                throw new Error(`Given emails are not unique`);
             }
 
             if (!selfPresent) {
@@ -224,18 +276,26 @@ export class GICController extends Controller {
             // check if any users are already in a contest, or the person registering
             // has registered another idea
             await Promise.all(
-                members.map(mem => (async () => {
-                    if (await this.gicService.emailHasTeam(mem.email)) {
-                        throw new Error(`A user on your team already has a team`)
-                    }
-                    if (
-                        mem.email === user.email &&
-                        (await this.gicService.userHasRegisteredContest(userId))
-                    ) {
-                        throw new Error(`You have already registered your idea`)
-                    }
-                })())
-            )
+                members.map((mem) =>
+                    (async () => {
+                        if (await this.gicService.emailHasTeam(mem.email)) {
+                            throw new Error(
+                                `A user on your team already has a team`,
+                            );
+                        }
+                        if (
+                            mem.email === user.email &&
+                            (await this.gicService.userHasRegisteredContest(
+                                userId,
+                            ))
+                        ) {
+                            throw new Error(
+                                `You have already registered your idea`,
+                            );
+                        }
+                    })(),
+                ),
+            );
 
             const result = await this.gicService.registerContest(
                 userId,
@@ -250,25 +310,24 @@ export class GICController extends Controller {
                 if (m.confirmed) {
                     this.mailService.sendToOne(
                         m.email,
-                        "[GDSC Idea Contest 2023] Đăng ký dự thi thành công",
-                        CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
-                            m.name,
-                            ideaName
-                        )
-                    )
+                        '[GDSC Idea Contest 2023] Đăng ký dự thi thành công',
+                        CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
+                    );
                 } else {
                     this.mailService.sendToOne(
                         m.email,
-                        "[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi",
+                        '[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi',
                         CONTEST_CONFIRMATION_EMAIL(
                             m.name,
                             ideaName,
-                            aes256_encrypt(JSON.stringify({
-                                regId: result._id,
-                                email: m.email
-                            }))
-                        )
-                    )
+                            aes256_encrypt(
+                                JSON.stringify({
+                                    regId: result._id,
+                                    email: m.email,
+                                }),
+                            ),
+                        ),
+                    );
                 }
             }
 
@@ -281,7 +340,7 @@ export class GICController extends Controller {
 
     async unregisterContest(req: Request, res: Response) {
         try {
-            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE)
+            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
 
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const reg = await this.gicService.findOneContestRegAndUpdate(
@@ -289,7 +348,9 @@ export class GICController extends Controller {
                 { status: ContestRegStatus.CANCELLED },
             );
             if (!reg) {
-                throw new Error(`Contest registration not found, or your team has already checked in`);
+                throw new Error(
+                    `Contest registration not found, or your team has already checked in`,
+                );
             }
             res.composer.success(reg);
         } catch (error) {
@@ -301,9 +362,11 @@ export class GICController extends Controller {
     async getRegisteredContest(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const user = await this.userService.findById(userId)
+            const user = await this.userService.findById(userId);
 
-            const ans = await this.gicService.findCurrentContestRegistration(user.email);
+            const ans = await this.gicService.findCurrentContestRegistration(
+                user.email,
+            );
             res.composer.success(!ans ? {} : ans);
         } catch (error) {
             console.log(error);
@@ -314,9 +377,11 @@ export class GICController extends Controller {
     async downloadIdeaDescription(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const user = await this.userService.findById(userId)
+            const user = await this.userService.findById(userId);
 
-            const reg = await this.gicService.findCurrentContestRegistration(user.email);
+            const reg = await this.gicService.findCurrentContestRegistration(
+                user.email,
+            );
             if (!reg) {
                 throw new Error(`Contest registration not found`);
             }
@@ -335,47 +400,47 @@ export class GICController extends Controller {
             res.composer.badRequest(error.message);
         }
     }
-    
+
     async confirmContest(req: Request, res: Response) {
         try {
             if (!req.body.code) {
-                throw new Error(`Missing code`)
+                throw new Error(`Missing code`);
             }
-            const data = JSON.parse(aes256_decrypt(req.body.code))
+            const data = JSON.parse(aes256_decrypt(req.body.code));
             if (!data.email || !data.regId) {
-                throw new Error(`Invalid confirmation code`)
+                throw new Error(`Invalid confirmation code`);
             }
-            const email = data.email as string
-            const regId = new Types.ObjectId(data.regId)
-            console.log(`Confirming ${email} ${regId.toString()}`)
-            
+            const email = data.email as string;
+            const regId = new Types.ObjectId(data.regId);
+            console.log(`Confirming ${email} ${regId.toString()}`);
+
             if (await this.gicService.emailHasTeam(email)) {
-                throw new Error(`You have already registered to a team`)
+                throw new Error(`You have already registered to a team`);
             }
-            
-            const reg = await this.gicService.findContestRegById(regId)
+
+            const reg = await this.gicService.findContestRegById(regId);
             if (!reg) {
-                throw new Error(`Registration not found`)
+                throw new Error(`Registration not found`);
             }
             let i = -1;
             for (let j = 0; j < reg.members.length; j++) {
                 if (reg.members[j].email === email) {
-                    i = j
+                    i = j;
                 }
             }
             if (i === -1) {
-                throw new Error(`You are not in this team`)
+                throw new Error(`You are not in this team`);
             }
             if (reg.members[i].confirmed) {
-                throw new Error(`You have already joined this team`)
+                throw new Error(`You have already joined this team`);
             }
-            
-            reg.members[i].confirmed = true
-            await reg.save()
-            res.composer.success(reg)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+
+            reg.members[i].confirmed = true;
+            await reg.save();
+            res.composer.success(reg);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -388,16 +453,16 @@ export class GICController extends Controller {
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3 and 5`);
             }
-            
+
             // block registering after end time
-            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_END)
-            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_END)
-            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_END)
-            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_END)
+            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_END);
+            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_END);
+            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_END);
+            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_END);
 
             // block spamming
             if (IS_PRODUCTION) {
-                await this.gicService.rateLimitOnDayRegistration(userId, day)
+                await this.gicService.rateLimitOnDayRegistration(userId, day);
             }
 
             if (await this.gicService.userHasRegisteredDay(userId, day)) {
@@ -423,7 +488,7 @@ export class GICController extends Controller {
             if (inviteIdString) {
                 const inviteId = new Types.ObjectId(inviteIdString);
                 if (inviteId.equals(userId)) {
-                    throw new Error(`Cannot invite yourself...`)
+                    throw new Error(`Cannot invite yourself...`);
                 }
                 if (!(await this.userService.findById(inviteId))) {
                     throw new Error(`Invite code invalid`);
@@ -439,42 +504,46 @@ export class GICController extends Controller {
 
             // send confirmation email
             const EVENT_NAME_LIST = [
-                "GIC Opening Day",
-                "Seminar 1: Designing Your Idea",
-                "Seminar 2: Presenting Your Idea",
-            ]
+                'GIC Opening Day',
+                'Seminar 1: Designing Your Idea',
+                'Seminar 2: Presenting Your Idea',
+            ];
             const EVENT_TIME_LIST = [
-                "Online 09:00 - 12:25",
-                "Online 19:00 - 21:15",
-                "Online 09:00 - 11:30"
-            ]
+                'Online 09:00 - 12:25',
+                'Online 19:00 - 21:15',
+                'Online 09:00 - 11:30',
+            ];
             const EVENT_DESCRIPTION_LIST = [
-                "Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh. Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện, đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.",
-                "Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp, những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.",
-                "Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar."
-            ]
+                'Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh. Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện, đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.',
+                'Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp, những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.',
+                'Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar.',
+            ];
 
             const user = await this.userService.findById(userId);
             if (day != 5) {
                 this.mailService.sendToOne(
                     user.email,
-                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]}"`,
+                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${
+                        EVENT_NAME_LIST[day - 1]
+                    }"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
                         EVENT_NAME_LIST[day - 1],
                         EVENT_TIME_LIST[day - 1],
-                        EVENT_DESCRIPTION_LIST[day - 1]
-                    )
-                )
+                        EVENT_DESCRIPTION_LIST[day - 1],
+                    ),
+                );
             } else {
                 this.mailService.sendToOne(
                     user.email,
                     `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "Idea Showcase"`,
                     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
-                        aes256_encrypt(JSON.stringify({ userId: userId.toString })),
-                    )
-                )
+                        aes256_encrypt(
+                            JSON.stringify({ userId: userId.toString }),
+                        ),
+                    ),
+                );
             }
 
             res.composer.success(result);
@@ -491,12 +560,12 @@ export class GICController extends Controller {
             if (!(1 <= day && day <= 5) || day === 4) {
                 throw new Error(`Can only register for days 1, 2, 3, and 5`);
             }
-            
+
             // block unregistering after some date
-            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_START)
-            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_START)
-            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_START)
-            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_START)
+            if (day === 1) blockIfLaterThan(GIC_TIMESTAMPS.DAY_1_START);
+            else if (day === 2) blockIfLaterThan(GIC_TIMESTAMPS.DAY_2_START);
+            else if (day === 3) blockIfLaterThan(GIC_TIMESTAMPS.DAY_3_START);
+            else if (day === 5) blockIfLaterThan(GIC_TIMESTAMPS.DAY_5_START);
 
             if (!(await this.gicService.userHasRegisteredDay(userId, day))) {
                 throw new Error(
