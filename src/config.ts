@@ -58,7 +58,7 @@ export const USER_WHITE_LIST: Array<{ email: string }> = [
     { email: 'minh.tranduy2209@hcmut.edu.vn' },
     { email: 'gdscchatapp@gmail.com' },
     { email: 'duc.nv291@gmail.com' },
-    { email: 'ngoquochieu1211@gmai.com' },
+    { email: 'ngoquochieu1211@gmail.com' },
     { email: 'qtrung.tran2004@gmail.com' },
     { email: 'khanhtrnguyen863@gmail.com' },
 ];
