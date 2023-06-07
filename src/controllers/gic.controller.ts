@@ -121,7 +121,7 @@ export class GICController extends Controller {
             this.getAllContestRegistrations.bind(this)
         )
         this.router.get(
-            `contest/downloadadmin`,
+            `contest/downloadadmin/:registrationId`,
             this.downloadIdeaAdmin.bind(this)
         )
 
