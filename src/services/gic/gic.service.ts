@@ -183,18 +183,21 @@ export class GICService {
 
     async checkin(userId: Types.ObjectId) {
         if (await this.userHasCheckinDay(userId, 5)) {
-            throw new Error(`User has already checkin to Idea Showcase`)
+            throw new Error(`User has already checkin to Idea Showcase`);
         }
-        const reg = await DayRegModel.findOneAndUpdate({
-            registeredBy: userId,
-            day: 5,
-            status: DayRegStatus.REGISTERED
-        }, {
-            status: DayRegStatus.CHECKIN,
-            checkinAt: Date.now()
-        })
+        const reg = await DayRegModel.findOneAndUpdate(
+            {
+                registeredBy: userId,
+                day: 5,
+                status: DayRegStatus.REGISTERED,
+            },
+            {
+                status: DayRegStatus.CHECKIN,
+                checkinAt: Date.now(),
+            },
+        );
         if (!reg) {
-            throw new Error(`User has not registered for Idea Showcase`)
+            throw new Error(`User has not registered for Idea Showcase`);
         }
     }
 
@@ -202,7 +205,7 @@ export class GICService {
         let checkins = await DayRegModel.find({
             day: 5,
             status: DayRegStatus.CHECKIN,
-        });
+        }).populate('registeredBy');
         return checkins;
     }
 
