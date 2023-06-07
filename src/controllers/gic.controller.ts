@@ -117,11 +117,11 @@ export class GICController extends Controller {
             this.downloadIdeaDescription.bind(this),
         );
         this.router.get(
-            `contest/allregistrations`,
+            `/contest/allregistrations`,
             this.getAllContestRegistrations.bind(this)
         )
         this.router.get(
-            `contest/downloadadmin/:registrationId`,
+            `/contest/downloadadmin/:registrationId`,
             this.downloadIdeaAdmin.bind(this)
         )
 
