@@ -64,6 +64,10 @@ export class GICService {
             members: members,
         });
     }
+    
+    async findContestRegs(query: any = {}) {
+        return GICContestRegModel.find(query)
+    }
 
     // to block spamming
     async rateLimitOnContestRegistration(userId: Types.ObjectId) {

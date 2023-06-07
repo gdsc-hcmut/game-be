@@ -116,6 +116,14 @@ export class GICController extends Controller {
             `/contest/download`,
             this.downloadIdeaDescription.bind(this),
         );
+        this.router.get(
+            `contest/allregistrations`,
+            this.getAllContestRegistrations.bind(this)
+        )
+        this.router.get(
+            `contest/downloadadmin`,
+            this.downloadIdeaAdmin.bind(this)
+        )
 
         this.router.post('/day/register/:day', this.registerDay.bind(this));
         this.router.post('/day/unregister/:day', this.unregisterDay.bind(this));
@@ -217,6 +225,51 @@ export class GICController extends Controller {
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
+        }
+    }
+    
+    async getAllContestRegistrations(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`You don't have permission`)
+            }
+            const result = await Promise.all(
+                (await this.gicService.findContestRegs())
+                    .map(r => (async () => await r.populate("registeredBy"))())
+            )
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async downloadIdeaAdmin(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`You don't have permission`)
+            }
+            
+            const regId = new Types.ObjectId(req.params.registrationId)
+            const reg = await this.gicService.findContestRegById(regId)
+            if (!reg) {
+                throw new Error(`Registration doesn't exist`)
+            }
+
+            const file = await this.fileUploadService.downloadFile(
+                reg.ideaDescription,
+            );
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename=${file.originalName}`,
+            );
+            res.setHeader('Content-Type', `${file.mimetype}`);
+            res.end(file.buffer);
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
         }
     }
 
