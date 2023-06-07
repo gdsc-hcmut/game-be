@@ -139,6 +139,10 @@ export class GICController extends Controller {
             `/day/invitedbyme`,
             this.getPeopleUserInvited.bind(this),
         );
+        this.router.get(
+            `/day/allregistrations/:day`,
+            this.getAllDayRegistrations.bind(this)
+        )
 
         this.router.post(`/gacha`, this.gacha.bind(this));
         this.router.post(`/gachapack`, this.gachaPack.bind(this));
@@ -267,6 +271,32 @@ export class GICController extends Controller {
             );
             res.setHeader('Content-Type', `${file.mimetype}`);
             res.end(file.buffer);
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async getAllDayRegistrations(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`You don't have permission`)
+            }
+            const day = parseInt(req.params.day)
+            const queryResult = await Promise.all(
+                (await this.gicService.findDayRegistrations({
+                    day : day,
+                    status: { $ne: DayRegStatus.CANCELLED }
+                })).map(
+                    r => (async () => await r.populate("registeredBy"))()
+                )
+            )
+            const result = queryResult.map(x => ({
+                name: (x.registeredBy as any).name,
+                email: (x.registeredBy as any).email
+            }))
+            res.composer.success(result)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
