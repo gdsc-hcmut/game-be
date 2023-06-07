@@ -182,16 +182,20 @@ export class GICService {
     }
 
     async checkin(userId: Types.ObjectId) {
-        let register = await DayRegModel.findOne({
+        if (await this.userHasCheckinDay(userId, 5)) {
+            throw new Error(`User has already checkin to Idea Showcase`)
+        }
+        const reg = await DayRegModel.findOneAndUpdate({
             registeredBy: userId,
             day: 5,
-        });
-        if (!register) throw Error('User not register yet');
-        if (register.checkinAt || register.status == DayRegStatus.CHECKIN)
-            throw Error('User already checked in');
-        register.checkinAt = Date.now();
-        await register.save();
-        return register;
+            status: DayRegStatus.REGISTERED
+        }, {
+            status: DayRegStatus.CHECKIN,
+            checkinAt: Date.now()
+        })
+        if (!reg) {
+            throw new Error(`User has not registered for Idea Showcase`)
+        }
     }
 
     async findAllCheckin() {
