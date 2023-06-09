@@ -9,7 +9,7 @@ class GICAchievementService {
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
-    
+
     private constructor() {
         this.lock = new AsyncLock()
         this.EXCLUDE_SPECIAL_LIMITED_HIDDEN = []
@@ -20,14 +20,14 @@ class GICAchievementService {
         }
         this.SPECIAL_ACHIEVEMENTS = [29, 45, 48, 49, 55, 60, 64, 65, 80, 89, 92, 93, 100]
     }
-    
+
     public static getService() {
         if (!this.instance) {
             this.instance = new GICAchievementService()
         }
         return this.instance
     }
-    
+
     private async gotAPiece(userId: Types.ObjectId, item: GicItem) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -41,7 +41,7 @@ class GICAchievementService {
             }
 
             const pieceList = await Item.find({
-                ownerId: userId, 
+                ownerId: userId,
                 collectionName: "GicReward"
             })
             const myPieceCount = pieceList.length
@@ -54,13 +54,13 @@ class GICAchievementService {
             if (!d.achievements.includes(2) && myPieceCount >= 50) {
                 d.achievements.push(2)
                 // TODO: send 2000 GCoins + MIRROR R
-                this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR'})
+                this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(3) && myPieceCount >= 100) {
                 d.achievements.push(3)
                 // TODO: send 2500 GCoins + TOTE2
-                this.gotAPiece(userId, { name: 'TOTE2', rare: 'SR'})
+                this.gotAPiece(userId, { name: 'TOTE2', rare: 'SR' })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(4) && myPieceCount >= 200) {
@@ -73,7 +73,7 @@ class GICAchievementService {
                 // TODO: send 7500 GCoins + 1x Premium pack
                 this.completedAMission(userId)
             }
-            
+
             if (!d.achievements.includes(6)) {
                 // does someone have keychain4, cup4, figure4, tote4?
                 const good = (await Item.findOne({
@@ -88,9 +88,9 @@ class GICAchievementService {
                     this.completedAMission(userId)
                 }
             }
-            
+
             // achievements that invole unique pieces
-            const uniqueNotGift = Array.from(new Set(pieceList.map(x => x.name).filter(x => x.length === 1 ||  x.startsWith("MIRROR")))).length
+            const uniqueNotGift = Array.from(new Set(pieceList.map(x => x.name).filter(x => x.length === 1 || x.startsWith("MIRROR")))).length
             if (!d.achievements.includes(7) && uniqueNotGift >= 18) {
                 d.achievements.push(7)
                 // TODO: send 2000 gcoins
@@ -108,7 +108,7 @@ class GICAchievementService {
             await d.save()
         })
     }
-    
+
     private async completedAMission(userId: Types.ObjectId) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -147,7 +147,7 @@ class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async packGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -159,10 +159,10 @@ class GICAchievementService {
                     achievements: []
                 })
             }
-            
+
             const R = a.filter(x => x.rare === 'R').length
             d.R_Pack += R
-            
+
             if (!d.achievements.includes(9) && d.R_Pack >= 10) {
                 d.achievements.push(9)
                 // TODO: 1000 gcoin
@@ -177,7 +177,7 @@ class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async premiumPackGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -189,10 +189,10 @@ class GICAchievementService {
                     achievements: []
                 })
             }
-            
+
             const SR = a.filter(x => x.rare === 'SR').length
             d.SR_PremiumPack += SR
-            
+
             if (!d.achievements.includes(11) && d.SR_PremiumPack >= 1) {
                 d.achievements.push(11)
                 // TODO: 5000 gcoins + MIRROR R
@@ -202,5 +202,73 @@ class GICAchievementService {
             d.markModified("achievements")
             await d.save()
         })
+    }
+
+    public async URLClick(userId: Types.ObjectId, numClicks: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let docs = await GICAchievementModel.findOne({
+                userId: userId
+            });
+            if (!docs) {
+                docs = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                });
+            }
+
+            docs.URLMaxClicks = Math.max(numClicks, docs.URLMaxClicks);
+
+            if (docs.URLMaxClicks === 10) {
+                docs.achievements.push(54);
+                // TODO: 5000 GCoins
+                this.completedAMission(userId);
+            }
+            if (docs.URLMaxClicks === 25) {
+                docs.achievements.push(55);
+                // TODO: 10000 GCoins + Premium Pack
+                // TODO: this.gotAPiece(userId, {})
+                this.completedAMission(userId);
+            }
+
+            docs.markModified("achievements");
+            await docs.save();
+        });
+    }
+
+    public async URLCreate(userId: Types.ObjectId, urlCount: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let docs = await GICAchievementModel.findOne({
+                userId: userId
+            });
+            if (!docs) {
+                docs = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                });
+            }
+
+            docs.URLCount = Math.max(urlCount, docs.URLCount);
+
+            if (docs.URLCount === 1) {
+                docs.achievements.push(51);
+                // TODO: 1000 GCoins
+                this.completedAMission(userId);
+            }
+            if (docs.URLCount === 7) {
+                docs.achievements.push(52);
+                // TODO: 2000 GCoins + Normal Pack R
+                // TODO: this.gotAPiece(userId, {})
+                this.completedAMission(userId);
+            }
+            if (docs.URLCount === 15) {
+                docs.achievements.push(52);
+                // TODO: 2000 GCoins + FIGURE4
+                // TODO: this.gotAPiece(userId, {})
+                this.completedAMission(userId);
+            }
+
+            docs.markModified("achievements");
+            await docs.save();
+        });
     }
 }
