@@ -876,11 +876,14 @@ export class GICController extends Controller {
 
     async aquireAchievement(req: Request, res: Response) {
         try {
-            let { roles } = req.tokenMeta as TokenDocument;
+            const { roles } = req.tokenMeta as TokenDocument;
+            const { achievementId, email } = req.body;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
             }
+
+            console.log(achievementId, email);
 
             res.composer.success('Success');
         } catch (error) {
