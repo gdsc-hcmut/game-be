@@ -244,6 +244,11 @@ export class GICService {
         return gifts;
     }
 
+    async findAllGicGift() {
+        let gifts = await GicGiftModel.find();
+        return gifts;
+    }
+
     async receiveGicGift(giftId: Types.ObjectId) {
         let gift = await GicGiftModel.findById(giftId);
 
