@@ -265,10 +265,8 @@ export class GICController extends Controller {
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
                 throw new Error(`You don't have permission`);
             }
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
 
             const gifts = await this.gicService.receiveGicGift(
-                userId,
                 new Types.ObjectId(req.params.giftId),
             );
 
