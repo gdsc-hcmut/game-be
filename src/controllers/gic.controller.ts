@@ -242,7 +242,9 @@ export class GICController extends Controller {
             if (!req.query.qrcode) {
                 throw Error('Missing QrCode');
             }
-            const decodedData = JSON.parse(aes256_decrypt(req.query.qrcode));
+            const decodedData = JSON.parse(
+                aes256_decrypt(req.query.qrcode as string),
+            );
             if (!decodedData.userId) {
                 throw Error('QrCode not valid');
             }
