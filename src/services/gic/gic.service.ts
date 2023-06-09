@@ -245,7 +245,7 @@ export class GICService {
     }
 
     async findAllGicGift() {
-        let gifts = await GicGiftModel.find();
+        let gifts = await GicGiftModel.find().populate('userId');
         return gifts;
     }
 
