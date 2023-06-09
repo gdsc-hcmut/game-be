@@ -154,13 +154,16 @@ export class AuthController extends Controller {
     }
 
     async mobileLogin(req: Request, res: Response) {
-        const { idToken } = req.body;
-        const ticket = await this.client.verifyIdToken({
-            idToken,
-            audience: GOOGLE_CLIENT_ID,
-        });
-        const payload = ticket.getPayload();
-        console.log(payload);
+        try {
+            const { idToken } = req.body;
+
+            //Check valid payload, exp,... Xem nhugn thong so khac payload
+            const token = await this.authService.generateTokenGoogle(idToken);
+            res.composer.success({ token });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
     }
 
     async recoverPasswordRequest(req: Request, res: Response) {
