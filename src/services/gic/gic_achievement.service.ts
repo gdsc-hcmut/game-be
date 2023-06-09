@@ -49,24 +49,29 @@ class GICAchievementService {
             if (!d.achievements.includes(1) && myPieceCount >= 25) {
                 d.achievements.push(1)
                 // TODO: send 1000 GCoins
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(2) && myPieceCount >= 50) {
                 d.achievements.push(2)
                 // TODO: send 2000 GCoins + MIRROR R
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR'})
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(3) && myPieceCount >= 100) {
                 d.achievements.push(3)
                 // TODO: send 2500 GCoins + TOTE2
                 this.gotAPiece(userId, { name: 'TOTE2', rare: 'SR'})
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(4) && myPieceCount >= 200) {
                 d.achievements.push(4)
                 // TODO: send 5000 GCoins + 1x Normal pack
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(5) && myPieceCount >= 500) {
                 d.achievements.push(5)
                 // TODO: send 7500 GCoins + 1x Premium pack
+                this.completedAMission(userId)
             }
             
             if (!d.achievements.includes(6)) {
@@ -80,6 +85,7 @@ class GICAchievementService {
                     d.achievements.push(6)
                     // TODO: send 3x premium pack + FLASK4
                     this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
+                    this.completedAMission(userId)
                 }
             }
             
@@ -88,12 +94,14 @@ class GICAchievementService {
             if (!d.achievements.includes(7) && uniqueNotGift >= 18) {
                 d.achievements.push(7)
                 // TODO: send 2000 gcoins
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(8) && uniqueNotGift >= 38) {
                 d.achievements.push(8)
                 // TODO: 1x Premium Pack  + Mảnh TOTE3 + MIRROR R
                 this.gotAPiece(userId, { name: "TOTE3", rare: "SR" })
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
             }
 
             d.markModified("achievements")
@@ -158,17 +166,19 @@ class GICAchievementService {
             if (!d.achievements.includes(9) && d.R_Pack >= 10) {
                 d.achievements.push(9)
                 // TODO: 1000 gcoin
+                this.completedAMission(userId)
             }
             if (!d.achievements.includes(10) && d.R_Pack >= 20) {
                 d.achievements.push(10)
                 // TODO: 5000 gcoin
+                this.completedAMission(userId)
             }
             d.markModified("achievements")
             await d.save()
         })
     }
     
-    public async premiumGacha(userId: Types.ObjectId, a: GicItem[]) {
+    public async premiumPackGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId
@@ -187,6 +197,7 @@ class GICAchievementService {
                 d.achievements.push(11)
                 // TODO: 5000 gcoins + MIRROR R
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
+                this.completedAMission(userId)
             }
             d.markModified("achievements")
             await d.save()
