@@ -28,6 +28,7 @@ import {
 import { UserService } from '../user.service';
 import { SYSTEM_ACCOUNT_ID } from '../../config';
 import { TransactionService } from '../transaction.service';
+import GicGiftModel from '../../models/gic/gic_gift';
 
 @injectable()
 export class GICService {
@@ -64,9 +65,9 @@ export class GICService {
             members: members,
         });
     }
-    
+
     async findContestRegs(query: any = {}) {
-        return GICContestRegModel.find(query)
+        return GICContestRegModel.find(query);
     }
 
     // to block spamming
@@ -203,6 +204,21 @@ export class GICService {
         if (!reg) {
             throw new Error(`User has not registered for Idea Showcase`);
         }
+        if (reg.invitedBy) {
+            const invited = await DayRegModel.find({
+                day: 5,
+                invitedBy: reg.invitedBy,
+            });
+            if (invited.length == 1) {
+                this.sendGicGift(reg.invitedBy, 'Keychain', 'Invite 1 friend');
+            } else if (invited.length == 3) {
+                this.sendGicGift(
+                    reg.invitedBy,
+                    'Cup/Figure',
+                    'Invite 3 friend',
+                );
+            }
+        }
     }
 
     async findAllCheckin() {
@@ -213,12 +229,44 @@ export class GICService {
         return checkins;
     }
 
-    // Gameeeeeeeee
-
     async sendItemGIC(itemData: ItemDocument) {
         console.log('Send Item', itemData);
         const item = await this.itemService.createNewItem(itemData);
         return item;
+    }
+
+    // Gameeeeeeeee
+
+    async findAllUserGicGift(userId: Types.ObjectId) {
+        let gifts = await GicGiftModel.find({
+            userId: userId,
+        });
+        return gifts;
+    }
+
+    async receiveGicGift(userId: Types.ObjectId, giftId: Types.ObjectId) {
+        let gift = await GicGiftModel.findById(giftId);
+
+        if (!gift) throw Error('Gift not existed');
+        if (gift.userId != userId) throw Error('Not valid user receive');
+        gift.isReceived = true;
+        gift.reveicedAt = Date.now();
+        return gift;
+    }
+
+    async sendGicGift(
+        userId: Types.ObjectId,
+        name: string,
+        description: string,
+    ) {
+        const gicGift = await GicGiftModel.create({
+            userId,
+            name,
+            description,
+            isReceived: false,
+        });
+
+        return gicGift;
     }
 
     async gacha(userId: Types.ObjectId) {

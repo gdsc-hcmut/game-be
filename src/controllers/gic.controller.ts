@@ -96,6 +96,8 @@ export class GICController extends Controller {
         this.router.get(`/myqr`, this.getMyQr.bind(this));
         this.router.post(`/checkin`, this.checkin.bind(this));
         this.router.get(`/allcheckin`, this.getAllCheckin.bind(this));
+        this.router.get(`/gicgift`, this.getGicGift.bind(this));
+        this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.post(
             `/contest/register`,
@@ -118,12 +120,12 @@ export class GICController extends Controller {
         );
         this.router.get(
             `/contest/allregistrations`,
-            this.getAllContestRegistrations.bind(this)
-        )
+            this.getAllContestRegistrations.bind(this),
+        );
         this.router.get(
             `/contest/downloadadmin/:registrationId`,
-            this.downloadIdeaAdmin.bind(this)
-        )
+            this.downloadIdeaAdmin.bind(this),
+        );
 
         this.router.post('/day/register/:day', this.registerDay.bind(this));
         this.router.post('/day/unregister/:day', this.unregisterDay.bind(this));
@@ -141,8 +143,8 @@ export class GICController extends Controller {
         );
         this.router.get(
             `/day/allregistrations/:day`,
-            this.getAllDayRegistrations.bind(this)
-        )
+            this.getAllDayRegistrations.bind(this),
+        );
 
         this.router.post(`/gacha`, this.gacha.bind(this));
         this.router.post(`/gachapack`, this.gachaPack.bind(this));
@@ -216,6 +218,35 @@ export class GICController extends Controller {
         }
     }
 
+    async getGicGift(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const gifts = await this.gicService.findAllUserGicGift(userId);
+
+            res.composer.success(gifts);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async receiveGicGift(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const gifts = await this.gicService.receiveGicGift(
+                userId,
+                new Types.ObjectId(req.params.giftId),
+            );
+
+            res.composer.success(gifts);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
     async getAllCheckin(req: Request, res: Response) {
         try {
             let { roles } = req.tokenMeta as TokenDocument;
@@ -231,35 +262,36 @@ export class GICController extends Controller {
             res.composer.badRequest(error.message);
         }
     }
-    
+
     async getAllContestRegistrations(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission`)
+                throw new Error(`You don't have permission`);
             }
             const result = await Promise.all(
-                (await this.gicService.findContestRegs())
-                    .map(r => (async () => await r.populate("registeredBy"))())
-            )
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+                (
+                    await this.gicService.findContestRegs()
+                ).map((r) => (async () => await r.populate('registeredBy'))()),
+            );
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async downloadIdeaAdmin(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission`)
+                throw new Error(`You don't have permission`);
             }
-            
-            const regId = new Types.ObjectId(req.params.registrationId)
-            const reg = await this.gicService.findContestRegById(regId)
+
+            const regId = new Types.ObjectId(req.params.registrationId);
+            const reg = await this.gicService.findContestRegById(regId);
             if (!reg) {
-                throw new Error(`Registration doesn't exist`)
+                throw new Error(`Registration doesn't exist`);
             }
 
             const file = await this.fileUploadService.downloadFile(
@@ -271,38 +303,38 @@ export class GICController extends Controller {
             );
             res.setHeader('Content-Type', `${file.mimetype}`);
             res.end(file.buffer);
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async getAllDayRegistrations(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission`)
+                throw new Error(`You don't have permission`);
             }
-            const day = parseInt(req.params.day)
+            const day = parseInt(req.params.day);
             const queryResult = await Promise.all(
-                (await this.gicService.findDayRegistrations({
-                    day : day,
-                    status: { $ne: DayRegStatus.CANCELLED }
-                })).map(
-                    r => (async () => await r.populate("registeredBy"))()
-                )
-            )
-            const result = queryResult.map(x => ({
+                (
+                    await this.gicService.findDayRegistrations({
+                        day: day,
+                        status: { $ne: DayRegStatus.CANCELLED },
+                    })
+                ).map((r) => (async () => await r.populate('registeredBy'))()),
+            );
+            const result = queryResult.map((x) => ({
                 name: (x.registeredBy as any).name,
-                email: (x.registeredBy as any).email
-            }))
+                email: (x.registeredBy as any).email,
+            }));
             res.composer.success({
                 numberOfRegistrations: result.length,
-                registrations: result
-            })
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+                registrations: result,
+            });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
