@@ -250,6 +250,7 @@ export class GICService {
         if (!gift) throw Error('Gift not existed');
         gift.isReceived = true;
         gift.reveicedAt = Date.now();
+        gift.save();
         return gift;
     }
 
