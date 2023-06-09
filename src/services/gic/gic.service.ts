@@ -244,13 +244,18 @@ export class GICService {
         return gifts;
     }
 
-    async receiveGicGift(userId: Types.ObjectId, giftId: Types.ObjectId) {
+    async findAllGicGift() {
+        let gifts = await GicGiftModel.find().populate('userId');
+        return gifts;
+    }
+
+    async receiveGicGift(giftId: Types.ObjectId) {
         let gift = await GicGiftModel.findById(giftId);
 
         if (!gift) throw Error('Gift not existed');
-        if (gift.userId != userId) throw Error('Not valid user receive');
         gift.isReceived = true;
         gift.reveicedAt = Date.now();
+        gift.save();
         return gift;
     }
 

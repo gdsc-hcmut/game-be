@@ -97,6 +97,7 @@ export class GICController extends Controller {
         this.router.post(`/checkin`, this.checkin.bind(this));
         this.router.get(`/allcheckin`, this.getAllCheckin.bind(this));
         this.router.get(`/gicgift`, this.getGicGift.bind(this));
+        this.router.get(`/allgicgift`, this.getAllUserGicGift.bind(this));
         this.router.get(`/user/gicgift`, this.getUserGicGift.bind(this));
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
@@ -259,16 +260,31 @@ export class GICController extends Controller {
         }
     }
 
+    async getAllUserGicGift(req: Request, res: Response) {
+        try {
+            let { roles } = req.tokenMeta as TokenDocument;
+
+            if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
+                throw Error('Permission Error');
+            }
+
+            const gifts = await this.gicService.findAllGicGift();
+
+            res.composer.success(gifts);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
     async receiveGicGift(req: Request, res: Response) {
         try {
             const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
                 throw new Error(`You don't have permission`);
             }
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
 
             const gifts = await this.gicService.receiveGicGift(
-                userId,
                 new Types.ObjectId(req.params.giftId),
             );
 
