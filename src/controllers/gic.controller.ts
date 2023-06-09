@@ -153,6 +153,7 @@ export class GICController extends Controller {
 
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
+        this.router.post(`/achievement`, this.aquireAchievement.bind(this));
     }
 
     async getAllMail(req: Request, res: Response) {
@@ -689,8 +690,7 @@ export class GICController extends Controller {
             if (day != 5) {
                 this.mailService.sendToOne(
                     user.email,
-                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${
-                        EVENT_NAME_LIST[day - 1]
+                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]
                     }"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
@@ -868,6 +868,21 @@ export class GICController extends Controller {
 
             const items = await this.gicService.premiumGachaPack(userId);
             res.composer.success({ items });
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async aquireAchievement(req: Request, res: Response) {
+        try {
+            let { roles } = req.tokenMeta as TokenDocument;
+
+            if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
+                throw Error('Permission Error');
+            }
+
+            res.composer.success('Success');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
