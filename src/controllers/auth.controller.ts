@@ -5,6 +5,7 @@ import User, { USER_ROLES } from '../models/user.model';
 import { Request, Response, ServiceType } from '../types';
 import { Controller } from './controller';
 import { AuthService, TransactionService } from '../services';
+import { OAuth2Client } from 'google-auth-library';
 import passport from 'passport';
 import { UserDocument } from '../models/user.model';
 import { TokenDocument } from '../models/token.model';
@@ -12,6 +13,7 @@ import {
     Domain,
     SYSTEM_ACCOUNT_ID,
     USER_WHITE_LIST,
+    GOOGLE_CLIENT_ID,
     WhitelistDomain,
 } from '../config';
 import DiscordBattle from '../models/discord_battle';
@@ -24,6 +26,7 @@ import PingHistoryModel from '../models/user-ping.model';
 export class AuthController extends Controller {
     public readonly router = Router();
     public readonly path = '/auth';
+    public client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
@@ -34,6 +37,7 @@ export class AuthController extends Controller {
 
         // Confing child routes
         this.router.post('/login', this.login.bind(this));
+        this.router.post('/mobile/login', this.mobileLogin.bind(this));
         this.router.get(
             '/google',
             (req, res, next) => {
@@ -147,6 +151,16 @@ export class AuthController extends Controller {
             console.log(error);
             res.composer.badRequest(error.message);
         }
+    }
+
+    async mobileLogin(req: Request, res: Response) {
+        const { idToken } = req.body;
+        const ticket = await this.client.verifyIdToken({
+            idToken,
+            audience: GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        console.log(payload);
     }
 
     async recoverPasswordRequest(req: Request, res: Response) {
