@@ -5,8 +5,6 @@ export type GICAchievementDocument = Document & {
     achievements: number[]
     R_Pack: number
     SR_PremiumPack: number
-    URLCount: number
-    URLMaxClicks: number
 }
 
 const gicAchievementSchema = new Schema<GICAchievementDocument>({
