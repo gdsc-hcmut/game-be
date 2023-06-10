@@ -44,8 +44,12 @@ import { ZaloZPI } from '../apis/zalo';
 import { lazyInject } from '../container';
 import { hashingPassword } from '../lib/helper';
 import PingHistoryModel from '../models/user-ping.model';
+import { OAuth2Client } from 'google-auth-library';
+
 @injectable()
 export class AuthService {
+    public client = new OAuth2Client(GOOGLE_CLIENT_ID);
+
     @lazyInject(ServiceType.User) private userService: UserService;
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Mail) private mailService: MailService,
@@ -198,16 +202,46 @@ export class AuthService {
         return await this.createToken(userId, googleId, email, roles);
     }
 
-    async generateTokenGoogle(user: UserDocument, roles: Array<USER_ROLES>) {
-        if (_.isEmpty(user)) {
-            throw new ErrorUserInvalid('User not exist');
+    async generateTokenGoogleSignin(idToken: string) {
+        if (_.isEmpty(idToken)) {
+            throw new ErrorUserInvalid('Missing IdToken');
+        }
+
+        const ticket = await this.client.verifyIdToken({
+            idToken,
+            audience: GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        //check valid payload .... TODO
+        if (!payload.email) {
+            throw Error('Invalid email');
+        }
+        // Check env dev = whitelist, production
+        let user = await User.findOne({ googleId: payload.sub });
+        // If user doesn't exist creates a new user. (similar to sign up)
+        if (!user) {
+            const newUser = await User.create({
+                googleId: payload.sub,
+                name: payload.name,
+                email: payload.email,
+                picture: payload.picture,
+                roles: USER_ROLES.USER,
+            });
+            user = newUser;
+            console.log('New User');
+        } else {
+            if (user.picture !== payload.picture) {
+                user.picture = payload.picture;
+                await user.save();
+            }
         }
 
         return await this.createToken(
             user._id,
             user.googleId,
             user.email,
-            roles,
+            user.roles,
         );
     }
 
