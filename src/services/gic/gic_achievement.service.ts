@@ -1,7 +1,7 @@
 import AsyncLock from "async-lock"
 import { Types } from "mongoose"
 import GICAchievementModel from "../../models/gic/gic_achievements.model"
-import { GicItem } from "./utils"
+import { GicItem, GicItemName } from "./utils"
 import Item from "../../models/item.model"
 import { inject, injectable } from "inversify"
 import { ServiceType } from "../../types"
@@ -116,6 +116,11 @@ export class GICAchievementService {
             if (!d.achievements.includes(8) && uniqueNotGift >= 38) {
                 d.achievements.push(8)
                 // TODO: 1x Premium Pack  + Mảnh TOTE3 + MIRROR R
+                await Promise.all(["TOTE3", "MIRROR R"].map((item: GicItemName) => async () => {
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, item)
+                    );
+                }));
                 this.gotAPiece(userId, { name: "TOTE3", rare: "SR" })
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -140,6 +145,9 @@ export class GICAchievementService {
             if (!d.achievements.includes(99) && d.achievements.length >= 50) {
                 d.achievements.push(99)
                 // TODO: send FLASK2
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "FLASK2")
+                );
                 this.completedAMission(userId)
                 this.gotAPiece(userId, { name: 'FLASK2', rare: 'SSR' })
             }
@@ -191,12 +199,18 @@ export class GICAchievementService {
                 if (!d.achievements.includes(69) && d.moneySpent >= 25000) {
                     d.achievements.push(69)
                     // 1x Normal Pack + 1x Premium Pack + 1 MIRROR R
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, "MIRROR R")
+                    );
                     this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(70) && d.moneySpent >= 50000) {
                     d.achievements.push(70)
                     // Premium pack +  Mirror SR
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, "MIRROR SR")
+                    );
                     this.gotAPiece(userId, { name: "MIRROR SR", rare: "MSR" })
                     this.completedAMission(userId)
                 }
@@ -352,6 +366,9 @@ export class GICAchievementService {
             if (!d.achievements.includes(13) && this.canCombineTo(a, "SOLUTION")) {
                 d.achievements.push(13)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
@@ -383,60 +400,90 @@ export class GICAchievementService {
             if (!d.achievements.includes(19) && this.canCombineTo(a, "25062023")) {
                 d.achievements.push(19)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(20) && this.canCombineTo(a, "KEYCHAIN")) {
                 d.achievements.push(20)
                 // 2000 GCoin + Mảnh KEYCHAIN1
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "KEYCHAIN1")
+                );
                 this.gotAPiece(userId, { name: "KEYCHAIN1", rare: "SR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(21) && this.canCombineTo(a, "CUP")) {
                 d.achievements.push(21)
                 // 2000 GCoin + Mảnh KEYCHAIN1
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "KEYCHAIN1")
+                );
                 this.gotAPiece(userId, { name: "CUP1", rare: "SR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(22) && this.canCombineTo(a, "FIGURE")) {
                 d.achievements.push(22)
                 // 2000 GCoin + Mảnh FIGURE1
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "FIGURE1")
+                );
                 this.gotAPiece(userId, { name: "FIGURE1", rare: "SR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(23) && this.canCombineTo(a, "TOTE BAG")) {
                 d.achievements.push(23)
                 // 2000 GCoin + Mảnh TOTE1
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "TOTE1")
+                );
                 this.gotAPiece(userId, { name: "TOTE1", rare: "SR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(24) && this.canCombineTo(a, "VACUUM FLASK")) {
                 d.achievements.push(24)
-                // 2000 GCoin + Mảnh TOTE1
+                // 2000 GCoin + Mảnh FLASK1
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "FLASK1")
+                );
                 this.gotAPiece(userId, { name: "FLASK1", rare: "SSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(25) && this.canCombineTo(a, "IDEA BOARD")) {
                 d.achievements.push(25)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(26) && this.canCombineTo(a, "INVITE FRIEND")) {
                 d.achievements.push(26)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(27) && this.canCombineTo(a, "BAEMIN TECH")) {
                 d.achievements.push(27)
                 // 7500 GCoin + 2x Normal Pack + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(28) && this.canCombineTo(a, "GDSC IDEA CONTEST 2023")) {
                 d.achievements.push(28)
                 // 10000 GCoin + 1x Normal Pack + Mảnh TOTE4
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "TOTE4")
+                );
                 this.gotAPiece(userId, { name: "TOTE4", rare: "SSR" })
                 this.completedAMission(userId)
             }
@@ -454,6 +501,9 @@ export class GICAchievementService {
                     if (good) {
                         d.achievements.push(30)
                         // 10000 GCoin + Mảnh FLASK4
+                        await this.gicService.sendItemGIC(
+                            this.gicService.createGicRewardItem(userId, "FLASK4")
+                        );
                         this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
                         this.completedAMission(userId)
                     }
