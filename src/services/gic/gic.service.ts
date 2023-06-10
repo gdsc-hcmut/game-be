@@ -15,6 +15,7 @@ import { ItemDocument } from '../../models/item.model';
 import {
     GACHA_COST,
     GACHA_COST_PACK,
+    GicItem,
     GicItemName,
     GicRare,
     GicRarity,
@@ -29,6 +30,7 @@ import { UserService } from '../user.service';
 import { SYSTEM_ACCOUNT_ID } from '../../config';
 import { TransactionService } from '../transaction.service';
 import GicGiftModel from '../../models/gic/gic_gift';
+import { GICAchievementService } from './gic_achievement.service';
 
 @injectable()
 export class GICService {
@@ -39,6 +41,7 @@ export class GICService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
+        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
     ) {}
 
     // FOR CONTESTS
@@ -285,12 +288,14 @@ export class GICService {
             GACHA_COST,
             `Transfer ${GACHA_COST}coin to gacha`,
         );
+        const name = this.getRandomItemWithRare(gachaRarity)
         const item = await this.sendItemGIC(
             this.createGicRewardItem(
                 userId,
-                this.getRandomItemWithRare(gachaRarity),
+                name
             ),
         );
+        this.gicAchievementService.singleGacha(userId, gicItems.find(x => x.name === name))
         return item;
     }
 
@@ -306,16 +311,20 @@ export class GICService {
             `Transfer ${GACHA_COST_PACK}coin to x10 gacha`,
         );
         let items: ItemDocument[] = [];
+        let itemsForAchievement: GicItem[] = []
         for (let i = 0; i < 10; i++) {
+            const name = this.getRandomItemWithRare(gachaRarity)
             items.push(
                 await this.sendItemGIC(
                     this.createGicRewardItem(
                         userId,
-                        this.getRandomItemWithRare(gachaRarity),
+                        name
                     ),
                 ),
             );
+            itemsForAchievement.push(gicItems.find(x => x.name === name))
         }
+        this.gicAchievementService.packGacha(userId, itemsForAchievement)
 
         return items;
     }
@@ -331,12 +340,14 @@ export class GICService {
             GACHA_COST,
             `Transfer ${GACHA_COST}coin to premium gacha`,
         );
+        const name = this.getRandomItemWithRare(premiumGachaRarity)
         const item = await this.sendItemGIC(
             this.createGicRewardItem(
                 userId,
-                this.getRandomItemWithRare(premiumGachaRarity),
+                name
             ),
         );
+        this.gicAchievementService.singlePremiumGacha(userId, gicItems.find(x => x.name === name))
         return item;
     }
 
@@ -352,16 +363,20 @@ export class GICService {
             `Transfer ${PREMIUM_GACHA_COST_PACK}coin to x10 premium gacha`,
         );
         let items: ItemDocument[] = [];
+        let itemsForAchievement: GicItem[] = []
         for (let i = 0; i < 10; i++) {
+            const name: GicItemName = this.getRandomItemWithRare(premiumGachaRarity)
             items.push(
                 await this.sendItemGIC(
                     this.createGicRewardItem(
                         userId,
-                        this.getRandomItemWithRare(premiumGachaRarity),
+                        name
                     ),
                 ),
             );
+            itemsForAchievement.push(gicItems.find(x => x.name === name))
         }
+        this.gicAchievementService.premiumPackGacha(userId, itemsForAchievement)
 
         return items;
     }

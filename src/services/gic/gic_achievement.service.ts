@@ -248,21 +248,41 @@ export class GICAchievementService {
             if (!d.achievements.includes(9) && d.R_Pack >= 10) {
                 d.achievements.push(9)
                 // TODO: 1000 gcoin
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    1000,
+                    "hoàn thành nhiệm vụ 'Kiếm được 10 mảnh R từ mở Pack'"
+                )
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(10) && d.R_Pack >= 20) {
                 d.achievements.push(10)
                 // TODO: 5000 gcoin
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    5000,
+                    "hoàn thành nhiệm vụ 'Kiếm được 20 mảnh R từ mở Pack'"
+                )
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(73) && d.packCount >= 1) {
                 d.achievements.push(73)
                 // TODO: 500 gcoin
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    500,
+                    "hoàn thành nhiệm vụ 'Mở Normal Pack 1 lần'"
+                )
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(74) && d.packCount >= 5) {
                 d.achievements.push(74)
                 // TODO: 1000 gcoin
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    1000,
+                    "hoàn thành nhiệm vụ 'Mở Normal Pack 5 lần'"
+                )
                 this.completedAMission(userId)
             }
             d.markModified("achievements")
