@@ -4,7 +4,7 @@ import GICAchievementModel from "../../models/gic/gic_achievements.model"
 import { GicItem } from "./utils"
 import Item from "../../models/item.model"
 
-class GICAchievementService {
+export class GICAchievementService {
     private static instance: GICAchievementService = null
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
@@ -26,6 +26,14 @@ class GICAchievementService {
             this.instance = new GICAchievementService()
         }
         return this.instance
+    }
+
+    async getAchievementOfUser(userId: Types.ObjectId) {
+        await this.lock.acquire(userId.toString(), async () => {
+            return await GICAchievementModel.findOne({
+                userId: userId
+            })
+        })
     }
     
     private async gotAPiece(userId: Types.ObjectId, item: GicItem) {
@@ -150,6 +158,8 @@ class GICAchievementService {
     
     public async packGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
+            a.forEach(x => this.gotAPiece(userId, x))
+
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
@@ -191,6 +201,8 @@ class GICAchievementService {
     
     public async premiumPackGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
+            a.forEach(x => this.gotAPiece(userId, x))
+
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
@@ -252,7 +264,144 @@ class GICAchievementService {
         })
     }
     
+    private canCombineTo(a: GicItem[], s: string) {
+        const aa = a.map(x => x.name)
+        const ss = s.split("").filter(x => x != ' ')
+        if (aa.length != ss.length) return false;
+        for (let i = 0; i < aa.length; i++) if (aa[i] != ss[i]) return false;
+        return true
+    }
+
     public async combinePieces(userId: Types.ObjectId, a: GicItem[]) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let d = await GICAchievementModel.findOne({
+                userId: userId
+            })
+            if (!d) {
+                d = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+
+            if (!d.achievements.includes(12) && this.canCombineTo(a, "PROBLEM")) {
+                d.achievements.push(12)
+                // 2000 GCoin
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(13) && this.canCombineTo(a, "SOLUTION")) {
+                d.achievements.push(13)
+                // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(14) && this.canCombineTo(a, "DESIGN")) {
+                d.achievements.push(14)
+                // 2000 gcoins
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(15) && this.canCombineTo(a, "PRESENT")) {
+                d.achievements.push(15)
+                // 2000 gcoins
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(16) && this.canCombineTo(a, "11062023")) {
+                d.achievements.push(16)
+                // 2000 gcoins
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(17) && this.canCombineTo(a, "14062023")) {
+                d.achievements.push(17)
+                // 2000 gcoins
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(18) && this.canCombineTo(a, "17062023")) {
+                d.achievements.push(18)
+                // 2000 gcoins
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(19) && this.canCombineTo(a, "25062023")) {
+                d.achievements.push(19)
+                // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(20) && this.canCombineTo(a, "KEYCHAIN")) {
+                d.achievements.push(20)
+                // 2000 GCoin + Mảnh KEYCHAIN1
+                this.gotAPiece(userId, { name: "KEYCHAIN1", rare: "SR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(21) && this.canCombineTo(a, "CUP")) {
+                d.achievements.push(21)
+                // 2000 GCoin + Mảnh KEYCHAIN1
+                this.gotAPiece(userId, { name: "CUP1", rare: "SR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(22) && this.canCombineTo(a, "FIGURE")) {
+                d.achievements.push(22)
+                // 2000 GCoin + Mảnh FIGURE1
+                this.gotAPiece(userId, { name: "FIGURE1", rare: "SR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(23) && this.canCombineTo(a, "TOTE BAG")) {
+                d.achievements.push(23)
+                // 2000 GCoin + Mảnh TOTE1
+                this.gotAPiece(userId, { name: "TOTE1", rare: "SR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(24) && this.canCombineTo(a, "VACUUM FLASK")) {
+                d.achievements.push(24)
+                // 2000 GCoin + Mảnh TOTE1
+                this.gotAPiece(userId, { name: "FLASK1", rare: "SSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(25) && this.canCombineTo(a, "IDEA BOARD")) {
+                d.achievements.push(25)
+                // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(26) && this.canCombineTo(a, "INVITE FRIEND")) {
+                d.achievements.push(26)
+                // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(27) && this.canCombineTo(a, "BAEMIN TECH")) {
+                d.achievements.push(27)
+                // 7500 GCoin + 2x Normal Pack + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(28) && this.canCombineTo(a, "GDSC IDEA CONTEST 2023")) {
+                d.achievements.push(28)
+                // 10000 GCoin + 1x Normal Pack + Mảnh TOTE4
+                this.gotAPiece(userId, { name: "TOTE4", rare: "SSR" })
+                this.completedAMission(userId)
+            }
+            if (this.canCombineTo(a, "GOOGLE DEVELOPER STUDENT CLUB HCMUT")) {
+                if (!d.achievements.includes(29)) {
+                    d.achievements.push(29)
+                    // 15000 GCoin + 3x Premium Pack
+                    this.completedAMission(userId)
+                }
+                if (!d.achievements.includes(30)) {
+                    const good = await GICAchievementModel.findOne({
+                        userId: { $ne: userId },
+                        achievements: 30
+                    }) == null
+                    if (good) {
+                        d.achievements.push(30)
+                        // 10000 GCoin + Mảnh FLASK4
+                        this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
+                        this.completedAMission(userId)
+                    }
+                }
+            }
+            d.markModified("achievements")
+            await d.save()
+        })
     }
     
     public async addDiscordAchievement(userId: Types.ObjectId, id: number) {
@@ -341,48 +490,6 @@ class GICAchievementService {
                     }
                     case 60: {
                         // 5000 GCoin + 1x Premium Pack
-                        break
-                    }
-                    default: {
-                        throw new Error(`Unknown id ${id}`)
-                    }
-                }
-                d.achievements.push(id)
-                this.completedAMission(userId)
-            }
-            d.markModified("achievements")
-            await d.save()
-        })
-    }
-
-    async addUrlAchievement(userId: Types.ObjectId, id: number) {
-        await this.lock.acquire(userId.toString(), async () => {
-            let d = await GICAchievementModel.findOne({
-                userId: userId
-            })
-            if (!d) {
-                d = new GICAchievementModel({
-                    userId: userId,
-                    achievements: []
-                })
-            }
-            if (!d.achievements.includes(id)) {
-                switch(id) {
-                    case 51: {
-                        // 1000 gcoin
-                        break
-                    }
-                    case 52: {
-                        // 2000 GCoin + 1x Normal Pack
-                        break
-                    }
-                    case 53: {
-                        // 5000 GCoin + Mảnh FIGURE4
-                        this.gotAPiece(userId, { name: "FIGURE4", rare: "SSR" })
-                        break
-                    }
-                    case 54: {
-                        // 5000 gcoin
                         break
                     }
                     default: {

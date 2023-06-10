@@ -14,6 +14,7 @@ import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-
 import { MailService } from '../services/mail.service';
 import { USER_ROLES } from '../models/user.model';
 import { FileUploadService } from '../services/file-upload.service';
+import { GICAchievementService } from '../services/gic/gic_achievement.service'
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
 import {
@@ -101,6 +102,8 @@ export class GICController extends Controller {
         this.router.get(`/user/gicgift`, this.getUserGicGift.bind(this));
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
+        this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
+
         this.router.post(
             `/contest/register`,
             authService.authenticate(),
@@ -154,6 +157,17 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
         this.router.post(`/achievement`, this.aquireAchievement.bind(this));
+    }
+
+    async getMyAchievements(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const d = await GICAchievementService.getService().getAchievementOfUser(userId)
+            res.composer.success(d != null ? d : {})
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
 
     async getAllMail(req: Request, res: Response) {
