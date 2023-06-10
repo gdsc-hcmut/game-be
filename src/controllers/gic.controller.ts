@@ -104,7 +104,7 @@ export class GICController extends Controller {
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
-        this.router.get(`/achievements/view`, this.viewAchievement.bind(this))
+        this.router.get(`/achievements/view`, this.getViewedAchievements.bind(this))
         this.router.post(`/achievements/view`, this.viewAchievement.bind(this))
 
         this.router.post(
@@ -176,7 +176,7 @@ export class GICController extends Controller {
         }
     }
 
-    async getViewedMyAchievements(req: Request, res: Response) {
+    async getViewedAchievements(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const d = await this.gicAchievementService.getViewedAchievementOfUser(userId)
