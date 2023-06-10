@@ -35,7 +35,7 @@ export class GICAchievementService {
             })
         })
     }
-    
+
     private async gotAPiece(userId: Types.ObjectId, item: GicItem) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -173,7 +173,7 @@ export class GICAchievementService {
             const R = a.filter(x => x.rare === 'R').length
             d.R_Pack += R
             d.packCount++;
-            
+
             if (!d.achievements.includes(9) && d.R_Pack >= 10) {
                 d.achievements.push(9)
                 // TODO: 1000 gcoin
@@ -218,7 +218,7 @@ export class GICAchievementService {
             d.SR_PremiumPack += SR
             d.FLASK3_PremiumPack += FLASK3
             d.premiumPackCount++;
-            
+
             if (!d.achievements.includes(11) && d.SR_PremiumPack >= 1) {
                 d.achievements.push(11)
                 // TODO: 5000 gcoins + MIRROR R
@@ -263,7 +263,7 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     private canCombineTo(a: GicItem[], s: string) {
         const aa = a.map(x => x.name)
         const ss = s.split("").filter(x => x != ' ')
@@ -403,7 +403,7 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async addDiscordAchievement(userId: Types.ObjectId, id: number) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -416,7 +416,7 @@ export class GICAchievementService {
                 })
             }
             if (!d.achievements.includes(id)) {
-                switch(id) {
+                switch (id) {
                     case 31: {
                         // 1000 GCoin + 1x Normal Pack + CUP2
                         this.gotAPiece(userId, { name: "CUP2", rare: "SR" })
@@ -502,6 +502,7 @@ export class GICAchievementService {
             d.markModified("achievements")
             await d.save()
         })
+    }
 
     public async URLClick(userId: Types.ObjectId, numClicks: number) {
         await this.lock.acquire(userId.toString(), async () => {

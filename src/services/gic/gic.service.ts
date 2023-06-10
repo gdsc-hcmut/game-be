@@ -39,7 +39,7 @@ export class GICService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
-    ) {}
+    ) { }
 
     // FOR CONTESTS
 
