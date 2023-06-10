@@ -9,6 +9,7 @@ export type GICAchievementDocument = Document & {
     packCount: number
     premiumPackCount: number
     moneySpent: number
+    maxMathQuizScore: number
 }
 
 const gicAchievementSchema = new Schema<GICAchievementDocument>({
@@ -19,7 +20,8 @@ const gicAchievementSchema = new Schema<GICAchievementDocument>({
     FLASK3_PremiumPack: { type: Number, default: 0 },
     packCount: { type: Number, default: 0 },
     premiumPackCount: { type: Number, default: 0 },
-    moneySpent: { type: Number, default: 0 }
+    moneySpent: { type: Number, default: 0 },
+    maxMathQuizScore: { type: Number, default: 0 }
 })
 
 const GICAchievementModel = mongoose.model<GICAchievementDocument>("gic_achievements", gicAchievementSchema)

@@ -157,7 +157,7 @@ export class GICController extends Controller {
 
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
-        this.router.post(`/achievement`, this.aquireAchievement.bind(this));
+        this.router.post(`/achievement`, this.acquireAchievement.bind(this));
     }
 
     async getMyAchievements(req: Request, res: Response) {
@@ -889,18 +889,18 @@ export class GICController extends Controller {
         }
     }
 
-    async aquireAchievement(req: Request, res: Response) {
+    async acquireAchievement(req: Request, res: Response) {
         try {
             const { roles } = req.tokenMeta as TokenDocument;
-            const { achievementId, email } = req.body;
+            const { achievementId, email, data } = req.body;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
             }
 
-            console.log(achievementId, email);
+            // TODO: GICAchievementService
 
-            res.composer.success('Success');
+            res.composer.success(null);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
