@@ -11,8 +11,7 @@ import { GICAchievementService } from './gic/gic_achievement.service';
 export class TransactionService {
     constructor(
         @inject(ServiceType.User) private userService: UserService,
-        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
-    ) {}
+    ) { }
 
     async createNewTransaction(
         fromUser: Types.ObjectId,
@@ -29,8 +28,6 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-        this.gicAchievementService.userChangeMoney(fromUser, -amount)
-        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -53,7 +50,6 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -76,7 +72,6 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-        this.gicAchievementService.userChangeMoney(fromUser, -amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -117,8 +112,6 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
-        this.gicAchievementService.userChangeMoney(fromUser, -amount)
-        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -143,8 +136,6 @@ export class TransactionService {
             createdAt: Date.now(),
         });
         newTransaction.save();
-        this.gicAchievementService.userChangeMoney(fromUser, -amount)
-        this.gicAchievementService.userChangeMoney(userId, amount)
 
         return newTransaction;
     }
@@ -164,9 +155,8 @@ export class TransactionService {
                 toUserDiscordId,
                 amount * 2,
             );
-        let message = `End Battle transfer to ${toUser.name} ${
-            2 * amount
-        }Gcoin`;
+        let message = `End Battle transfer to ${toUser.name} ${2 * amount
+            }Gcoin`;
         const newTransaction = new Transaction({
             fromUser: SYSTEM_ACCOUNT_ID,
             toUser: toUser._id,
@@ -175,8 +165,6 @@ export class TransactionService {
             createdAt: Date.now(),
         });
         newTransaction.save();
-        this.gicAchievementService.userChangeMoney(fromUser._id, -amount)
-        this.gicAchievementService.userChangeMoney(toUser._id, amount)
 
         return newTransaction;
     }

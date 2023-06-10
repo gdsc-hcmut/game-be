@@ -156,6 +156,12 @@ export class SocketService {
         });
     };
 
+    notifyEvent = (userId: string, message: string) => {
+        Object.keys(this.connectedUser).map((key: any, index: any) => {
+            if (userId == key) this.connectedUser[key].notifyEvent(message);
+        });
+    };
+
     initialize = (socketServer: Socket) => {
         this.socketIOServer = socketServer;
         const wrapMiddlewareForSocketIo =

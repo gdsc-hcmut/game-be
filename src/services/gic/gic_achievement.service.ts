@@ -2,21 +2,23 @@ import AsyncLock from "async-lock"
 import { Types } from "mongoose"
 import GICAchievementModel from "../../models/gic/gic_achievements.model"
 import { GicItem, GicItemName } from "./utils"
-import Item from "../../models/item.model"
+import Item, { ItemDocument } from "../../models/item.model"
 import { inject, injectable } from "inversify"
 import { ServiceType } from "../../types"
 import { GICService } from "./gic.service"
 import { TransactionService } from "../transaction.service"
+import { ItemService } from "../item.service"
 
 @injectable()
 export class GICAchievementService {
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
+    private GLOBAL_KEY: string = ""
 
     constructor(
-        @inject(ServiceType.GIC) private gicService: GICService,
-        @inject(ServiceType.Transaction) private transactionService: TransactionService
+        @inject(ServiceType.Transaction) private transactionService: TransactionService,
+        @inject(ServiceType.Item) private itemService: ItemService,
     ) {
         this.lock = new AsyncLock()
         this.EXCLUDE_SPECIAL_LIMITED_HIDDEN = []
@@ -26,6 +28,29 @@ export class GICAchievementService {
             }
         }
         this.SPECIAL_ACHIEVEMENTS = [29, 45, 48, 49, 55, 60, 64, 65, 80, 89, 92, 93, 100]
+    }
+
+    async sendItemGIC(itemData: ItemDocument) {
+        console.log('Send Item', itemData);
+        const item = await this.itemService.createNewItem(itemData);
+        return item;
+    }
+
+    createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
+        let item: ItemDocument = {
+            ownerId: userId,
+            name: itemName,
+            imgUrl: `https://firebasestorage.googleapis.com/v0/b/gic-web-dev.appspot.com/o/characterPieces%2F${itemName}.png?alt=media`,
+            description: `This is a magical item in GicReward called ${itemName}`,
+            currentPrice: 0,
+            isReceived: false,
+            receivedAt: false,
+            receivedNote: '',
+            isRequestToReceiveItem: false,
+            requestToReceiveItemAt: 0,
+            collectionName: 'GicReward',
+        } as ItemDocument;
+        return item;
     }
 
     async getAchievementOfUser(userId: Types.ObjectId) {
@@ -57,7 +82,7 @@ export class GICAchievementService {
     }
 
     private async gotAPiece(userId: Types.ObjectId, item: GicItem) {
-        await this.lock.acquire(userId.toString(), async () => {
+        await this.lock.acquire([this.GLOBAL_KEY, userId.toString()], async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
@@ -87,8 +112,8 @@ export class GICAchievementService {
             if (!d.achievements.includes(2) && myPieceCount >= 50) {
                 d.achievements.push(2)
                 // TODO: send 2000 GCoins + MIRROR R
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, 'MIRROR R')
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, 'MIRROR R')
                 )
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -101,8 +126,8 @@ export class GICAchievementService {
             if (!d.achievements.includes(3) && myPieceCount >= 100) {
                 d.achievements.push(3)
                 // TODO: send 2500 GCoins + TOTE2
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, 'TOTE2')
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, 'TOTE2')
                 )
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -143,8 +168,8 @@ export class GICAchievementService {
                 if (good) {
                     d.achievements.push(6)
                     // TODO: send 3x premium pack + FLASK4
-                    await this.gicService.sendItemGIC(
-                        this.gicService.createGicRewardItem(userId, 'FLASK4')
+                    await this.sendItemGIC(
+                        this.createGicRewardItem(userId, 'FLASK4')
                     )
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
@@ -174,8 +199,8 @@ export class GICAchievementService {
                 const obtainedItem = [{ name: "TOTE3", rare: "SR" }, { name: "MIRROR R", rare: "MSR" }];
                 await Promise.all(obtainedItem.map((item: GicItem) => (
                     async () => {
-                        await this.gicService.sendItemGIC(
-                            this.gicService.createGicRewardItem(userId, item.name)
+                        await this.sendItemGIC(
+                            this.createGicRewardItem(userId, item.name)
                         )
                         await this.gotAPiece(userId, item);
                     }
@@ -202,8 +227,8 @@ export class GICAchievementService {
             if (!d.achievements.includes(99) && d.achievements.length >= 50) {
                 d.achievements.push(99)
                 // TODO: send FLASK2
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "FLASK2")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "FLASK2")
                 );
                 this.completedAMission(userId)
                 this.gotAPiece(userId, { name: 'FLASK2', rare: 'SSR' })
@@ -271,8 +296,8 @@ export class GICAchievementService {
                         3000,
                         "Hoàn thành nhiệm vụ 'Xài 25000 GCoin'"
                     )
-                    await this.gicService.sendItemGIC(
-                        this.gicService.createGicRewardItem(userId, "MIRROR R")
+                    await this.sendItemGIC(
+                        this.createGicRewardItem(userId, "MIRROR R")
                     )
                     this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                     this.completedAMission(userId)
@@ -285,8 +310,8 @@ export class GICAchievementService {
                         2000,
                         "Hoàn thành nhiệm vụ 'Xài 50000 GCoin'"
                     )
-                    await this.gicService.sendItemGIC(
-                        this.gicService.createGicRewardItem(userId, "MIRROR SR")
+                    await this.sendItemGIC(
+                        this.createGicRewardItem(userId, "MIRROR SR")
                     )
                     this.gotAPiece(userId, { name: "MIRROR SR", rare: "MSR" })
                     this.completedAMission(userId)
@@ -398,8 +423,8 @@ export class GICAchievementService {
                     5000,
                     "Hoàn thành nhiệm vụ 'Kiếm được 1 mảnh SR từ Premium Pack'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
                 this.completedAMission(userId)
@@ -422,8 +447,8 @@ export class GICAchievementService {
                     1000,
                     "Hoàn thành nhiệm vụ 'Mở Premium Pack 3 lần'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -446,8 +471,8 @@ export class GICAchievementService {
                     5000,
                     "Hoàn thành nhiệm vụ 'Mở Premium Pack 7 lần'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -460,8 +485,8 @@ export class GICAchievementService {
                     10000,
                     "Hoàn thành nhiệm vụ 'Mở Premium Pack 10 lần'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -474,8 +499,8 @@ export class GICAchievementService {
                     10000,
                     "Hoàn thành nhiệm vụ 'Kiếm được mảnh FLASK3 từ Premium Pack'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -494,7 +519,7 @@ export class GICAchievementService {
     }
 
     public async combinePieces(userId: Types.ObjectId, a: GicItem[]) {
-        await this.lock.acquire(userId.toString(), async () => {
+        await this.lock.acquire([this.GLOBAL_KEY, userId.toString()], async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
@@ -523,8 +548,8 @@ export class GICAchievementService {
                     5000 + 1000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"SOLUTION\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -587,8 +612,8 @@ export class GICAchievementService {
                     5000 + 1000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"25062023\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -601,8 +626,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"KEYCHAIN\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "KEYCHAIN1")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "KEYCHAIN1")
                 );
                 this.gotAPiece(userId, { name: "KEYCHAIN1", rare: "SR" })
                 this.completedAMission(userId)
@@ -615,8 +640,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"CUP\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "CUP1")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "CUP1")
                 );
                 this.gotAPiece(userId, { name: "CUP1", rare: "SR" })
                 this.completedAMission(userId)
@@ -629,8 +654,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"FIGURE\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "FIGURE1")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "FIGURE1")
                 );
                 this.gotAPiece(userId, { name: "FIGURE1", rare: "SR" })
                 this.completedAMission(userId)
@@ -643,8 +668,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"TOTE BAG\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "TOTE1")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "TOTE1")
                 );
                 this.gotAPiece(userId, { name: "TOTE1", rare: "SR" })
                 this.completedAMission(userId)
@@ -657,8 +682,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"VACUUM FLASK\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "FLASK1")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "FLASK1")
                 );
                 this.gotAPiece(userId, { name: "FLASK1", rare: "SSR" })
                 this.completedAMission(userId)
@@ -671,8 +696,8 @@ export class GICAchievementService {
                     5000 + 1000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"IDEA BOARD\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -685,8 +710,8 @@ export class GICAchievementService {
                     5000 + 1000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"INVITE FRIEND\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -699,8 +724,8 @@ export class GICAchievementService {
                     7500 + 2000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"BAEMIN TECH\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "MIRROR R")
                 );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
@@ -713,8 +738,8 @@ export class GICAchievementService {
                     10000,
                     "Hoàn thành nhiệm vụ 'Ghép được chữ \"GDSC IDEA CONTEST 2023\"'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, "TOTE4")
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, "TOTE4")
                 );
                 this.gotAPiece(userId, { name: "TOTE4", rare: "SSR" })
                 this.completedAMission(userId)
@@ -738,8 +763,8 @@ export class GICAchievementService {
                             10000,
                             "Hoàn thành nhiệm vụ 'Ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\"'"
                         )
-                        await this.gicService.sendItemGIC(
-                            this.gicService.createGicRewardItem(userId, "FLASK4")
+                        await this.sendItemGIC(
+                            this.createGicRewardItem(userId, "FLASK4")
                         );
                         this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
                         this.completedAMission(userId)
@@ -771,8 +796,8 @@ export class GICAchievementService {
                             2000,
                             "Hoàn thành nhiệm vụ 'Kết nối tài khoản với Discord Bot'"
                         )
-                        await this.gicService.sendItemGIC(
-                            this.gicService.createGicRewardItem(userId, "CUP2")
+                        await this.sendItemGIC(
+                            this.createGicRewardItem(userId, "CUP2")
                         )
                         this.gotAPiece(userId, { name: "CUP2", rare: "SR" })
                         break;
@@ -880,8 +905,8 @@ export class GICAchievementService {
                         // 5000 GCoin  + 3x MIRROR R
                         await Promise.all([1, 2, 3].map(_ => (
                             async () => {
-                                await this.gicService.sendItemGIC(
-                                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                                await this.sendItemGIC(
+                                    this.createGicRewardItem(userId, "MIRROR R")
                                 )
                                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                             }
@@ -904,8 +929,8 @@ export class GICAchievementService {
                     }
                     case 57: {
                         // 5000 GCoin  + Mảnh FIGURE2
-                        await this.gicService.sendItemGIC(
-                            this.gicService.createGicRewardItem(userId, "FIGURE2")
+                        await this.sendItemGIC(
+                            this.createGicRewardItem(userId, "FIGURE2")
                         )
                         this.gotAPiece(userId, { name: "FIGURE2", rare: "SR" })
                         await this.transactionService.createNewTransactionFromSystem(
@@ -1032,8 +1057,8 @@ export class GICAchievementService {
                     2000,
                     "Hoàn thành nhiệm vụ 'Shorten 15 link bằng GDSC URL Shortener trên url.gdsc.app'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, 'FIGURE4')
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, 'FIGURE4')
                 )
                 this.gotAPiece(userId, { name: 'FLASK4', rare: 'LIMITED' });
                 this.completedAMission(userId);
@@ -1065,8 +1090,8 @@ export class GICAchievementService {
                     2000 + 1000,
                     "Hoàn thành nhiệm vụ 'Kiếm 1000 GCoin trong 1 ngày từ Math Quiz'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, 'CUP3')
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, 'CUP3')
                 )
                 this.gotAPiece(userId, { name: 'CUP3', rare: 'SR' })
                 this.completedAMission(userId);
@@ -1109,8 +1134,8 @@ export class GICAchievementService {
                     5000,
                     "Hoàn thành nhiệm vụ 'Đạt 40 điểm Math Quiz'"
                 )
-                await this.gicService.sendItemGIC(
-                    this.gicService.createGicRewardItem(userId, 'CUP4')
+                await this.sendItemGIC(
+                    this.createGicRewardItem(userId, 'CUP4')
                 )
                 this.gotAPiece(userId, { name: 'CUP4', rare: 'SSR' })
             }

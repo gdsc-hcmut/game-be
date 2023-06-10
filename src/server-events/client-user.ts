@@ -446,6 +446,12 @@ class ClientUser {
         // });
     }
 
+    notifyEvent(message: string) {
+        Object.keys(this.sockets).map((key: any, index: any) => {
+            this.sockets[key].socket.emit(EventTypes.NOTIFY_GIC, message);
+        });
+    }
+
     async onDisconnect(socket: any, reason: any) {
         console.log('Disconnect from: ', socket.id);
         console.log('reason: ', reason);

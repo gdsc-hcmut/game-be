@@ -918,13 +918,13 @@ export class GICController extends Controller {
                 throw Error('Invalid body');
             }
 
-            if ([51, 52, 53].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(req.user.id, body.data.urlCount);
-            }
+            // if ([51, 52, 53].includes(achievementId)) {
+            //     this.gicAchievementService.URLCreate(req.user._id, body.data.urlCount);
+            // }
 
-            if ([54, 55].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(req.user.id, body.data.size);
-            }
+            // if ([54, 55].includes(achievementId)) {
+            //     this.gicAchievementService.URLCreate(req.user._id, body.data.size);
+            // }
 
             res.composer.success(null);
         } catch (error) {
