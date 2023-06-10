@@ -14,7 +14,6 @@ export class GICAchievementService {
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
-    private GLOBAL_KEY: string = ""
 
     constructor(
         @inject(ServiceType.Transaction) private transactionService: TransactionService,
@@ -91,7 +90,7 @@ export class GICAchievementService {
     }
 
     private async gotAPiece(userId: Types.ObjectId, item: GicItem) {
-        await this.lock.acquire([this.GLOBAL_KEY, userId.toString()], async () => {
+        await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
@@ -533,7 +532,7 @@ export class GICAchievementService {
     }
 
     public async combinePieces(userId: Types.ObjectId, a: GicItem[]) {
-        await this.lock.acquire([this.GLOBAL_KEY, userId.toString()], async () => {
+        await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId
             })
