@@ -13,7 +13,7 @@ export class GICAchievementService {
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
-    
+
     constructor(
         @inject(ServiceType.GIC) private gicService: GICService,
         @inject(ServiceType.Transaction) private transactionService: TransactionService
@@ -62,12 +62,18 @@ export class GICAchievementService {
             if (!d.achievements.includes(2) && myPieceCount >= 50) {
                 d.achievements.push(2)
                 // TODO: send 2000 GCoins + MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, 'MIRROR R')
+                )
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(3) && myPieceCount >= 100) {
                 d.achievements.push(3)
                 // TODO: send 2500 GCoins + TOTE2
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, 'TOTE2')
+                )
                 this.gotAPiece(userId, { name: 'TOTE2', rare: 'SR' })
                 this.completedAMission(userId)
             }
@@ -92,6 +98,9 @@ export class GICAchievementService {
                 if (good) {
                     d.achievements.push(6)
                     // TODO: send 3x premium pack + FLASK4
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, 'FLASK4')
+                    )
                     this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
                     this.completedAMission(userId)
                 }
@@ -155,7 +164,7 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async changeMoney(userId: Types.ObjectId, d: number) {
         await this.lock.acquire(userId.toString(), async () => {
             if (d < 0) {
@@ -194,7 +203,7 @@ export class GICAchievementService {
             }
         })
     }
-    
+
     public async singleGacha(userId: Types.ObjectId, x: GicItem) {
         await this.lock.acquire(userId.toString(), async () => {
             this.gotAPiece(userId, x)
@@ -603,13 +612,14 @@ export class GICAchievementService {
             if (!docs.achievements.includes(52) && urlCount === 7) {
                 docs.achievements.push(52);
                 // TODO: 2000 GCoins + Normal Pack R
-                // TODO: this.gotAPiece(userId, {})
                 this.completedAMission(userId);
             }
             if (!docs.achievements.includes(53) && urlCount === 15) {
                 docs.achievements.push(53);
                 // TODO: 2000 GCoins + FIGURE4
-                // TODO: this.gotAPiece(userId, {})
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, 'FIGURE4')
+                )
                 this.gotAPiece(userId, { name: 'FLASK4', rare: 'LIMITED' });
                 this.completedAMission(userId);
             }
@@ -635,6 +645,9 @@ export class GICAchievementService {
             if (!docs.achievements.includes(44)) {
                 docs.achievements.push(44);
                 // TODO: 2000 GCoin + 1 Normal Pack + CUP3
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, 'CUP3')
+                )
                 this.gotAPiece(userId, { name: 'CUP3', rare: 'SR' })
                 this.completedAMission(userId);
             }
@@ -666,6 +679,9 @@ export class GICAchievementService {
                 docs.achievements.push(47);
                 // TODO: 5000 GCoin + Mảnh CUP4
                 this.completedAMission(userId);
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, 'CUP4')
+                )
                 this.gotAPiece(userId, { name: 'CUP4', rare: 'SSR' })
             }
 
@@ -676,12 +692,6 @@ export class GICAchievementService {
             }
 
             if (!docs.achievements.includes(49) && docs.maxMathQuizScore >= 75) {
-                docs.achievements.push(49);
-                // TODO: 25000 GCoin + 3x Premium Pack
-                this.completedAMission(userId);
-            }
-
-            if (!docs.achievements.includes(49) && docs.maxMathQuizScore >= 100) {
                 docs.achievements.push(49);
                 // TODO: 25000 GCoin + 3x Premium Pack
                 this.completedAMission(userId);

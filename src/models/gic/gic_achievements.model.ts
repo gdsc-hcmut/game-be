@@ -20,7 +20,7 @@ const gicAchievementSchema = new Schema<GICAchievementDocument>({
     FLASK3_PremiumPack: { type: Number, default: 0 },
     packCount: { type: Number, default: 0 },
     premiumPackCount: { type: Number, default: 0 },
-    moneySpent: { type: Number, default: 0 }
+    moneySpent: { type: Number, default: 0 },
     maxMathQuizScore: { type: Number, default: 0 }
 })
 
