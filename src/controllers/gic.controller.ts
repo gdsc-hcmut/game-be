@@ -85,6 +85,7 @@ export class GICController extends Controller {
         @inject(ServiceType.Mail) private mailService: MailService,
         @inject(ServiceType.FileUpload)
         private fileUploadService: FileUploadService,
+        @inject(ServiceType.GICAchievement) private gicAchievementService : GICAchievementService
     ) {
         super();
 
@@ -162,7 +163,7 @@ export class GICController extends Controller {
     async getMyAchievements(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const d = await GICAchievementService.getService().getAchievementOfUser(userId)
+            const d = await this.gicAchievementService.getAchievementOfUser(userId)
             res.composer.success(d != null ? d : {})
         } catch(error) {
             console.log(error)
