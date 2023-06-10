@@ -446,7 +446,7 @@ class ClientUser {
         // });
     }
 
-    notifyGIC(message: string) {
+    notifyEvent(message: string) {
         Object.keys(this.sockets).map((key: any, index: any) => {
             this.sockets[key].socket.emit(EventTypes.NOTIFY_GIC, message);
         });
