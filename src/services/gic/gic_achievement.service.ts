@@ -144,7 +144,7 @@ export class GICAchievementService {
                     ownerId: { $ne: userId },
                     collectionName: "GicReward",
                     name: { $in: ["KEYCHAIN4", "CUP4", "FIGURE4", "TOTE4"] }
-                })) != null
+                })) == null
                 if (good) {
                     d.achievements.push(6)
                     // TODO: send 3x premium pack + FLASK4
