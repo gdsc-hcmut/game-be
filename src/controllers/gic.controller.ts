@@ -919,11 +919,11 @@ export class GICController extends Controller {
             }
 
             if ([51, 52, 53].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(req.user.id, body.data.urlCount);
+                this.gicAchievementService.URLCreate(req.user._id, body.data.urlCount);
             }
 
             if ([54, 55].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(req.user.id, body.data.size);
+                this.gicAchievementService.URLCreate(req.user._id, body.data.size);
             }
 
             res.composer.success(null);
