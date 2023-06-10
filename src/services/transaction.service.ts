@@ -5,10 +5,14 @@ import Transaction, { TransactionDocument } from '../models/transaction.model';
 import { UserDocument } from '../models/user.model';
 import { ServiceType } from '../types';
 import { UserService } from './user.service';
+import { GICAchievementService } from './gic/gic_achievement.service';
 
 @injectable()
 export class TransactionService {
-    constructor(@inject(ServiceType.User) private userService: UserService) {}
+    constructor(
+        @inject(ServiceType.User) private userService: UserService,
+        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
+    ) {}
 
     async createNewTransaction(
         fromUser: Types.ObjectId,
@@ -25,6 +29,8 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
+        this.gicAchievementService.userChangeMoney(fromUser, -amount)
+        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -47,6 +53,7 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
+        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -69,6 +76,7 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
+        this.gicAchievementService.userChangeMoney(fromUser, -amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -109,6 +117,8 @@ export class TransactionService {
             message,
             createdAt: Date.now(),
         });
+        this.gicAchievementService.userChangeMoney(fromUser, -amount)
+        this.gicAchievementService.userChangeMoney(toUser, amount)
         newTransaction.save();
         return newTransaction;
     }
@@ -133,6 +143,8 @@ export class TransactionService {
             createdAt: Date.now(),
         });
         newTransaction.save();
+        this.gicAchievementService.userChangeMoney(fromUser, -amount)
+        this.gicAchievementService.userChangeMoney(userId, amount)
 
         return newTransaction;
     }
@@ -163,6 +175,8 @@ export class TransactionService {
             createdAt: Date.now(),
         });
         newTransaction.save();
+        this.gicAchievementService.userChangeMoney(fromUser._id, -amount)
+        this.gicAchievementService.userChangeMoney(toUser._id, amount)
 
         return newTransaction;
     }
