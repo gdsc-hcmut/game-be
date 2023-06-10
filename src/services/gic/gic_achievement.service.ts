@@ -162,6 +162,7 @@ class GICAchievementService {
             
             const R = a.filter(x => x.rare === 'R').length
             d.R_Pack += R
+            d.packCount++;
             
             if (!d.achievements.includes(9) && d.R_Pack >= 10) {
                 d.achievements.push(9)
@@ -171,6 +172,16 @@ class GICAchievementService {
             if (!d.achievements.includes(10) && d.R_Pack >= 20) {
                 d.achievements.push(10)
                 // TODO: 5000 gcoin
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(73) && d.packCount >= 1) {
+                d.achievements.push(73)
+                // TODO: 500 gcoin
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(74) && d.packCount >= 5) {
+                d.achievements.push(74)
+                // TODO: 1000 gcoin
                 this.completedAMission(userId)
             }
             d.markModified("achievements")
@@ -191,12 +202,191 @@ class GICAchievementService {
             }
             
             const SR = a.filter(x => x.rare === 'SR').length
+            const FLASK3 = a.filter(x => x.name === "FLASK3").length
             d.SR_PremiumPack += SR
+            d.FLASK3_PremiumPack += FLASK3
+            d.premiumPackCount++;
             
             if (!d.achievements.includes(11) && d.SR_PremiumPack >= 1) {
                 d.achievements.push(11)
                 // TODO: 5000 gcoins + MIRROR R
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(75) && d.premiumPackCount >= 1) {
+                d.achievements.push(75)
+                // 500 GCoin
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(76) && d.premiumPackCount >= 3) {
+                d.achievements.push(76)
+                // 1000 GCoin + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(77) && d.premiumPackCount >= 5) {
+                d.achievements.push(77)
+                // 5000 gcoin
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(78) && d.premiumPackCount >= 7) {
+                d.achievements.push(78)
+                // 5000 GCoin + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(79) && d.premiumPackCount >= 10) {
+                d.achievements.push(79)
+                // 10000 GCoin + 1 MIRROR R 
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            if (!d.achievements.includes(80) && d.FLASK3_PremiumPack >= 1) {
+                d.achievements.push(80)
+                // 10000 GCoin + 1 MIRROR R
+                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                this.completedAMission(userId)
+            }
+            d.markModified("achievements")
+            await d.save()
+        })
+    }
+    
+    public async combinePieces(userId: Types.ObjectId, a: GicItem[]) {
+    }
+    
+    public async addDiscordAchievement(userId: Types.ObjectId, id: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let d = await GICAchievementModel.findOne({
+                userId: userId
+            })
+            if (!d) {
+                d = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+            if (!d.achievements.includes(id)) {
+                switch(id) {
+                    case 31: {
+                        // 1000 GCoin + 1x Normal Pack + CUP2
+                        this.gotAPiece(userId, { name: "CUP2", rare: "SR" })
+                        break;
+                    }
+                    case 32: {
+                        // 1000 GCoin
+                        break;
+                    }
+                    case 33: {
+                        // 1000 GCoin
+                        break;
+                    }
+                    case 34: {
+                        // 1000 GCoin
+                        break;
+                    }
+                    case 35: {
+                        // 1000 GCoin
+                        break;
+                    }
+                    case 36: {
+                        // 2000 gcoin + 1 normal pack
+                        break;
+                    }
+                    case 37: {
+                        // 1000 gcoin
+                        break;
+                    }
+                    case 38: {
+                        // 2000 GCoin + 1x Normal Pack
+                        break;
+                    }
+                    case 39: {
+                        // 1000 gcoin
+                        break;
+                    }
+                    case 40: {
+                        // 2000 GCoin + 1x Normal Pack
+                        break;
+                    }
+                    case 41: {
+                        // 1000 GCoin
+                        break;
+                    }
+                    case 42: {
+                        // 2000 GCoin + 1x Normal Pack
+                        break
+                    }
+                    case 43: {
+                        // 5000 GCoin  + 3x MIRROR R
+                        for (let i = 0; i < 3; i++) this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                        break
+                    }
+                    case 56: {
+                        // 2000 GCoin + 1x Nornal Pack
+                        break
+                    }
+                    case 57: {
+                        // 5000 GCoin  + Mảnh FIGURE2
+                        this.gotAPiece(userId, { name: "FIGURE2", rare: "SR" })
+                        break
+                    }
+                    case 58: {
+                        // 1000 GCoin
+                        break
+                    }
+                    case 59: {
+                        // 2000 GCoin
+                        break
+                    }
+                    case 60: {
+                        // 5000 GCoin + 1x Premium Pack
+                        break
+                    }
+                    default: {
+                        throw new Error(`Unknown id ${id}`)
+                    }
+                }
+                d.achievements.push(id)
+                this.completedAMission(userId)
+            }
+            d.markModified("achievements")
+            await d.save()
+        })
+    }
+
+    async addUrlAchievement(userId: Types.ObjectId, id: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let d = await GICAchievementModel.findOne({
+                userId: userId
+            })
+            if (!d) {
+                d = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+            if (!d.achievements.includes(id)) {
+                switch(id) {
+                    case 51: {
+                        // 1000 gcoin
+                        break
+                    }
+                    case 52: {
+                        // 2000 GCoin + 1x Normal Pack
+                        break
+                    }
+                    case 53: {
+                        // 5000 GCoin + Mảnh FIGURE4
+                        this.gotAPiece(userId, { name: "FIGURE4", rare: "SSR" })
+                        break
+                    }
+                    case 54: {
+                        // 5000 gcoin
+                        break
+                    }
+                }
+                d.achievements.push(id)
                 this.completedAMission(userId)
             }
             d.markModified("achievements")
