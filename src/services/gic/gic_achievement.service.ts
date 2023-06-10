@@ -53,11 +53,40 @@ export class GICAchievementService {
         return item;
     }
 
-    async getAchievementOfUser(userId: Types.ObjectId) {
-        await this.lock.acquire(userId.toString(), async () => {
-            return await GICAchievementModel.findOne({
+    async getAchievementOfUser(userId: Types.ObjectId): Promise<number[]> {
+        return await this.lock.acquire(userId.toString(), async () => {
+            const doc = await GICAchievementModel.findOne({
                 userId: userId
             })
+            return doc.achievements;
+        })
+    }
+
+    async getViewedAchievementOfUser(userId: Types.ObjectId): Promise<number[]> {
+        return await this.lock.acquire(userId.toString(), async () => {
+            const doc = await GICAchievementModel.findOne({
+                userId: userId
+            })
+            const res = doc.achievements.filter(id => !doc.viewedAchievements.includes(id))
+            return res;
+        })
+    }
+
+    async viewAcheivement(userId: Types.ObjectId, achievementNumber: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let doc = await GICAchievementModel.findOne({
+                userId: userId
+            })
+            if (!doc) {
+                doc = new GICAchievementModel({
+                    userId: userId,
+                    achievements: [],
+                    viewedAchievements: []
+                })
+            }
+            doc.viewedAchievements.push(achievementNumber);
+            doc.markModified("viewedAchievements");
+            await doc.save();
         })
     }
 
