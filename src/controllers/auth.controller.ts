@@ -158,10 +158,11 @@ export class AuthController extends Controller {
             const { idToken } = req.body;
 
             //Check valid payload, exp,... Xem nhugn thong so khac payload
-            const token = await this.authService.generateTokenGoogle(idToken);
+            const token = await this.authService.generateTokenGoogleSignin(
+                idToken,
+            );
             res.composer.success({ token });
         } catch (error) {
-            console.log(error);
             res.composer.badRequest(error.message);
         }
     }

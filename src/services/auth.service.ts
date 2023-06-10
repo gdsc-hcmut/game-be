@@ -202,9 +202,9 @@ export class AuthService {
         return await this.createToken(userId, googleId, email, roles);
     }
 
-    async generateTokenGoogle(idToken: string) {
+    async generateTokenGoogleSignin(idToken: string) {
         if (_.isEmpty(idToken)) {
-            throw new ErrorUserInvalid('Miss idtoken');
+            throw new ErrorUserInvalid('Missing IdToken');
         }
 
         const ticket = await this.client.verifyIdToken({
@@ -214,26 +214,26 @@ export class AuthService {
         const payload = ticket.getPayload();
 
         //check valid payload .... TODO
-        if (!payload.email) throw Error('Invalid email');
+        if (!payload.email) {
+            throw Error('Invalid email');
+        }
         // Check env dev = whitelist, production
-        if (payload.exp < Date.now()) throw Error('Token Expired');
-        // TODO ..
-        let user = await User.findOne({ email: payload.email });
+        let user = await User.findOne({ googleId: payload.sub });
         // If user doesn't exist creates a new user. (similar to sign up)
         if (!user) {
             const newUser = await User.create({
-                googleId: payload.sub, // Check again
+                googleId: payload.sub,
                 name: payload.name,
                 email: payload.email,
                 picture: payload.picture,
                 roles: USER_ROLES.USER,
-                // we are using optional chaining because profile.emails may be undefined.
             });
             user = newUser;
+            console.log('New User');
         } else {
             if (user.picture !== payload.picture) {
                 user.picture = payload.picture;
-                user.save();
+                await user.save();
             }
         }
 
