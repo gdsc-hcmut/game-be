@@ -104,7 +104,7 @@ export class GICController extends Controller {
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
-        this.router.post(`/achievements/view`, this.getMyAchievements.bind(this))
+        this.router.post(`/achievements/view`, this.viewAchievement.bind(this))
 
         this.router.post(
             `/contest/register`,
@@ -179,7 +179,7 @@ export class GICController extends Controller {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const d = await this.gicAchievementService.getAchievementOfUser(userId)
-            res.composer.success(d != null ? d : {})
+            res.composer.success(d != null ? d : [])
         } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
