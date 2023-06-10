@@ -296,6 +296,9 @@ export class GICAchievementService {
             if (!d.achievements.includes(11) && d.SR_PremiumPack >= 1) {
                 d.achievements.push(11)
                 // TODO: 5000 gcoins + MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
                 this.completedAMission(userId)
             }
@@ -307,6 +310,9 @@ export class GICAchievementService {
             if (!d.achievements.includes(76) && d.premiumPackCount >= 3) {
                 d.achievements.push(76)
                 // 1000 GCoin + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
@@ -318,18 +324,27 @@ export class GICAchievementService {
             if (!d.achievements.includes(78) && d.premiumPackCount >= 7) {
                 d.achievements.push(78)
                 // 5000 GCoin + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(79) && d.premiumPackCount >= 10) {
                 d.achievements.push(79)
                 // 10000 GCoin + 1 MIRROR R 
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(80) && d.FLASK3_PremiumPack >= 1) {
                 d.achievements.push(80)
                 // 10000 GCoin + 1 MIRROR R
+                await this.gicService.sendItemGIC(
+                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                );
                 this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                 this.completedAMission(userId)
             }
