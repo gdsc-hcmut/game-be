@@ -172,22 +172,48 @@ export class GICAchievementService {
                 if (!d.achievements.includes(67) && d.moneySpent >= 5000) {
                     d.achievements.push(67)
                     // 1x normal pack
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        1000,
+                        "Hoàn thành nhiệm vụ 'Xài 5000 GCoin'"
+                    )
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(68) && d.moneySpent >= 12000) {
                     d.achievements.push(68)
                     // Premium Pack
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        2000,
+                        "Hoàn thành nhiệm vụ 'Xài 12000 GCoin'"
+                    )
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(69) && d.moneySpent >= 25000) {
                     d.achievements.push(69)
                     // 1x Normal Pack + 1x Premium Pack + 1 MIRROR R
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        3000,
+                        "Hoàn thành nhiệm vụ 'Xài 25000 GCoin'"
+                    )
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, "MIRROR R")
+                    )
                     this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(70) && d.moneySpent >= 50000) {
                     d.achievements.push(70)
                     // Premium pack +  Mirror SR
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        2000,
+                        "Hoàn thành nhiệm vụ 'Xài 50000 GCoin'"
+                    )
+                    await this.gicService.sendItemGIC(
+                        this.gicService.createGicRewardItem(userId, "MIRROR SR")
+                    )
                     this.gotAPiece(userId, { name: "MIRROR SR", rare: "MSR" })
                     this.completedAMission(userId)
                 }
