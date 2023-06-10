@@ -104,6 +104,7 @@ export class GICController extends Controller {
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
+        this.router.post(`/achievements/view`, this.getMyAchievements.bind(this))
 
         this.router.post(
             `/contest/register`,
@@ -158,6 +159,20 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
         this.router.post(`/achievement`, this.acquireAchievement.bind(this));
+    }
+
+    async viewAchievement(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            if (!req.body.achievementNumber) {
+                throw Error("Missing acheivementNumber in req.body");
+            }
+            const docs = await this.gicAchievementService.viewAcheivement(userId, req.body.achievementNumber)
+            res.composer.success(docs !== null ? docs : {})
+        } catch (error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
 
     async getMyAchievements(req: Request, res: Response) {
