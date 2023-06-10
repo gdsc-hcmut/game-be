@@ -155,7 +155,13 @@ export class GICAchievementService {
             await d.save()
         })
     }
-
+    
+    public async singleGacha(userId: Types.ObjectId, x: GicItem) {
+        await this.lock.acquire(userId.toString(), async () => {
+            this.gotAPiece(userId, x)
+        })
+    }
+    
     public async packGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             a.forEach(x => this.gotAPiece(userId, x))
@@ -198,7 +204,13 @@ export class GICAchievementService {
             await d.save()
         })
     }
-
+    
+    public async singlePremiumGacha(userId: Types.ObjectId, x: GicItem) {
+        await this.lock.acquire(userId.toString(), async () => {
+            this.gotAPiece(userId, x)
+        })
+    }
+    
     public async premiumPackGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             a.forEach(x => this.gotAPiece(userId, x))
