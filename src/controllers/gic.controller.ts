@@ -913,20 +913,24 @@ export class GICController extends Controller {
                 throw Error('Permission Error');
             }
 
+            const userId = (await this.userService.findOne({
+                email
+            }))._id;
+
             // TODO: GICAchievementService
             if (!body?.data) {
                 throw Error('Invalid body');
             }
 
-            // if ([51, 52, 53].includes(achievementId)) {
-            //     this.gicAchievementService.URLCreate(req.user._id, body.data.urlCount);
-            // }
+            if ([51, 52, 53].includes(achievementId)) {
+                this.gicAchievementService.URLCreate(userId, body.data.urlCount);
+            }
 
-            // if ([54, 55].includes(achievementId)) {
-            //     this.gicAchievementService.URLCreate(req.user._id, body.data.size);
-            // }
+            if ([54, 55].includes(achievementId)) {
+                this.gicAchievementService.URLCreate(userId, body.data.size);
+            }
 
-            res.composer.success(null);
+            res.composer.success("Sucess");
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

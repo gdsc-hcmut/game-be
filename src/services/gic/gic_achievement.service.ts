@@ -991,7 +991,7 @@ export class GICAchievementService {
                 });
             }
 
-            if (!docs.achievements.includes(54) && numClicks === 10) {
+            if (!docs.achievements.includes(54) && numClicks >= 10) {
                 docs.achievements.push(54);
                 // TODO: 5000 GCoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -1001,7 +1001,7 @@ export class GICAchievementService {
                 )
                 this.completedAMission(userId);
             }
-            if (!docs.achievements.includes(55) && numClicks === 25) {
+            if (!docs.achievements.includes(55) && numClicks >= 25) {
                 docs.achievements.push(55);
                 // TODO: 10000 GCoins + Premium Pack
                 await this.transactionService.createNewTransactionFromSystem(
@@ -1029,7 +1029,7 @@ export class GICAchievementService {
                 });
             }
 
-            if (!docs.achievements.includes(51) && urlCount === 1) {
+            if (!docs.achievements.includes(51) && urlCount >= 1) {
                 docs.achievements.push(51);
                 // TODO: 1000 GCoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -1039,7 +1039,7 @@ export class GICAchievementService {
                 )
                 this.completedAMission(userId);
             }
-            if (!docs.achievements.includes(52) && urlCount === 7) {
+            if (!docs.achievements.includes(52) && urlCount >= 7) {
                 docs.achievements.push(52);
                 // TODO: 2000 GCoins + Normal Pack R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -1049,7 +1049,7 @@ export class GICAchievementService {
                 )
                 this.completedAMission(userId);
             }
-            if (!docs.achievements.includes(53) && urlCount === 15) {
+            if (!docs.achievements.includes(53) && urlCount >= 15) {
                 docs.achievements.push(53);
                 // TODO: 2000 GCoins + FIGURE4
                 await this.transactionService.createNewTransactionFromSystem(
