@@ -385,6 +385,9 @@ class GICAchievementService {
                         // 5000 gcoin
                         break
                     }
+                    default: {
+                        throw new Error(`Unknown id ${id}`)
+                    }
                 }
                 d.achievements.push(id)
                 this.completedAMission(userId)
