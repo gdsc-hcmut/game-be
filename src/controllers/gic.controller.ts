@@ -104,8 +104,8 @@ export class GICController extends Controller {
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
-        this.router.get(`/achievements/view`, this.getViewedAchievements.bind(this))
-        this.router.post(`/achievements/view`, this.viewAchievement.bind(this))
+        this.router.get(`/achievements/unread`, this.getViewedAchievements.bind(this))
+        this.router.post(`/achievements/mark-as-read`, this.viewAchievement.bind(this))
 
         this.router.post(
             `/contest/register`,
