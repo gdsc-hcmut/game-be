@@ -155,13 +155,13 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async singleGacha(userId: Types.ObjectId, x: GicItem) {
         await this.lock.acquire(userId.toString(), async () => {
             this.gotAPiece(userId, x)
         })
     }
-    
+
     public async packGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             a.forEach(x => this.gotAPiece(userId, x))
@@ -204,13 +204,13 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     public async singlePremiumGacha(userId: Types.ObjectId, x: GicItem) {
         await this.lock.acquire(userId.toString(), async () => {
             this.gotAPiece(userId, x)
         })
     }
-    
+
     public async premiumPackGacha(userId: Types.ObjectId, a: GicItem[]) {
         await this.lock.acquire(userId.toString(), async () => {
             a.forEach(x => this.gotAPiece(userId, x))
@@ -536,7 +536,6 @@ export class GICAchievementService {
             if (!docs.achievements.includes(55) && numClicks === 25) {
                 docs.achievements.push(55);
                 // TODO: 10000 GCoins + Premium Pack
-                // TODO: this.gotAPiece(userId, {})
                 this.completedAMission(userId);
             }
 
@@ -572,11 +571,103 @@ export class GICAchievementService {
                 docs.achievements.push(53);
                 // TODO: 2000 GCoins + FIGURE4
                 // TODO: this.gotAPiece(userId, {})
+                this.gotAPiece(userId, { name: 'FLASK4', rare: 'LIMITED' });
                 this.completedAMission(userId);
             }
 
             docs.markModified("achievements");
             await docs.save();
         });
+    }
+
+    public async availableRecieved(userId: Types.ObjectId) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let docs = await GICAchievementModel.findOne({
+                userId: userId
+            });
+
+            if (!docs) {
+                docs = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+
+            if (!docs.achievements.includes(44)) {
+                docs.achievements.push(44);
+                // TODO: 2000 GCoin + 1 Normal Pack + CUP3
+                this.gotAPiece(userId, { name: 'CUP3', rare: 'SR' })
+                this.completedAMission(userId);
+            }
+        })
+    }
+
+    public async mathQuizScore(userId: Types.ObjectId, score: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let docs = await GICAchievementModel.findOne({
+                userId: userId
+            });
+
+            if (!docs) {
+                docs = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+
+            docs.maxMathQuizScore = Math.max(docs.maxMathQuizScore, score);
+
+            if (!docs.achievements.includes(46) && docs.maxMathQuizScore >= 25) {
+                docs.achievements.push(46);
+                // TODO: 2000 GCoin
+                this.completedAMission(userId);
+            }
+
+            if (!docs.achievements.includes(47) && docs.maxMathQuizScore >= 40) {
+                docs.achievements.push(47);
+                // TODO: 5000 GCoin + Mảnh CUP4
+                this.completedAMission(userId);
+                this.gotAPiece(userId, { name: 'CUP4', rare: 'SSR' })
+            }
+
+            if (!docs.achievements.includes(48) && docs.maxMathQuizScore >= 60) {
+                docs.achievements.push(48);
+                // TODO: 10000 GCoin + 1x Premium Pack
+                this.completedAMission(userId);
+            }
+
+            if (!docs.achievements.includes(49) && docs.maxMathQuizScore >= 75) {
+                docs.achievements.push(49);
+                // TODO: 25000 GCoin + 3x Premium Pack
+                this.completedAMission(userId);
+            }
+
+            if (!docs.achievements.includes(49) && docs.maxMathQuizScore >= 100) {
+                docs.achievements.push(49);
+                // TODO: 25000 GCoin + 3x Premium Pack
+                this.completedAMission(userId);
+            }
+        });
+    }
+
+    public async onTopMathQuiz(userId: Types.ObjectId) {
+        await this.lock.acquire(userId.toString(), async () => {
+            let docs = await GICAchievementModel.findOne({
+                userId: userId
+            });
+
+            if (!docs) {
+                docs = new GICAchievementModel({
+                    userId: userId,
+                    achievements: []
+                })
+            }
+
+            if (!docs.achievements.includes(45)) {
+                docs.achievements.includes(45);
+                // TODO: 5000 GCoin + 2x Premium Pack
+                this.completedAMission(userId);
+            }
+        })
     }
 }
