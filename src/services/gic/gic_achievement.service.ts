@@ -172,8 +172,8 @@ export class GICAchievementService {
             await d.save()
         })
     }
-
-    public async changeMoney(userId: Types.ObjectId, d: number) {
+    
+    public async userChangeMoney(userId: Types.ObjectId, d: number) {
         await this.lock.acquire(userId.toString(), async () => {
             if (d < 0) {
                 let d = await GICAchievementModel.findOne({
@@ -189,28 +189,48 @@ export class GICAchievementService {
                 if (!d.achievements.includes(67) && d.moneySpent >= 5000) {
                     d.achievements.push(67)
                     // 1x normal pack
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        1000,
+                        "Hoàn thành nhiệm vụ 'Xài 5000 GCoin'"
+                    )
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(68) && d.moneySpent >= 12000) {
                     d.achievements.push(68)
                     // Premium Pack
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        2000,
+                        "Hoàn thành nhiệm vụ 'Xài 12000 GCoin'"
+                    )
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(69) && d.moneySpent >= 25000) {
                     d.achievements.push(69)
                     // 1x Normal Pack + 1x Premium Pack + 1 MIRROR R
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        3000,
+                        "Hoàn thành nhiệm vụ 'Xài 25000 GCoin'"
+                    )
                     await this.gicService.sendItemGIC(
                         this.gicService.createGicRewardItem(userId, "MIRROR R")
-                    );
+                    )
                     this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(70) && d.moneySpent >= 50000) {
                     d.achievements.push(70)
                     // Premium pack +  Mirror SR
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        2000,
+                        "Hoàn thành nhiệm vụ 'Xài 50000 GCoin'"
+                    )
                     await this.gicService.sendItemGIC(
                         this.gicService.createGicRewardItem(userId, "MIRROR SR")
-                    );
+                    )
                     this.gotAPiece(userId, { name: "MIRROR SR", rare: "MSR" })
                     this.completedAMission(userId)
                 }
@@ -544,77 +564,180 @@ export class GICAchievementService {
                 switch (id) {
                     case 31: {
                         // 1000 GCoin + 1x Normal Pack + CUP2
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            2000,
+                            "hoàn thành nhiệm vụ 'Kết nối tài khoản với Discord Bot'"
+                        )
+                        await this.gicService.sendItemGIC(
+                            this.gicService.createGicRewardItem(userId, "CUP2")
+                        )
                         this.gotAPiece(userId, { name: "CUP2", rare: "SR" })
                         break;
                     }
                     case 32: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ '/work 1 lần trong kênh daily-and-work'"
+                        )
                         break;
                     }
                     case 33: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ '/work 14 lần trong kênh daily-and-work'"
+                        )
                         break;
                     }
                     case 34: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ '/daily 7 lần trong kênh daily-and-work'"
+                        )
                         break;
                     }
                     case 35: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ 'Chơi /guess 3 lần trong kênh battle'"
+                        )
                         break;
                     }
                     case 36: {
                         // 2000 gcoin + 1 normal pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            3000,
+                            "hoàn thành nhiệm vụ 'Guess đúng trong không quá 10 lượt'"
+                        )
                         break;
                     }
                     case 37: {
                         // 1000 gcoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ 'Chơi /hangman 3 lần trong kênh battle'"
+                        )
                         break;
                     }
                     case 38: {
                         // 2000 GCoin + 1x Normal Pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            3000,
+                            "hoàn thành nhiệm vụ 'Thắng hangman trong không quá 10 lượt'"
+                        )
                         break;
                     }
                     case 39: {
                         // 1000 gcoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ 'Chơi /rps 1 lần trong kênh battle'"
+                        )
                         break;
                     }
                     case 40: {
                         // 2000 GCoin + 1x Normal Pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            3000,
+                            "hoàn thành nhiệm vụ 'Thắng /rps bằng búa 3 lần'"
+                        )
                         break;
                     }
                     case 41: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ 'Battle thắng 1 lần'"
+                        )
                         break;
                     }
                     case 42: {
                         // 2000 GCoin + 1x Normal Pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            3000,
+                            "hoàn thành nhiệm vụ 'Battle thắng 5 lần'"
+                        )
                         break
                     }
                     case 43: {
                         // 5000 GCoin  + 3x MIRROR R
-                        for (let i = 0; i < 3; i++) this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                        await Promise.all([1, 2, 3].map(_ => (
+                            async () => {
+                                await this.gicService.sendItemGIC(
+                                    this.gicService.createGicRewardItem(userId, "MIRROR R")
+                                )
+                                this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                            }
+                        )()))
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            5000,
+                            "hoàn thành nhiệm vụ 'Battle thắng 10 lần'"
+                        )
                         break
                     }
                     case 56: {
                         // 2000 GCoin + 1x Nornal Pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            3000,
+                            "hoàn thành nhiệm vụ 'Tham gia Thursday Minigame 1 lần'"
+                        )
                         break
                     }
                     case 57: {
                         // 5000 GCoin  + Mảnh FIGURE2
+                        await this.gicService.sendItemGIC(
+                            this.gicService.createGicRewardItem(userId, "FIGURE2")
+                        )
                         this.gotAPiece(userId, { name: "FIGURE2", rare: "SR" })
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            5000,
+                            "hoàn thành nhiệm vụ 'Tham gia Thursday Minigame 2 lần'"
+                        )
                         break
                     }
                     case 58: {
                         // 1000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            1000,
+                            "hoàn thành nhiệm vụ 'Trả lời đúng 5 câu hỏi từ Thursday Minigame'"
+                        )
                         break
                     }
                     case 59: {
                         // 2000 GCoin
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            2000,
+                            "hoàn thành nhiệm vụ 'Trả lời đúng 10 câu hỏi từ Thursday Minigame'"
+                        )
                         break
                     }
                     case 60: {
                         // 5000 GCoin + 1x Premium Pack
+                        await this.transactionService.createNewTransactionFromSystem(
+                            userId,
+                            7000,
+                            "hoàn thành nhiệm vụ 'Lọt top 10 Thursday Minigame'"
+                        )
                         break
                     }
                     default: {
