@@ -104,6 +104,7 @@ export class GICController extends Controller {
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
         this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
+        this.router.get(`/achievements/view`, this.viewAchievement.bind(this))
         this.router.post(`/achievements/view`, this.viewAchievement.bind(this))
 
         this.router.post(
@@ -167,8 +168,19 @@ export class GICController extends Controller {
             if (!req.body.achievementNumber) {
                 throw Error("Missing acheivementNumber in req.body");
             }
-            const docs = await this.gicAchievementService.viewAcheivement(userId, req.body.achievementNumber)
-            res.composer.success(docs !== null ? docs : {})
+            await this.gicAchievementService.viewAcheivement(userId, req.body.achievementNumber)
+            res.composer.success(null)
+        } catch (error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+
+    async getViewedMyAchievements(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const d = await this.gicAchievementService.getViewedAchievementOfUser(userId)
+            res.composer.success(d != null ? d : [])
         } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
