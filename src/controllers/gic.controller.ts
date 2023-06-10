@@ -85,7 +85,7 @@ export class GICController extends Controller {
         @inject(ServiceType.Mail) private mailService: MailService,
         @inject(ServiceType.FileUpload)
         private fileUploadService: FileUploadService,
-        @inject(ServiceType.GICAchievement) private gicAchievementService : GICAchievementService
+        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
     ) {
         super();
 
@@ -165,7 +165,7 @@ export class GICController extends Controller {
             const userId = new Types.ObjectId(req.tokenMeta.userId)
             const d = await this.gicAchievementService.getAchievementOfUser(userId)
             res.composer.success(d != null ? d : {})
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             res.composer.badRequest(error.message)
         }
@@ -892,13 +892,24 @@ export class GICController extends Controller {
     async acquireAchievement(req: Request, res: Response) {
         try {
             const { roles } = req.tokenMeta as TokenDocument;
-            const { achievementId, email, data } = req.body;
+            const { achievementId, email, ...body } = req.body;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
             }
 
             // TODO: GICAchievementService
+            if (!body?.data) {
+                throw Error('Invalid body');
+            }
+
+            if ([51, 52, 53].includes(achievementId)) {
+                this.gicAchievementService.URLCreate(req.user.id, body.data.urlCount);
+            }
+
+            if ([54, 55].includes(achievementId)) {
+                this.gicAchievementService.URLCreate(req.user.id, body.data.size);
+            }
 
             res.composer.success(null);
         } catch (error) {
