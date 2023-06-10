@@ -33,6 +33,7 @@ import { FileUploadService } from './services/file-upload.service';
 import { CacheService } from './services/cache.service';
 import { GICService } from './services/gic/gic.service';
 import { MailService } from './services/mail.service';
+import { GICAchievementService } from './services/gic/gic_achievement.service';
 
 // Binding service
 container
@@ -87,6 +88,10 @@ container.bind<GICService>(ServiceType.GIC).to(GICService).inSingletonScope();
 container
     .bind<MailService>(ServiceType.Mail)
     .to(MailService)
+    .inSingletonScope();
+container
+    .bind<GICAchievementService>(ServiceType.GICAchievement)
+    .to(GICAchievementService)
     .inSingletonScope();
 
 // Initialize service first

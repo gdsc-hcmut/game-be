@@ -3,14 +3,21 @@ import { Types } from "mongoose"
 import GICAchievementModel from "../../models/gic/gic_achievements.model"
 import { GicItem } from "./utils"
 import Item from "../../models/item.model"
+import { inject, injectable } from "inversify"
+import { ServiceType } from "../../types"
+import { GICService } from "./gic.service"
+import { TransactionService } from "../transaction.service"
 
+@injectable()
 export class GICAchievementService {
-    private static instance: GICAchievementService = null
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
     
-    private constructor() {
+    constructor(
+        @inject(ServiceType.GIC) private gicService: GICService,
+        @inject(ServiceType.Transaction) private transactionService: TransactionService
+    ) {
         this.lock = new AsyncLock()
         this.EXCLUDE_SPECIAL_LIMITED_HIDDEN = []
         for (let i = 1; i <= 100; i++) {
@@ -19,13 +26,6 @@ export class GICAchievementService {
             }
         }
         this.SPECIAL_ACHIEVEMENTS = [29, 45, 48, 49, 55, 60, 64, 65, 80, 89, 92, 93, 100]
-    }
-    
-    public static getService() {
-        if (!this.instance) {
-            this.instance = new GICAchievementService()
-        }
-        return this.instance
     }
 
     async getAchievementOfUser(userId: Types.ObjectId) {
@@ -116,7 +116,7 @@ export class GICAchievementService {
             await d.save()
         })
     }
-    
+
     private async completedAMission(userId: Types.ObjectId) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
@@ -153,6 +153,45 @@ export class GICAchievementService {
             }
             d.markModified("achievements")
             await d.save()
+        })
+    }
+    
+    public async changeMoney(userId: Types.ObjectId, d: number) {
+        await this.lock.acquire(userId.toString(), async () => {
+            if (d < 0) {
+                let d = await GICAchievementModel.findOne({
+                    userId: userId
+                })
+                if (!d) {
+                    d = new GICAchievementModel({
+                        userId: userId,
+                        achievements: []
+                    })
+                }
+                d.moneySpent += -d
+                if (!d.achievements.includes(67) && d.moneySpent >= 5000) {
+                    d.achievements.push(67)
+                    // 1x normal pack
+                    this.completedAMission(userId)
+                }
+                if (!d.achievements.includes(68) && d.moneySpent >= 12000) {
+                    d.achievements.push(68)
+                    // Premium Pack
+                    this.completedAMission(userId)
+                }
+                if (!d.achievements.includes(69) && d.moneySpent >= 25000) {
+                    d.achievements.push(69)
+                    // 1x Normal Pack + 1x Premium Pack + 1 MIRROR R
+                    this.gotAPiece(userId, { name: "MIRROR R", rare: "MSR" })
+                    this.completedAMission(userId)
+                }
+                if (!d.achievements.includes(70) && d.moneySpent >= 50000) {
+                    d.achievements.push(70)
+                    // Premium pack +  Mirror SR
+                    this.gotAPiece(userId, { name: "MIRROR SR", rare: "MSR" })
+                    this.completedAMission(userId)
+                }
+            }
         })
     }
     

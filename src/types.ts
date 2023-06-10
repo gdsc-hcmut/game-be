@@ -25,6 +25,7 @@ export const ServiceType = {
     FileUpload: Symbol.for("FileUploadService"),
     Cache: Symbol.for("CacheService"),
     GIC: Symbol.for("GICService"),
+    GICAchievement: Symbol.for("GICAchievement"),
     Mail: Symbol.for("Mail")
 };
 
