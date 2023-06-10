@@ -29,6 +29,50 @@ export class TransactionService {
         return newTransaction;
     }
 
+    async createNewTransactionFromSystem(
+        toUser: Types.ObjectId,
+        amount: number,
+        message: string,
+    ): Promise<TransactionDocument> {
+        // TODO: apply mongoose transaction
+        await this.userService.transferBalance(
+            SYSTEM_ACCOUNT_ID,
+            toUser,
+            amount,
+        );
+        const newTransaction = new Transaction({
+            SYSTEM_ACCOUNT_ID,
+            toUser,
+            amount,
+            message,
+            createdAt: Date.now(),
+        });
+        newTransaction.save();
+        return newTransaction;
+    }
+
+    async createNewTransactionToSystem(
+        fromUser: Types.ObjectId,
+        amount: number,
+        message: string,
+    ): Promise<TransactionDocument> {
+        // TODO: apply mongoose transaction
+        await this.userService.transferBalance(
+            fromUser,
+            SYSTEM_ACCOUNT_ID,
+            amount,
+        );
+        const newTransaction = new Transaction({
+            fromUser,
+            SYSTEM_ACCOUNT_ID,
+            amount,
+            message,
+            createdAt: Date.now(),
+        });
+        newTransaction.save();
+        return newTransaction;
+    }
+
     async getUserTransaction(
         userId: Types.ObjectId,
     ): Promise<TransactionDocument[]> {
