@@ -31,6 +31,22 @@ import _ from 'lodash';
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
 
+const EVENT_NAME_LIST = [
+    'GIC Opening Day',
+    'Seminar 1: Designing Your Idea',
+    'Seminar 2: Presenting Your Idea',
+];
+const EVENT_TIME_LIST = [
+    'Online 09:00 - 12:25',
+    'Online 19:00 - 21:15',
+    'Online 09:00 - 11:30',
+];
+const EVENT_DESCRIPTION_LIST = [
+    'Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh. Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện, đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.',
+    'Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp, những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.',
+    'Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar.',
+];
+
 const aes256_encrypt = (val: string) => {
     let cipher = crypto.createCipheriv(
         'aes-256-cbc',
@@ -62,13 +78,13 @@ function blockIfLaterThan(
 }
 
 enum GIC_TIMESTAMPS {
-    DAY_1_START = 1686448800000,
+    DAY_1_START = 1686447000000,
     DAY_1_END = 1686457500000,
-    DAY_2_START = 1686457500000,
+    DAY_2_START = 1686742200000,
     DAY_2_END = 1686752100000,
-    DAY_3_START = 1686967200000,
+    DAY_3_START = 1686965400000,
     DAY_3_END = 1686976200000,
-    DAY_5_START = 1687658400000,
+    DAY_5_START = 1687654800000,
     DAY_5_END = 1687670100000,
     IDEA_SUBMISSION_DEADLINE = 1687093200000,
 }
@@ -710,23 +726,6 @@ export class GICController extends Controller {
             } else {
                 result = await this.gicService.registerDay(userId, day);
             }
-
-            // send confirmation email
-            const EVENT_NAME_LIST = [
-                'GIC Opening Day',
-                'Seminar 1: Designing Your Idea',
-                'Seminar 2: Presenting Your Idea',
-            ];
-            const EVENT_TIME_LIST = [
-                'Online 09:00 - 12:25',
-                'Online 19:00 - 21:15',
-                'Online 09:00 - 11:30',
-            ];
-            const EVENT_DESCRIPTION_LIST = [
-                'Nội dung, giải thưởng cũng như mục tiêu của cuộc thi sẽ được phổ biến cho các thí sinh. Ngoài ra, sự kiện còn đem đến cho mọi người chuyên mục “Fireside chat”, một hoạt động trò chuyện, đặt câu hỏi và lắng nghe những chia sẻ từ diễn giả về việc thiết kế, phát triển các giải pháp thiết thực.',
-                'Các bạn tham dự sẽ được bật mí về những yêu cầu đối với giải pháp, những tiêu chí quan trọng sẽ được giám khảo xem xét. Bên cạnh đó, diễn giả từ Baemin sẽ chia sẻ về những kỹ năng, kinh nghiệm trong việc thiết kế nên những giải pháp thiết thực.',
-                'Những kỹ năng cần thiết để trình bày ý tưởng và chuyên nghiệp hoá sản phẩm như phong thái, nội dung khi thuyết trình, cách thiết kế slide... sẽ là những kiến thức, kĩ năng mà các bạn sẽ được trau dồi từ hoạt động seminar.',
-            ];
 
             const user = await this.userService.findById(userId);
             if (day != 5) {
