@@ -444,7 +444,9 @@ class ClientUser {
     }
 
     notifyEvent(message: string) {
+        console.log('notify', message);
         Object.keys(this.sockets).map((key: any, index: any) => {
+            console.log('here');
             this.sockets[key].socket.emit(EventTypes.NOTIFY_GIC, message);
         });
     }
