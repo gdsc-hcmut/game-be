@@ -422,4 +422,24 @@ export class GICService {
         } as ItemDocument;
         return item;
     }
+
+    async forge(userId: Types.ObjectId, s: string) {
+        const FIRST_CASE_LIST = ["KEYCHAIN", "CUP", "FIGURE", "TOTE", "FLASK"]
+        const SECOND_CASE_LIST = ["PROBLEM", "SOLUTION"]
+        if (FIRST_CASE_LIST.includes(s)) {
+            switch(s) {
+                case "KEYCHAIN": {
+                }
+                case "CUP": {
+                }
+                case "FIGURE": {
+                }
+                case "TOTE": {
+                }
+                case "FLASK": {
+                }
+            }
+        } else if (SECOND_CASE_LIST.includes(s)) {
+        }
+    }
 }

@@ -27,6 +27,7 @@ import * as crypto from 'crypto';
 import { IS_PRODUCTION } from '../config';
 import { TokenDocument } from '../models/token.model';
 import _ from 'lodash';
+import { GicItemName } from '../services/gic/utils';
 
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
@@ -176,6 +177,15 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
         this.router.post(`/achievement`, this.acquireAchievement.bind(this));
+    }
+
+    async combinePieces(req: Request, res: Response) {
+        try {
+            const pieces = req.body.pieces as GicItemName[]
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
 
     async viewAchievement(req: Request, res: Response) {
