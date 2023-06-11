@@ -681,15 +681,7 @@ export class GICAchievementService {
         });
     }
 
-    private canCombineTo(a: GicItem[], s: string) {
-        const aa = a.map((x) => x.name);
-        const ss = s.split('').filter((x) => x != ' ');
-        if (aa.length != ss.length) return false;
-        for (let i = 0; i < aa.length; i++) if (aa[i] != ss[i]) return false;
-        return true;
-    }
-
-    public async combinePieces(userId: Types.ObjectId, a: GicItem[]) {
+    public async forge(userId: Types.ObjectId, s: string) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId,
@@ -701,11 +693,8 @@ export class GICAchievementService {
                 });
             }
 
-            if (
-                !d.achievements.includes(12) &&
-                this.canCombineTo(a, 'PROBLEM')
-            ) {
-                d.achievements.push(12);
+            if (!d.achievements.includes(12) && s === "PROBLEM") {
+                d.achievements.push(12)
                 // 2000 GCoin
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -718,11 +707,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(13) &&
-                this.canCombineTo(a, 'SOLUTION')
-            ) {
-                d.achievements.push(13);
+            if (!d.achievements.includes(13) && s === "SOLUTION") {
+                d.achievements.push(13)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -739,11 +725,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(14) &&
-                this.canCombineTo(a, 'DESIGN')
-            ) {
-                d.achievements.push(14);
+            if (!d.achievements.includes(14) && s === "DESIGN") {
+                d.achievements.push(14)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -756,11 +739,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(15) &&
-                this.canCombineTo(a, 'PRESENT')
-            ) {
-                d.achievements.push(15);
+            if (!d.achievements.includes(15) && s === "PRESENT") {
+                d.achievements.push(15)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -773,11 +753,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(16) &&
-                this.canCombineTo(a, '11062023')
-            ) {
-                d.achievements.push(16);
+            if (!d.achievements.includes(16) && s === "11062023") {
+                d.achievements.push(16)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -790,11 +767,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(17) &&
-                this.canCombineTo(a, '14062023')
-            ) {
-                d.achievements.push(17);
+            if (!d.achievements.includes(17) && s === "14062023") {
+                d.achievements.push(17)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -807,11 +781,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(18) &&
-                this.canCombineTo(a, '17062023')
-            ) {
-                d.achievements.push(18);
+            if (!d.achievements.includes(18) && s === "17062023") {
+                d.achievements.push(18)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -824,11 +795,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(19) &&
-                this.canCombineTo(a, '25062023')
-            ) {
-                d.achievements.push(19);
+            if (!d.achievements.includes(19) && s === "25062023") {
+                d.achievements.push(19)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -845,11 +813,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(20) &&
-                this.canCombineTo(a, 'KEYCHAIN')
-            ) {
-                d.achievements.push(20);
+            if (!d.achievements.includes(20) && s === "KEYCHAIN") {
+                d.achievements.push(20)
                 // 2000 GCoin + Mảnh KEYCHAIN1
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -866,8 +831,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'KEYCHAIN1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(21) && this.canCombineTo(a, 'CUP')) {
-                d.achievements.push(21);
+            if (!d.achievements.includes(21) && s === "CUP") {
+                d.achievements.push(21)
                 // 2000 GCoin + Mảnh CUP1
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -884,11 +849,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'CUP1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(22) &&
-                this.canCombineTo(a, 'FIGURE')
-            ) {
-                d.achievements.push(22);
+            if (!d.achievements.includes(22) && s === "FIGURE") {
+                d.achievements.push(22)
                 // 2000 GCoin + Mảnh FIGURE1
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -905,11 +867,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'FIGURE1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(23) &&
-                this.canCombineTo(a, 'TOTE BAG')
-            ) {
-                d.achievements.push(23);
+            if (!d.achievements.includes(23) && s === "TOTE BAG") {
+                d.achievements.push(23)
                 // 2000 GCoin + Mảnh TOTE1
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -926,11 +885,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'TOTE1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(24) &&
-                this.canCombineTo(a, 'VACUUM FLASK')
-            ) {
-                d.achievements.push(24);
+            if (!d.achievements.includes(24) && "VACUUM FLASK") {
+                d.achievements.push(24)
                 // 2000 GCoin + Mảnh FLASK1
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -947,11 +903,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'FLASK1', rare: 'SSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(25) &&
-                this.canCombineTo(a, 'IDEA BOARD')
-            ) {
-                d.achievements.push(25);
+            if (!d.achievements.includes(25) && s === "IDEA BOARD") {
+                d.achievements.push(25)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -968,11 +921,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(26) &&
-                this.canCombineTo(a, 'INVITE FRIEND')
-            ) {
-                d.achievements.push(26);
+            if (!d.achievements.includes(26) && s === "INVITE FRIEND") {
+                d.achievements.push(26)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -989,11 +939,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(27) &&
-                this.canCombineTo(a, 'BAEMIN TECH')
-            ) {
-                d.achievements.push(27);
+            if (!d.achievements.includes(27) && s === "BAEMIN TECH") {
+                d.achievements.push(27)
                 // 7500 GCoin + 2x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -1010,11 +957,8 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (
-                !d.achievements.includes(28) &&
-                this.canCombineTo(a, 'GDSC IDEA CONTEST 2023')
-            ) {
-                d.achievements.push(28);
+            if (!d.achievements.includes(28) && s === "GDSC IDEA CONTEST 2023") {
+                d.achievements.push(28)
                 // 10000 GCoin + 1x Normal Pack + Mảnh TOTE4
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
@@ -1031,7 +975,7 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'TOTE4', rare: 'SSR' });
                 this.completedAMission(userId);
             }
-            if (this.canCombineTo(a, 'GOOGLE DEVELOPER STUDENT CLUB HCMUT')) {
+            if (s === "GOOGLE DEVELOPER STUDENT CLUB HCMUT") {
                 if (!d.achievements.includes(29)) {
                     d.achievements.push(29);
                     // 15000 GCoin + 3x Premium Pack
@@ -1504,7 +1448,9 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'CUP3', rare: 'SR' });
                 this.completedAMission(userId);
             }
-        });
+            docs.markModified("achievements")
+            await docs.save()
+        })
     }
 
     public async mathQuizScore(userId: Types.ObjectId, score: number) {
@@ -1597,6 +1543,8 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
+            docs.markModified("achievements")
+            await docs.save()
         });
     }
 }
