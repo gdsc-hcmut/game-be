@@ -14,7 +14,6 @@ export class GICAchievementService {
     private lock: AsyncLock
     private EXCLUDE_SPECIAL_LIMITED_HIDDEN: number[]
     private SPECIAL_ACHIEVEMENTS: number[]
-
     constructor(
         @inject(ServiceType.Transaction) private transactionService: TransactionService,
         @inject(ServiceType.Item) private itemService: ItemService,
