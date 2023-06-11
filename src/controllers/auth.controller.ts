@@ -383,4 +383,5 @@ export class AuthController extends Controller {
             res.composer.badRequest(error.message);
         }
     }
+
 }
