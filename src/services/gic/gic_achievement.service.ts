@@ -213,7 +213,7 @@ export class GICAchievementService {
                     })) == null;
                 const have =
                     (await Item.findOne({
-                        ownerId: { userId },
+                        ownerId: userId,
                         collectionName: 'GicReward',
                         name: {
                             $in: ['KEYCHAIN4', 'CUP4', 'FIGURE4', 'TOTE4'],
