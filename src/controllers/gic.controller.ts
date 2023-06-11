@@ -14,7 +14,7 @@ import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-
 import { MailService } from '../services/mail.service';
 import { USER_ROLES } from '../models/user.model';
 import { FileUploadService } from '../services/file-upload.service';
-import { GICAchievementService } from '../services/gic/gic_achievement.service'
+import { GICAchievementService } from '../services/gic/gic_achievement.service';
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
 import {
@@ -101,7 +101,8 @@ export class GICController extends Controller {
         @inject(ServiceType.Mail) private mailService: MailService,
         @inject(ServiceType.FileUpload)
         private fileUploadService: FileUploadService,
-        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
+        @inject(ServiceType.GICAchievement)
+        private gicAchievementService: GICAchievementService,
     ) {
         super();
 
@@ -119,9 +120,15 @@ export class GICController extends Controller {
         this.router.get(`/user/gicgift`, this.getUserGicGift.bind(this));
         this.router.post(`/gicgift/:giftId`, this.receiveGicGift.bind(this));
 
-        this.router.get(`/achievements/my`, this.getMyAchievements.bind(this))
-        this.router.get(`/achievements/unread`, this.getViewedAchievements.bind(this))
-        this.router.post(`/achievements/mark-as-read`, this.viewAchievement.bind(this))
+        this.router.get(`/achievements/my`, this.getMyAchievements.bind(this));
+        this.router.get(
+            `/achievements/unread`,
+            this.getViewedAchievements.bind(this),
+        );
+        this.router.post(
+            `/achievements/mark-as-read`,
+            this.viewAchievement.bind(this),
+        );
 
         this.router.post(
             `/contest/register`,
@@ -180,37 +187,45 @@ export class GICController extends Controller {
 
     async viewAchievement(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
             if (!req.body.achievementNumber) {
-                throw Error("Missing acheivementNumber in req.body");
+                throw Error('Missing acheivementNumber in req.body');
             }
-            await this.gicAchievementService.viewAcheivement(userId, req.body.achievementNumber)
-            res.composer.success(null)
+            await this.gicAchievementService.viewAcheivement(
+                userId,
+                req.body.achievementNumber,
+            );
+            res.composer.success(null);
         } catch (error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async getViewedAchievements(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const d = await this.gicAchievementService.getViewedAchievementOfUser(userId)
-            res.composer.success(d != null ? d : [])
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const d =
+                await this.gicAchievementService.getViewedAchievementOfUser(
+                    userId,
+                );
+            res.composer.success(d != null ? d : []);
         } catch (error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async getMyAchievements(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const d = await this.gicAchievementService.getAchievementOfUser(userId)
-            res.composer.success(d != null ? d : [])
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const d = await this.gicAchievementService.getAchievementOfUser(
+                userId,
+            );
+            res.composer.success(d ? d : []);
         } catch (error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -731,7 +746,8 @@ export class GICController extends Controller {
             if (day != 5) {
                 this.mailService.sendToOne(
                     user.email,
-                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${EVENT_NAME_LIST[day - 1]
+                    `[GDSC Idea Contest 2023] Đăng ký thành công sự kiện "${
+                        EVENT_NAME_LIST[day - 1]
                     }"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
