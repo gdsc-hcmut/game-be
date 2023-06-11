@@ -154,6 +154,7 @@ export class SocketService {
 
     notifyEvent = (userId: string, message: string) => {
         Object.keys(this.connectedUser).map((key: any, index: any) => {
+            console.log(userId, key, 'keyy');
             if (userId == key) this.connectedUser[key].notifyEvent(message);
         });
     };
