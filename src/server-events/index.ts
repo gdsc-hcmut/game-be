@@ -28,7 +28,6 @@ import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
 import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
-import { GICService } from '../services/gic/gic.service';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -65,8 +64,6 @@ export class SocketService {
         private transactionService: TransactionService,
         @inject(ServiceType.Item)
         private itemService: ItemService,
-        @inject(ServiceType.GIC)
-        private gicService: GICService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -101,7 +98,6 @@ export class SocketService {
                 this.userService,
                 this.transactionService,
                 this.itemService,
-                this.gicService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);

@@ -44,7 +44,6 @@ class ClientUser {
     private userData: UserDocument;
     private transactionService: TransactionService;
     private itemService: ItemService;
-    private gicService: GICService;
 
     constructor(
         userId: string,
@@ -53,7 +52,6 @@ class ClientUser {
         userService: UserService,
         transactionService: TransactionService,
         itemService: ItemService,
-        gicService: GICService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -64,7 +62,6 @@ class ClientUser {
         this.userService = userService;
         this.transactionService = transactionService;
         this.itemService = itemService;
-        this.gicService = gicService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -430,10 +427,10 @@ class ClientUser {
         score: number,
     ) {
         if (score < 15) return;
-        const item = await this.gicService.sendItemGIC(
-            this.gicService.createGicRewardItem(
+        const item = await this.itemService.sendItemGIC(
+            this.itemService.createGicRewardItem(
                 userId,
-                this.gicService.getRandomItemWithRare(mathQuizRarity),
+                this.itemService.getRandomItemWithRare(mathQuizRarity),
             ),
         );
         this.sockets[socketId].socket.emit(EventTypes.GIC_REWARD, item);
