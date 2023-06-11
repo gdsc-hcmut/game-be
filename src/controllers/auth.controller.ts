@@ -65,8 +65,8 @@ export class AuthController extends Controller {
                         );
                     let redirectDomain: WhitelistDomain =
                         WhitelistDomain[
-                            (req?.session?.lastQuery?.domain as Domain) ??
-                                'game'
+                        (req?.session?.lastQuery?.domain as Domain) ??
+                        'game'
                         ];
                     let redirectLink = '';
                     if (req?.session?.lastQuery?.redirect) {
@@ -155,6 +155,7 @@ export class AuthController extends Controller {
 
     async mobileLogin(req: Request, res: Response) {
         try {
+            console.log('req', req);
             const { idToken } = req.body;
 
             //Check valid payload, exp,... Xem nhugn thong so khac payload
