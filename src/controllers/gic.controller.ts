@@ -964,7 +964,7 @@ export class GICController extends Controller {
             }
 
             if ([54, 55].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(userId, body.data.size);
+                this.gicAchievementService.URLClick(userId, body.data.size);
             }
 
             res.composer.success("Sucess");
