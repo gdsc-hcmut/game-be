@@ -28,6 +28,8 @@ import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
 import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
+import { GICAchievementService } from '../services/gic/gic_achievement.service';
+import { lazyInject } from '../container';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -50,7 +52,8 @@ export class SocketService {
     private tracking: TrackingUser;
     private clientSockets: any;
     private trackingDevice: TrackingDevice;
-
+    @lazyInject(ServiceType.GICAchievement)
+    private gicAchievementService: GICAchievementService;
     constructor(
         // @inject(ServiceType.MQTT) private mqttService: MQTTService,
         // @inject(ServiceType.Device) private deviceService: DeviceService,
@@ -98,6 +101,7 @@ export class SocketService {
                 this.userService,
                 this.transactionService,
                 this.itemService,
+                this.gicAchievementService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
