@@ -28,7 +28,8 @@ import { JWT_SECRET } from '../config';
 import { nextTick } from 'process';
 import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
-import { GICService } from '../services/gic/gic.service';
+import { GICAchievementService } from '../services/gic/gic_achievement.service';
+import { lazyInject } from '../container';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -51,7 +52,8 @@ export class SocketService {
     private tracking: TrackingUser;
     private clientSockets: any;
     private trackingDevice: TrackingDevice;
-
+    @lazyInject(ServiceType.GICAchievement)
+    private gicAchievementService: GICAchievementService;
     constructor(
         // @inject(ServiceType.MQTT) private mqttService: MQTTService,
         // @inject(ServiceType.Device) private deviceService: DeviceService,
@@ -65,8 +67,6 @@ export class SocketService {
         private transactionService: TransactionService,
         @inject(ServiceType.Item)
         private itemService: ItemService,
-        @inject(ServiceType.GIC)
-        private gicService: GICService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -101,7 +101,7 @@ export class SocketService {
                 this.userService,
                 this.transactionService,
                 this.itemService,
-                this.gicService,
+                this.gicAchievementService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
@@ -158,6 +158,7 @@ export class SocketService {
 
     notifyEvent = (userId: string, message: string) => {
         Object.keys(this.connectedUser).map((key: any, index: any) => {
+            console.log(userId, key, 'keyy');
             if (userId == key) this.connectedUser[key].notifyEvent(message);
         });
     };

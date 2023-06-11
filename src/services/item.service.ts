@@ -2,6 +2,7 @@ import { injectable } from 'inversify';
 import { ObjectId, Types } from 'mongoose';
 import Item, { ItemDocument } from '../models/item.model';
 import RandomPool, { RandomPoolDocument } from '../models/random_pool.model';
+import { GicItemName, GicRare, GicRarity, gicItems, random } from './gic/utils';
 
 @injectable()
 export class ItemService {
@@ -59,5 +60,53 @@ export class ItemService {
             new: true,
         });
         return updatedItem;
+    }
+
+    async sendItemGIC(itemData: ItemDocument) {
+        console.log('Send Item', itemData);
+        const item = await this.createNewItem(itemData);
+        return item;
+    }
+
+    getRandomItemWithRare(rarity: GicRarity): GicItemName {
+        const rnd = Math.random() * 100000;
+
+        const percent = rnd / 1000;
+
+        let result: GicRare,
+            acc = 0;
+
+        Object.keys(rarity).forEach((key: GicRare) => {
+            if (result === undefined && percent > 100 - rarity[key] - acc)
+                result = key;
+            acc += rarity[key];
+        });
+        console.log('result', result);
+
+        let item = gicItems[random(58)];
+        console.log('first item', item);
+        while (item.rare != result) {
+            console.log('Random', item, result);
+            item = gicItems[random(58)];
+        }
+        console.log('Return', item);
+        return item.name;
+    }
+
+    createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
+        let item: ItemDocument = {
+            ownerId: userId,
+            name: itemName,
+            imgUrl: `https://firebasestorage.googleapis.com/v0/b/gic-web-dev.appspot.com/o/characterPieces%2F${itemName}.png?alt=media`,
+            description: `This is a magical item in GicReward called ${itemName}`,
+            currentPrice: 0,
+            isReceived: false,
+            receivedAt: false,
+            receivedNote: '',
+            isRequestToReceiveItem: false,
+            requestToReceiveItemAt: 0,
+            collectionName: 'GicReward',
+        } as ItemDocument;
+        return item;
     }
 }

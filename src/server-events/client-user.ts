@@ -16,6 +16,7 @@ import expressionToSVG from '../game/math-quiz/expressionToSVG';
 import { ItemDocument } from '../models/item.model';
 import { GICService } from '../services/gic/gic.service';
 import { mathQuizRarity } from '../services/gic/utils';
+import { GICAchievementService } from '../services/gic/gic_achievement.service';
 const MAX_CHAPTER = 50;
 
 export interface SocketInfo {
@@ -44,7 +45,7 @@ class ClientUser {
     private userData: UserDocument;
     private transactionService: TransactionService;
     private itemService: ItemService;
-    private gicService: GICService;
+    private gicAchievementService: GICAchievementService;
 
     constructor(
         userId: string,
@@ -53,7 +54,7 @@ class ClientUser {
         userService: UserService,
         transactionService: TransactionService,
         itemService: ItemService,
-        gicService: GICService,
+        gicAchievementService: GICAchievementService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -64,7 +65,7 @@ class ClientUser {
         this.userService = userService;
         this.transactionService = transactionService;
         this.itemService = itemService;
-        this.gicService = gicService;
+        this.gicAchievementService = gicAchievementService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -430,10 +431,11 @@ class ClientUser {
         score: number,
     ) {
         if (score < 15) return;
-        const item = await this.gicService.sendItemGIC(
-            this.gicService.createGicRewardItem(
+        this.gicAchievementService.mathQuizScore(userId, score);
+        const item = await this.itemService.sendItemGIC(
+            this.itemService.createGicRewardItem(
                 userId,
-                this.gicService.getRandomItemWithRare(mathQuizRarity),
+                this.itemService.getRandomItemWithRare(mathQuizRarity),
             ),
         );
         this.sockets[socketId].socket.emit(EventTypes.GIC_REWARD, item);
@@ -447,7 +449,9 @@ class ClientUser {
     }
 
     notifyEvent(message: string) {
+        console.log('notify', message);
         Object.keys(this.sockets).map((key: any, index: any) => {
+            console.log('here');
             this.sockets[key].socket.emit(EventTypes.NOTIFY_GIC, message);
         });
     }
