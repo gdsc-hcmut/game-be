@@ -5,7 +5,7 @@ import { GicItem, GicItemName } from "./utils"
 import Item, { ItemDocument } from "../../models/item.model"
 import { inject, injectable } from "inversify"
 import { ServiceType } from "../../types"
-import { GICService } from "./gic.service"
+import { SocketService } from "../../server-events/index"
 import { TransactionService } from "../transaction.service"
 import { ItemService } from "../item.service"
 
@@ -18,6 +18,7 @@ export class GICAchievementService {
     constructor(
         @inject(ServiceType.Transaction) private transactionService: TransactionService,
         @inject(ServiceType.Item) private itemService: ItemService,
+        @inject(ServiceType.Socket) private socketService: SocketService
     ) {
         this.lock = new AsyncLock()
         this.EXCLUDE_SPECIAL_LIMITED_HIDDEN = []
@@ -113,8 +114,9 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     1000,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 25 mảnh'"
+                    "Hoàn thành nhiệm vụ 'Thợ săn Mảnh I' (Thu thập được 25 mảnh)"
                 )
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Thợ săn Mảnh I'")
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(2) && myPieceCount >= 50) {
@@ -126,8 +128,9 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 50 mảnh'"
+                    "Hoàn thành nhiệm vụ 'Thợ săn Mảnh II' (Thu thập được 50 mảnh)"
                 )
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Thợ săn Mảnh II' (Thu thập được 50 mảnh)")
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' })
                 this.completedAMission(userId)
             }
@@ -140,8 +143,9 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2500,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 100 mảnh'"
+                    "Hoàn thành nhiệm vụ 'Thợ săn Mảnh III' (Thu thập được 100 mảnh)"
                 )
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Thợ săn Mảnh III' (Thu thập được 100 mảnh)")
                 this.gotAPiece(userId, { name: 'TOTE2', rare: 'SR' })
                 this.completedAMission(userId)
             }
@@ -151,8 +155,9 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 200 mảnh'"
+                    "Hoàn thành nhiệm vụ 'Thợ săn Mảnh IV' (Thu thập được 200 mảnh)"
                 )
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Thợ săn Mảnh IV' (Thu thập được 200 mảnh)")
                 this.completedAMission(userId)
             }
             if (!d.achievements.includes(5) && myPieceCount >= 500) {
@@ -161,8 +166,9 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     7500 + 2000,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 200 mảnh'"
+                    "Hoàn thành nhiệm vụ 'Thợ săn Mảnh V' (Thu thập được 500 mảnh)"
                 )
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Thợ săn Mảnh V' (Thu thập được 500 mảnh)")
                 this.completedAMission(userId)
             }
 
@@ -187,7 +193,11 @@ export class GICAchievementService {
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
                         2000 * 3,
-                        "Hoàn thành nhiệm vụ 'Trở thành nguời nhanh nhất thu thập được mảnh KEYCHAIN4, CUP4, FIGURE4, TOTE4'"
+                        "Hoàn thành nhiệm vụ 'Try hard' (Trở thành nguời nhanh nhất thu thập được mảnh KEYCHAIN4, CUP4, FIGURE4, TOTE4)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Try hard' (Trở thành nguời nhanh nhất thu thập được mảnh KEYCHAIN4, CUP4, FIGURE4, TOTE4)"
                     )
                     this.gotAPiece(userId, { name: "FLASK4", rare: "LIMITED" })
                     this.completedAMission(userId)
@@ -202,7 +212,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Thu thập được 18 mảnh khác nhau (Không tính mảnh quà)'"
+                    "Hoàn thành nhiệm vụ 'Nhà sưu tầm I' (Thu thập được 18 mảnh khác nhau (Không tính mảnh quà))"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Nhà sưu tầm I' (Thu thập được 18 mảnh khác nhau (Không tính mảnh quà))"
                 )
                 this.completedAMission(userId)
             }
@@ -218,6 +232,15 @@ export class GICAchievementService {
                         await this.gotAPiece(userId, item);
                     }
                 )()));
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    2000,
+                    "Hoàn thành nhiệm vụ 'Nhà sưu tầm II' (Thu thập toàn bộ các mảnh (Không tính mảnh quà))"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Nhà sưu tầm II' (Thu thập toàn bộ các mảnh (Không tính mảnh quà))"
+                )
                 this.completedAMission(userId)
             }
 
@@ -244,6 +267,7 @@ export class GICAchievementService {
                     this.createGicRewardItem(userId, "FLASK2")
                 );
                 this.completedAMission(userId)
+                this.socketService.notifyEvent(userId.toString(), "Bạn đã hoàn thành nhiệm vụ 'Một nửa chặng đường' (Hoàn thành 50 Nhiệm vụ)")
                 this.gotAPiece(userId, { name: 'FLASK2', rare: 'SSR' })
             }
             if (!d.achievements.includes(100)) {
@@ -251,6 +275,15 @@ export class GICAchievementService {
                 if (finished_100) {
                     d.achievements.push(100)
                     // TODO: send 50000 GCoin
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        50000,
+                        "Hoàn thành nhiệm vụ 'Liệu đây là kết thúc?' (Hoàn thành tất cả các nhiệm vụ (trừ nhiệm vụ giới hạn và nhiệm vụ đặc biệt))"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Liệu đây là kết thúc?' (Hoàn thành tất cả các nhiệm vụ (trừ nhiệm vụ giới hạn và nhiệm vụ đặc biệt))"
+                    )
                     this.completedAMission(userId)
                 }
             }
@@ -260,6 +293,15 @@ export class GICAchievementService {
                 if (have_100 || have_5_special) {
                     d.achievements.push(101)
                     // TODO: 100000 GCoin + special message
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        100000,
+                        "Hoàn thành nhiệm vụ 'Hạ màn!!!' (Hoàn thành nhiệm vụ 100 hoặc khi hoàn thành 5 nhiệm vụ đặc biệt)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Hạ màn!!!' (Hoàn thành nhiệm vụ 100 hoặc khi hoàn thành 5 nhiệm vụ đặc biệt)"
+                    )
                     this.completedAMission(userId)
                 }
             }
@@ -287,7 +329,11 @@ export class GICAchievementService {
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
                         1000,
-                        "Hoàn thành nhiệm vụ 'Xài 5000 GCoin'"
+                        "Hoàn thành nhiệm vụ 'Trung lưu tiêu tiền' (Xài 5000 GCoin)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Trung lưu tiêu tiền' (Xài 5000 GCoin)"
                     )
                     this.completedAMission(userId)
                 }
@@ -297,7 +343,11 @@ export class GICAchievementService {
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
                         2000,
-                        "Hoàn thành nhiệm vụ 'Xài 12000 GCoin'"
+                        "Hoàn thành nhiệm vụ 'Thượng lưu tiêu tiền' (Xài 12000 GCoin)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Thượng lưu tiêu tiền' (Xài 12000 GCoin)"
                     )
                     this.completedAMission(userId)
                 }
@@ -307,7 +357,11 @@ export class GICAchievementService {
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
                         3000,
-                        "Hoàn thành nhiệm vụ 'Xài 25000 GCoin'"
+                        "Hoàn thành nhiệm vụ 'Triệu phú tiêu tiền' (Xài 25000 GCoin)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Triệu phú tiêu tiền' (Xài 25000 GCoin)"
                     )
                     await this.sendItemGIC(
                         this.createGicRewardItem(userId, "MIRROR R")
@@ -321,7 +375,11 @@ export class GICAchievementService {
                     await this.transactionService.createNewTransactionFromSystem(
                         userId,
                         2000,
-                        "Hoàn thành nhiệm vụ 'Xài 50000 GCoin'"
+                        "Hoàn thành nhiệm vụ 'Tỉ phú tiêu tiền' (Xài 50000 GCoin)"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Tỉ phú tiêu tiền' (Xài 50000 GCoin)"
                     )
                     await this.sendItemGIC(
                         this.createGicRewardItem(userId, "MIRROR SR")
@@ -363,7 +421,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     1000,
-                    "Hoàn thành nhiệm vụ 'Kiếm được 10 mảnh R từ mở Pack'"
+                    "Hoàn thành nhiệm vụ 'Siêu thợ săn Mảnh I' (Kiếm được 10 mảnh R từ mở Pack)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Siêu thợ săn Mảnh I' (Kiếm được 10 mảnh R từ mở Pack)"
                 )
                 this.completedAMission(userId)
             }
@@ -373,7 +435,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Kiếm được 20 mảnh R từ mở Pack'"
+                    "Hoàn thành nhiệm vụ 'Siêu thợ săn Mảnh II' (Kiếm được 20 mảnh R từ mở Pack)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Siêu thợ săn Mảnh II' (Kiếm được 20 mảnh R từ mở Pack)"
                 )
                 this.completedAMission(userId)
             }
@@ -383,7 +449,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     500,
-                    "Hoàn thành nhiệm vụ 'Mở Normal Pack 1 lần'"
+                    "Hoàn thành nhiệm vụ 'Nhập môn Gacha' (Mở Normal Pack 1 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Nhập môn Gacha' (Mở Normal Pack 1 lần)"
                 )
                 this.completedAMission(userId)
             }
@@ -393,7 +463,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     1000,
-                    "Hoàn thành nhiệm vụ 'Mở Normal Pack 5 lần'"
+                    "Hoàn thành nhiệm vụ 'Đam mê Gacha' (Mở Normal Pack 5 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Đam mê Gacha' (Mở Normal Pack 5 lần)"
                 )
                 this.completedAMission(userId)
             }
@@ -434,7 +508,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Kiếm được 1 mảnh SR từ Premium Pack'"
+                    "Hoàn thành nhiệm vụ 'Trời độ' (Kiếm được 1 mảnh SR từ Premium Pack)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Trời độ' (Kiếm được 1 mảnh SR từ Premium Pack)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -448,7 +526,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     500,
-                    "Hoàn thành nhiệm vụ 'Mở Premium Pack 1 lần'"
+                    "Hoàn thành nhiệm vụ 'Gacha Thượng lưu' (Mở Premium Pack 1 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Gacha Thượng lưu' (Mở Premium Pack 1 lần)"
                 )
                 this.completedAMission(userId)
             }
@@ -458,7 +540,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     1000,
-                    "Hoàn thành nhiệm vụ 'Mở Premium Pack 3 lần'"
+                    "Hoàn thành nhiệm vụ 'Chưa gacha đủ sao?' (Mở Premium Pack 3 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Chưa gacha đủ sao?' (Mở Premium Pack 3 lần)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -472,7 +558,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Mở Premium Pack 5 lần'"
+                    "Hoàn thành nhiệm vụ 'Dừng lại đi!' (Mở Premium Pack 5 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Dừng lại đi!' (Mở Premium Pack 5 lần)"
                 )
                 this.completedAMission(userId)
             }
@@ -482,7 +572,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Mở Premium Pack 7 lần'"
+                    "Hoàn thành nhiệm vụ 'Không thể quay đầu được nữa đâu!' (Mở Premium Pack 7 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Không thể quay đầu được nữa đâu!' (Mở Premium Pack 7 lần)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -496,7 +590,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     10000,
-                    "Hoàn thành nhiệm vụ 'Mở Premium Pack 10 lần'"
+                    "Hoàn thành nhiệm vụ 'Hết cứu...' (Mở Premium Pack 10 lần)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Hết cứu...' (Mở Premium Pack 10 lần)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -510,7 +608,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     10000,
-                    "Hoàn thành nhiệm vụ 'Kiếm được mảnh FLASK3 từ Premium Pack'"
+                    "Hoàn thành nhiệm vụ 'Cái giá là gì...' (Kiếm được mảnh FLASK3 từ Premium Pack)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Cái giá là gì...' (Kiếm được mảnh FLASK3 từ Premium Pack)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -549,7 +651,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"PROBLEM\"'"
+                    "Hoàn thành nhiệm vụ 'Khó khăn' (Ghép được chữ \"PROBLEM\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Khó khăn' (Ghép được chữ \"PROBLEM\")"
                 )
                 this.completedAMission(userId)
             }
@@ -559,7 +665,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"SOLUTION\"'"
+                    "Hoàn thành nhiệm vụ 'Giải pháp' (Ghép được chữ \"SOLUTION\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Giải pháp' (Ghép được chữ \"SOLUTION\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -573,7 +683,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"DESIGN\"'"
+                    "Hoàn thành nhiệm vụ 'Thiết kế' (Ghép được chữ \"DESIGN\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Thiết kế' (Ghép được chữ \"DESIGN\")"
                 )
                 this.completedAMission(userId)
             }
@@ -583,7 +697,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"PRESENT\"'"
+                    "Hoàn thành nhiệm vụ 'Trình bày' (Ghép được chữ \"PRESENT\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Trình bày' (Ghép được chữ \"PRESENT\")"
                 )
                 this.completedAMission(userId)
             }
@@ -593,7 +711,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"11062023\"'"
+                    "Hoàn thành nhiệm vụ 'Opening Day' (Ghép được chữ \"11062023\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Opening Day' (Ghép được chữ \"11062023\")"
                 )
                 this.completedAMission(userId)
             }
@@ -603,7 +725,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"14062023\"'"
+                    "Hoàn thành nhiệm vụ 'Seminar 1' (Ghép được chữ \"14062023\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Seminar 1' (Ghép được chữ \"14062023\")"
                 )
                 this.completedAMission(userId)
             }
@@ -613,7 +739,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"17062023\"'"
+                    "Hoàn thành nhiệm vụ 'Seminar 2' (Ghép được chữ \"17062023\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Seminar 2' (Ghép được chữ \"17062023\")"
                 )
                 this.completedAMission(userId)
             }
@@ -623,7 +753,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"25062023\"'"
+                    "Hoàn thành nhiệm vụ 'Idea Showcase' (Ghép được chữ \"25062023\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Idea Showcase' (Ghép được chữ \"25062023\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -637,7 +771,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"KEYCHAIN\"'"
+                    "Hoàn thành nhiệm vụ 'Móc khóa' (Ghép được chữ \"KEYCHAIN\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Móc khóa' (Ghép được chữ \"KEYCHAIN\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "KEYCHAIN1")
@@ -651,7 +789,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"CUP\"'"
+                    "Hoàn thành nhiệm vụ 'Ly sứ' (Ghép được chữ \"CUP\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Ly sứ' (Ghép được chữ \"CUP\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "CUP1")
@@ -665,7 +807,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"FIGURE\"'"
+                    "Hoàn thành nhiệm vụ 'Figure' (Ghép được chữ \"FIGURE\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Figure' (Ghép được chữ \"FIGURE\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "FIGURE1")
@@ -679,7 +825,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"TOTE BAG\"'"
+                    "Hoàn thành nhiệm vụ 'Túi tote' (Ghép được chữ \"TOTE BAG\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Túi tote' (Ghép được chữ \"TOTE BAG\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "TOTE1")
@@ -693,7 +843,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"VACUUM FLASK\"'"
+                    "Hoàn thành nhiệm vụ 'Bình giữ nhiệt' (Ghép được chữ \"VACUUM FLASK\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Bình giữ nhiệt' (Ghép được chữ \"VACUUM FLASK\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "FLASK1")
@@ -707,7 +861,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"IDEA BOARD\"'"
+                    "Hoàn thành nhiệm vụ 'Bảng ý tưởng' (Ghép được chữ \"IDEA BOARD\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Bảng ý tưởng' (Ghép được chữ \"IDEA BOARD\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -721,7 +879,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"INVITE FRIEND\"'"
+                    "Hoàn thành nhiệm vụ 'Mời bạn' (Ghép được chữ \"INVITE FRIEND\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Mời bạn' (Ghép được chữ \"INVITE FRIEND\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -735,7 +897,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     7500 + 2000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"BAEMIN TECH\"'"
+                    "Hoàn thành nhiệm vụ 'BAEMIN Tech' (Ghép được chữ \"BAEMIN TECH\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'BAEMIN Tech' (Ghép được chữ \"BAEMIN TECH\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "MIRROR R")
@@ -749,7 +915,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     10000,
-                    "Hoàn thành nhiệm vụ 'Ghép được chữ \"GDSC IDEA CONTEST 2023\"'"
+                    "Hoàn thành nhiệm vụ 'GIC 2023' (Ghép được chữ \"GDSC IDEA CONTEST 2023\")"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'GIC 2023' (Ghép được chữ \"GDSC IDEA CONTEST 2023\")"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, "TOTE4")
@@ -761,6 +931,15 @@ export class GICAchievementService {
                 if (!d.achievements.includes(29)) {
                     d.achievements.push(29)
                     // 15000 GCoin + 3x Premium Pack
+                    await this.transactionService.createNewTransactionFromSystem(
+                        userId,
+                        15000 + 3 * 2000,
+                        "Hoàn thành nhiệm vụ 'Fan cứng' (Ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\")"
+                    )
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        "Bạn đã hoàn thành nhiệm vụ 'Fan cứng' (Ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\")"
+                    )
                     this.completedAMission(userId)
                 }
                 if (!d.achievements.includes(30)) {
@@ -774,7 +953,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             10000,
-                            "Hoàn thành nhiệm vụ 'Ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\"'"
+                            "Hoàn thành nhiệm vụ 'FAN SIÊU SIÊU CỨNG' (Trở thành người nhanh nhất ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\")"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'FAN SIÊU SIÊU CỨNG' (Trở thành người nhanh nhất ghép được chữ \"GOOGLE DEVELOPER STUDENT CLUB HCMUT\")"
                         )
                         await this.sendItemGIC(
                             this.createGicRewardItem(userId, "FLASK4")
@@ -807,7 +990,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             2000,
-                            "Hoàn thành nhiệm vụ 'Kết nối tài khoản với Discord Bot'"
+                            "Hoàn thành nhiệm vụ 'Chào mừng' (Kết nối tài khoản với Discord Bot)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Chào mừng' (Kết nối tài khoản với Discord Bot)"
                         )
                         await this.sendItemGIC(
                             this.createGicRewardItem(userId, "CUP2")
@@ -820,7 +1007,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ '/work 1 lần trong kênh daily-and-work'"
+                            "Hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ I' (/work 1 lần trong kênh daily-and-work)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ I' (/work 1 lần trong kênh daily-and-work)"
                         )
                         break;
                     }
@@ -829,7 +1020,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ '/work 14 lần trong kênh daily-and-work'"
+                            "Hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ II' (/work 14 lần trong kênh daily-and-work)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ II' (/work 14 lần trong kênh daily-and-work)"
                         )
                         break;
                     }
@@ -838,7 +1033,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ '/daily 7 lần trong kênh daily-and-work'"
+                            "Hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ III' (/daily 7 lần trong kênh daily-and-work)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Cày cuốc chăm chỉ III' (/daily 7 lần trong kênh daily-and-work)"
                         )
                         break;
                     }
@@ -847,7 +1046,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ 'Chơi /guess 3 lần trong kênh battle'"
+                            "Hoàn thành nhiệm vụ 'Let's DUEL!!!' (Chơi /guess 3 lần trong kênh battle)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Let's DUEL!!!' (Chơi /guess 3 lần trong kênh battle)"
                         )
                         break;
                     }
@@ -856,7 +1059,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             3000,
-                            "Hoàn thành nhiệm vụ 'Guess đúng trong không quá 10 lượt'"
+                            "Hoàn thành nhiệm vụ 'Tiên tri' (Guess đúng trong không quá 10 lượt)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Tiên tri' (Guess đúng trong không quá 10 lượt)"
                         )
                         break;
                     }
@@ -865,7 +1072,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ 'Chơi /hangman 3 lần trong kênh battle'"
+                            "Hoàn thành nhiệm vụ 'It's Hangman Time!' (Chơi /hangman 3 lần trong kênh battle)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'It's Hangman Time!' (Chơi /hangman 3 lần trong kênh battle)"
                         )
                         break;
                     }
@@ -874,7 +1085,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             3000,
-                            "Hoàn thành nhiệm vụ 'Thắng hangman trong không quá 10 lượt'"
+                            "Hoàn thành nhiệm vụ 'Từ điển sống' (Thắng hangman trong không quá 10 lượt)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Từ điển sống' (Thắng hangman trong không quá 10 lượt)"
                         )
                         break;
                     }
@@ -883,7 +1098,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ 'Chơi /rps 1 lần trong kênh battle'"
+                            "Hoàn thành nhiệm vụ 'Kéo, búa... BAO!' (Chơi /rps 1 lần trong kênh battle)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Kéo, búa... BAO!' (Chơi /rps 1 lần trong kênh battle)"
                         )
                         break;
                     }
@@ -892,7 +1111,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             3000,
-                            "Hoàn thành nhiệm vụ 'Thắng /rps bằng búa 3 lần'"
+                            "Hoàn thành nhiệm vụ 'Chơi theo meta' (Thắng /rps bằng búa 3 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Chơi theo meta' (Thắng /rps bằng búa 3 lần)"
                         )
                         break;
                     }
@@ -901,7 +1124,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ 'Battle thắng 1 lần'"
+                            "Hoàn thành nhiệm vụ 'Chiến lược gia' (Battle thắng 1 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Chiến lược gia' (Battle thắng 1 lần)"
                         )
                         break;
                     }
@@ -910,7 +1137,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             3000,
-                            "Hoàn thành nhiệm vụ 'Battle thắng 5 lần'"
+                            "Hoàn thành nhiệm vụ 'Siêu chiến lược gia' (Battle thắng 5 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Siêu chiến lược gia' (Battle thắng 5 lần)"
                         )
                         break
                     }
@@ -927,7 +1158,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             5000,
-                            "Hoàn thành nhiệm vụ 'Battle thắng 10 lần'"
+                            "Hoàn thành nhiệm vụ 'Siêu siêu chiến lược gia' (Battle thắng 10 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Siêu siêu chiến lược gia' (Battle thắng 10 lần)"
                         )
                         break
                     }
@@ -936,7 +1171,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             3000,
-                            "Hoàn thành nhiệm vụ 'Tham gia Thursday Minigame 1 lần'"
+                            "Hoàn thành nhiệm vụ 'Đam mê Thursday Minigame I' (Tham gia Thursday Minigame 1 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Đam mê Thursday Minigame I' (Tham gia Thursday Minigame 1 lần)"
                         )
                         break
                     }
@@ -949,7 +1188,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             5000,
-                            "Hoàn thành nhiệm vụ 'Tham gia Thursday Minigame 2 lần'"
+                            "Hoàn thành nhiệm vụ 'Đam mê Thursday Minigame II' (Tham gia Thursday Minigame 2 lần)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Đam mê Thursday Minigame II' (Tham gia Thursday Minigame 2 lần)"
                         )
                         break
                     }
@@ -958,7 +1201,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             1000,
-                            "Hoàn thành nhiệm vụ 'Trả lời đúng 5 câu hỏi từ Thursday Minigame'"
+                            "Hoàn thành nhiệm vụ 'Tân binh Thursday Minigame' (Trả lời đúng 5 câu hỏi từ Thursday Minigame)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Tân binh Thursday Minigame' (Trả lời đúng 5 câu hỏi từ Thursday Minigame)"
                         )
                         break
                     }
@@ -967,7 +1214,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             2000,
-                            "Hoàn thành nhiệm vụ 'Trả lời đúng 10 câu hỏi từ Thursday Minigame'"
+                            "Hoàn thành nhiệm vụ 'Chuyên gia Thursday Minigame' (Trả lời đúng 10 câu hỏi từ Thursday Minigame)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Chuyên gia Thursday Minigame' (Trả lời đúng 10 câu hỏi từ Thursday Minigame)"
                         )
                         break
                     }
@@ -976,7 +1227,11 @@ export class GICAchievementService {
                         await this.transactionService.createNewTransactionFromSystem(
                             userId,
                             7000,
-                            "Hoàn thành nhiệm vụ 'Lọt top 10 Thursday Minigame'"
+                            "Hoàn thành nhiệm vụ 'Quá dễ!' (Lọt top 10 Thursday Minigame)"
+                        )
+                        this.socketService.notifyEvent(
+                            userId.toString(),
+                            "Bạn đã hoàn thành nhiệm vụ 'Quá dễ!' (Lọt top 10 Thursday Minigame)"
                         )
                         break
                     }
@@ -1010,7 +1265,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Shortened link có 10 lượt click'"
+                    "Hoàn thành nhiệm vụ 'Link hot I' (Shortened link có 10 lượt click)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Link hot I' (Shortened link có 10 lượt click)"
                 )
                 this.completedAMission(userId);
             }
@@ -1020,7 +1279,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     10000,
-                    "Hoàn thành nhiệm vụ 'Shortened link có 25 lượt click'"
+                    "Hoàn thành nhiệm vụ 'Link hot II' (Shortened link có 25 lượt click)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Link hot II' (Shortened link có 25 lượt click)"
                 )
                 this.completedAMission(userId);
             }
@@ -1048,7 +1311,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     1000,
-                    "Hoàn thành nhiệm vụ 'Shorten 1 link bằng GDSC URL Shortener trên url.gdsc.app'"
+                    "Hoàn thành nhiệm vụ 'Link ngắn tiện lợi I' (Shorten 1 link bằng GDSC URL Shortener trên url.gdsc.app)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Link ngắn tiện lợi I' (Shorten 1 link bằng GDSC URL Shortener trên url.gdsc.app)"
                 )
                 this.completedAMission(userId);
             }
@@ -1058,7 +1325,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Shorten 7 link bằng GDSC URL Shortener trên url.gdsc.app'"
+                    "Hoàn thành nhiệm vụ 'Link ngắn tiện lợi II' (Shorten 7 link bằng GDSC URL Shortener trên url.gdsc.app)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Link ngắn tiện lợi II' (Shorten 7 link bằng GDSC URL Shortener trên url.gdsc.app)"
                 )
                 this.completedAMission(userId);
             }
@@ -1068,7 +1339,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Shorten 15 link bằng GDSC URL Shortener trên url.gdsc.app'"
+                    "Hoàn thành nhiệm vụ 'Link ngắn tiện lợi III' (Shorten 15 link bằng GDSC URL Shortener trên url.gdsc.app)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Link ngắn tiện lợi III' (Shorten 15 link bằng GDSC URL Shortener trên url.gdsc.app)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, 'FIGURE4')
@@ -1101,7 +1376,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000 + 1000,
-                    "Hoàn thành nhiệm vụ 'Kiếm 1000 GCoin trong 1 ngày từ Math Quiz'"
+                    "Hoàn thành nhiệm vụ 'Nghiện Math Quiz' (Kiếm 1000 GCoin trong 1 ngày từ Math Quiz)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Nghiện Math Quiz' (Kiếm 1000 GCoin trong 1 ngày từ Math Quiz)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, 'CUP3')
@@ -1133,7 +1412,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     2000,
-                    "Hoàn thành nhiệm vụ 'Đạt 25 điểm Math Quiz'"
+                    "Hoàn thành nhiệm vụ 'Tân binh Math Quiz' (Đạt 25 điểm Math Quiz)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Tân binh Math Quiz' (Đạt 25 điểm Math Quiz)"
                 )
                 this.completedAMission(userId);
             }
@@ -1145,7 +1428,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     5000,
-                    "Hoàn thành nhiệm vụ 'Đạt 40 điểm Math Quiz'"
+                    "Hoàn thành nhiệm vụ 'Chuyên gia Math Quiz' (Đạt 40 điểm Math Quiz)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Chuyên gia Math Quiz' (Đạt 40 điểm Math Quiz)"
                 )
                 await this.sendItemGIC(
                     this.createGicRewardItem(userId, 'CUP4')
@@ -1159,7 +1446,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     10000 + 2000,
-                    "Hoàn thành nhiệm vụ 'Đạt 60 điểm Math Quiz'"
+                    "Hoàn thành nhiệm vụ 'Bậc thầy Math Quiz' (Đạt 60 điểm Math Quiz)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Bậc thầy Math Quiz' (Đạt 60 điểm Math Quiz)"
                 )
                 this.completedAMission(userId);
             }
@@ -1170,7 +1461,11 @@ export class GICAchievementService {
                 await this.transactionService.createNewTransactionFromSystem(
                     userId,
                     25000 + 2000 * 3,
-                    "Hoàn thành nhiệm vụ 'Đạt 75 điểm Math Quiz'"
+                    "Hoàn thành nhiệm vụ 'Thiên tài Math Quiz' (Đạt 75 điểm Math Quiz)"
+                )
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    "Bạn đã hoàn thành nhiệm vụ 'Thiên tài Math Quiz' (Đạt 75 điểm Math Quiz)"
                 )
                 this.completedAMission(userId);
             }
