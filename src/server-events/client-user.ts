@@ -16,6 +16,7 @@ import expressionToSVG from '../game/math-quiz/expressionToSVG';
 import { ItemDocument } from '../models/item.model';
 import { GICService } from '../services/gic/gic.service';
 import { mathQuizRarity } from '../services/gic/utils';
+import { GICAchievementService } from '../services/gic/gic_achievement.service';
 const MAX_CHAPTER = 50;
 
 export interface SocketInfo {
@@ -44,6 +45,7 @@ class ClientUser {
     private userData: UserDocument;
     private transactionService: TransactionService;
     private itemService: ItemService;
+    private gicAchievementService: GICAchievementService;
 
     constructor(
         userId: string,
@@ -52,6 +54,7 @@ class ClientUser {
         userService: UserService,
         transactionService: TransactionService,
         itemService: ItemService,
+        gicAchievementService: GICAchievementService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -62,6 +65,7 @@ class ClientUser {
         this.userService = userService;
         this.transactionService = transactionService;
         this.itemService = itemService;
+        this.gicAchievementService = gicAchievementService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -427,6 +431,7 @@ class ClientUser {
         score: number,
     ) {
         if (score < 15) return;
+        this.gicAchievementService.mathQuizScore(userId, score);
         const item = await this.itemService.sendItemGIC(
             this.itemService.createGicRewardItem(
                 userId,
