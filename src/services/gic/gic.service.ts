@@ -434,19 +434,23 @@ export class GICService {
             throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
         }
 
-        const myItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward" && itemsName.find(y => y === x.name))
+        const allGicItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward")
+        const myPiece = allGicItems.filter(x => itemsName.find(y => y === x.name))
         const want = `GIC_${s}` as GicCombineName
-        if (myItems.find(x => x.name === want)) {
-            throw new Error(`You have already used this formula before`)
-        }
         const needed = [`${s}1`, `${s}2`, `${s}3`, `${s}4`]
 
-        const missing = needed.filter(x => !myItems.find(y => y.name === x))
+        const missing = needed.filter(x => !myPiece.find(y => y.name === x))
         if (missing.length > 0) {
             throw new Error(`Missing pieces: ${missing}`)
         }
 
         await this.itemService.sendItemGIC(this.createGicRewardItem(userId, want))
+        // delete items that were used to combine
+        await Promise.all(needed.map(x => (
+            async () => {
+                await this.itemService.deleteOneGicItemOfUser(userId, x)
+            }
+        )()))
         this.socketService.notifyEvent(
             userId.toString(),
             `Bạn đã nhận được vật phẩm '${s}'`
@@ -465,7 +469,8 @@ export class GICService {
             throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
         }
         
-        const myItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward" && itemsName.find(y => y === x.name))
+        const allGicItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward")
+        const myPiece = allGicItems.filter(x => itemsName.find(y => y === x.name))
         const need = new Map<string, number>()
         s.split('')
             .filter(x => x !== " ")
@@ -476,7 +481,7 @@ export class GICService {
             })
 
         const have = new Map<string, number>()
-        myItems.forEach(x => {
+        myPiece.forEach(x => {
             (have.get(x.name) != undefined) ?
                 have.set(x.name, 1) :
                 have.set(x.name, have.get(x.name) + 1)
