@@ -1,7 +1,7 @@
 import AsyncLock from 'async-lock';
 import { Types } from 'mongoose';
 import GICAchievementModel from '../../models/gic/gic_achievements.model';
-import { GicItem, GicItemName } from './utils';
+import { GicItem, GicItemName, itemsName } from './utils';
 import Item, { ItemDocument } from '../../models/item.model';
 import { inject, injectable } from 'inversify';
 import { ServiceType } from '../../types';
@@ -118,6 +118,7 @@ export class GICAchievementService {
 
             const pieceList = await Item.find({
                 ownerId: userId,
+                name: { $in: itemsName },
                 collectionName: 'GicReward',
             });
             const myPieceCount = pieceList.length;
@@ -681,7 +682,7 @@ export class GICAchievementService {
         });
     }
 
-    public async forge(userId: Types.ObjectId, s: string) {
+    public async combinePieces(userId: Types.ObjectId, s: string) {
         await this.lock.acquire(userId.toString(), async () => {
             let d = await GICAchievementModel.findOne({
                 userId: userId,
@@ -693,7 +694,13 @@ export class GICAchievementService {
                 });
             }
 
-            if (!d.achievements.includes(12) && s === "PROBLEM") {
+            if (s === "PROBLEM") {
+                if (d.achievements.includes(12)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "PROBLEM" từ trước rồi`
+                    )
+                }
                 d.achievements.push(12)
                 // 2000 GCoin
                 await this.transactionService.createNewTransactionFromSystem(
@@ -707,7 +714,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(13) && s === "SOLUTION") {
+
+            if (s === "SOLUTION") {
+                if (d.achievements.includes(13)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "SOLUTION" từ trước rồi`
+                    )
+                }
                 d.achievements.push(13)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -725,7 +739,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(14) && s === "DESIGN") {
+
+            if (s === "DESIGN") {
+                if (d.achievements.includes(14)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "DESIGN" từ trước rồi`
+                    )
+                }
                 d.achievements.push(14)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -739,7 +760,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(15) && s === "PRESENT") {
+
+            if (s === "PRESENT") {
+                if (d.achievements.includes(15)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "PRESENT" từ trước rồi`
+                    )
+                }
                 d.achievements.push(15)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -753,7 +781,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(16) && s === "11062023") {
+
+            if (s === "11062023") {
+                if (d.achievements.includes(16)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "11062023" từ trước rồi`
+                    )
+                }
                 d.achievements.push(16)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -767,7 +802,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(17) && s === "14062023") {
+
+            if (s === "14062023") {
+                if (d.achievements.includes(17)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "14062023" từ trước rồi`
+                    )
+                }
                 d.achievements.push(17)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -781,7 +823,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(18) && s === "17062023") {
+
+            if (s === "17062023") {
+                if (d.achievements.includes(18)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "17062023" từ trước rồi`
+                    )
+                }
                 d.achievements.push(18)
                 // 2000 gcoins
                 await this.transactionService.createNewTransactionFromSystem(
@@ -795,7 +844,14 @@ export class GICAchievementService {
                 );
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(19) && s === "25062023") {
+
+            if (s === "25062023") {
+                if (d.achievements.includes(19)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "25062023" từ trước rồi`
+                    )
+                }
                 d.achievements.push(19)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -813,7 +869,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(20) && s === "KEYCHAIN") {
+
+            if (s === "KEYCHAIN") {
+                if (d.achievements.includes(20)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "KEYCHAIN" từ trước rồi`
+                    )
+                }
                 d.achievements.push(20)
                 // 2000 GCoin + Mảnh KEYCHAIN1
                 await this.transactionService.createNewTransactionFromSystem(
@@ -831,7 +894,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'KEYCHAIN1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(21) && s === "CUP") {
+
+            if (s === "CUP") {
+                if (d.achievements.includes(21)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "CUP" từ trước rồi`
+                    )
+                }
                 d.achievements.push(21)
                 // 2000 GCoin + Mảnh CUP1
                 await this.transactionService.createNewTransactionFromSystem(
@@ -849,7 +919,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'CUP1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(22) && s === "FIGURE") {
+
+            if (s === "FIGURE") {
+                if (d.achievements.includes(22)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "FIGURE" từ trước rồi`
+                    )
+                }
                 d.achievements.push(22)
                 // 2000 GCoin + Mảnh FIGURE1
                 await this.transactionService.createNewTransactionFromSystem(
@@ -867,7 +944,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'FIGURE1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(23) && s === "TOTE BAG") {
+
+            if (s === "TOTE BAG") {
+                if (d.achievements.includes(23)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "TOTE BAG" từ trước rồi`
+                    )
+                }
                 d.achievements.push(23)
                 // 2000 GCoin + Mảnh TOTE1
                 await this.transactionService.createNewTransactionFromSystem(
@@ -885,7 +969,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'TOTE1', rare: 'SR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(24) && "VACUUM FLASK") {
+
+            if (s === "VACUUM FLASK") {
+                if (d.achievements.includes(24)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "VACUUM FLASK" từ trước rồi`
+                    )
+                }
                 d.achievements.push(24)
                 // 2000 GCoin + Mảnh FLASK1
                 await this.transactionService.createNewTransactionFromSystem(
@@ -903,7 +994,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'FLASK1', rare: 'SSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(25) && s === "IDEA BOARD") {
+
+            if (s === "IDEA BOARD") {
+                if (d.achievements.includes(25)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "IDEA BOARD" từ trước rồi`
+                    )
+                }
                 d.achievements.push(25)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -921,7 +1019,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(26) && s === "INVITE FRIEND") {
+
+            if (s === "INVITE FRIEND") {
+                if (d.achievements.includes(26)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "INVITE FRIEND" từ trước rồi`
+                    )
+                }
                 d.achievements.push(26)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -939,7 +1044,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(27) && s === "BAEMIN TECH") {
+
+            if (s === "BAEMIN TECH") {
+                if (d.achievements.includes(27)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "BAEMIN TECH" từ trước rồi`
+                    )
+                }
                 d.achievements.push(27)
                 // 7500 GCoin + 2x Normal Pack + 1 MIRROR R
                 await this.transactionService.createNewTransactionFromSystem(
@@ -957,7 +1069,14 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'MIRROR R', rare: 'MSR' });
                 this.completedAMission(userId);
             }
-            if (!d.achievements.includes(28) && s === "GDSC IDEA CONTEST 2023") {
+
+            if (s === "GDSC IDEA CONTEST 2023") {
+                if (d.achievements.includes(28)) {
+                    this.socketService.notifyEvent(
+                        userId.toString(),
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "GDSC IDEA CONTEST 2023" từ trước rồi`
+                    )
+                }
                 d.achievements.push(28)
                 // 10000 GCoin + 1x Normal Pack + Mảnh TOTE4
                 await this.transactionService.createNewTransactionFromSystem(
@@ -975,21 +1094,27 @@ export class GICAchievementService {
                 this.gotAPiece(userId, { name: 'TOTE4', rare: 'SSR' });
                 this.completedAMission(userId);
             }
+
             if (s === "GOOGLE DEVELOPER STUDENT CLUB HCMUT") {
-                if (!d.achievements.includes(29)) {
-                    d.achievements.push(29);
-                    // 15000 GCoin + 3x Premium Pack
-                    await this.transactionService.createNewTransactionFromSystem(
-                        userId,
-                        15000 + 3 * 2000,
-                        'Hoàn thành nhiệm vụ \'Fan cứng\' (Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT")',
-                    );
+                if (d.achievements.includes(29)) {
                     this.socketService.notifyEvent(
                         userId.toString(),
-                        'Bạn đã hoàn thành nhiệm vụ \'Fan cứng\' (Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT")',
-                    );
-                    this.completedAMission(userId);
+                        `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT" từ trước rồi`
+                    )
                 }
+                d.achievements.push(29);
+                // 15000 GCoin + 3x Premium Pack
+                await this.transactionService.createNewTransactionFromSystem(
+                    userId,
+                    15000 + 3 * 2000,
+                    'Hoàn thành nhiệm vụ \'Fan cứng\' (Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT")',
+                );
+                this.socketService.notifyEvent(
+                    userId.toString(),
+                    'Bạn đã hoàn thành nhiệm vụ \'Fan cứng\' (Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT")',
+                );
+                this.completedAMission(userId);
+
                 if (!d.achievements.includes(30)) {
                     const good =
                         (await GICAchievementModel.findOne({

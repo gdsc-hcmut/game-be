@@ -7,7 +7,7 @@ export type Collection =
     | 'Keychain'
     | 'Bracelet'
     | 'Tote'
-    | 'GicReward';
+    | 'GicReward'
 
 export type PriceHistory = {
     email: string;

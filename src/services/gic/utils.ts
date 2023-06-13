@@ -255,3 +255,10 @@ export type GicItemName =
     | 'FLASK4'
     | 'MIRROR R'
     | 'MIRROR SR';
+
+export type GicCombineName =
+    | "GIC_KEYCHAIN"
+    | "GIC_CUP"
+    | "GIC_FIGURE"
+    | "GIC_TOTE"
+    | "GIC_FLASK"
