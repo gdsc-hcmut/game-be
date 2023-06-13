@@ -700,6 +700,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "PROBLEM" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(12)
                 // 2000 GCoin
@@ -721,6 +722,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "SOLUTION" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(13)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
@@ -746,6 +748,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "DESIGN" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(14)
                 // 2000 gcoins
@@ -767,6 +770,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "PRESENT" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(15)
                 // 2000 gcoins
@@ -788,6 +792,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "11062023" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(16)
                 // 2000 gcoins
@@ -809,6 +814,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "14062023" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(17)
                 // 2000 gcoins
@@ -830,6 +836,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "17062023" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(18)
                 // 2000 gcoins
@@ -851,6 +858,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "25062023" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(19)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
@@ -876,6 +884,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "KEYCHAIN" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(20)
                 // 2000 GCoin + Mảnh KEYCHAIN1
@@ -901,6 +910,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "CUP" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(21)
                 // 2000 GCoin + Mảnh CUP1
@@ -926,6 +936,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "FIGURE" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(22)
                 // 2000 GCoin + Mảnh FIGURE1
@@ -951,6 +962,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "TOTE BAG" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(23)
                 // 2000 GCoin + Mảnh TOTE1
@@ -976,6 +988,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "VACUUM FLASK" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(24)
                 // 2000 GCoin + Mảnh FLASK1
@@ -1001,6 +1014,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "IDEA BOARD" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(25)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
@@ -1026,6 +1040,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "INVITE FRIEND" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(26)
                 // 5000 GCoin + 1x Normal Pack + 1 MIRROR R
@@ -1051,6 +1066,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "BAEMIN TECH" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(27)
                 // 7500 GCoin + 2x Normal Pack + 1 MIRROR R
@@ -1076,6 +1092,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "GDSC IDEA CONTEST 2023" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(28)
                 // 10000 GCoin + 1x Normal Pack + Mảnh TOTE4
@@ -1101,6 +1118,7 @@ export class GICAchievementService {
                         userId.toString(),
                         `Bạn đã hoàn thành nhiệm vụ 'Ghép được chữ "GOOGLE DEVELOPER STUDENT CLUB HCMUT" từ trước rồi`
                     )
+                    return
                 }
                 d.achievements.push(29);
                 // 15000 GCoin + 3x Premium Pack
