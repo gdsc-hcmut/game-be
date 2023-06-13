@@ -113,4 +113,12 @@ export class ItemService {
         } as ItemDocument;
         return item;
     }
+    
+    async deleteOneGicItemOfUser(userId: Types.ObjectId, name: string) {
+        return await Item.findOneAndDelete({
+            ownerId: userId,
+            collectionName: "GicReward",
+            name: name
+        })
+    }
 }
