@@ -438,6 +438,10 @@ export class GICService {
         const myPiece = allGicItems.filter(x => itemsName.find(y => y === x.name))
         const want = `GIC_${s}` as GicCombineName
         const needed = [`${s}1`, `${s}2`, `${s}3`, `${s}4`]
+        
+        if (allGicItems.find(x => x.name === want)) {
+            throw new Error(`You already have this item...`)
+        }
 
         const missing = needed.filter(x => !myPiece.find(y => y.name === x))
         if (missing.length > 0) {
