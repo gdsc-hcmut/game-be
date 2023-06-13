@@ -32,7 +32,7 @@ export type ItemDocument = Document & {
 };
 
 const itemSchema = new Schema<ItemDocument>({
-    ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
+    ownerId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
     name: String,
     imgUrl: String,
     description: String,
