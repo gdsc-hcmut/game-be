@@ -206,6 +206,7 @@ export class GICController extends Controller {
             }
 
             this.gicAchievementService.addDiscordAchievement(u._id, achievementId)
+            res.composer.success({})
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
