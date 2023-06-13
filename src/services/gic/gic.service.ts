@@ -434,7 +434,7 @@ export class GICService {
             throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
         }
 
-        const myItems = (await this.itemService.getUserItems(userId.toString())).filter(x => x.collectionName === "GicReward" && x.name in itemsName)
+        const myItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward" && itemsName.find(y => y === x.name))
         const want = `GIC_${s}` as GicCombineName
         if (myItems.find(x => x.name === want)) {
             throw new Error(`You have already used this formula before`)
@@ -465,7 +465,7 @@ export class GICService {
             throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
         }
         
-        const myItems = (await this.itemService.getUserItems(userId.toString())).filter(x => x.collectionName === "GicReward" && x.name in itemsName)
+        const myItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward" && itemsName.find(y => y === x.name))
         const need = new Map<string, number>()
         s.split('')
             .filter(x => x !== " ")
