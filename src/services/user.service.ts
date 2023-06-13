@@ -330,6 +330,10 @@ export class UserService {
         return { toUser: toUser, fromUser: fromUserDoc };
     }
 
+    async findUserWithDiscordId(id: string) {
+        return await User.findOne({ discordId: id })
+    }
+
     async getUserBalance(userId: Types.ObjectId): Promise<number> {
         const { balance } = await User.findById(userId, { balance: 1 });
         return balance;

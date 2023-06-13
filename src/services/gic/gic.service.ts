@@ -25,12 +25,15 @@ import {
     gicItems,
     premiumGachaRarity,
     random,
+    GicCombineName,
+    itemsName
 } from './utils';
 import { UserService } from '../user.service';
 import { SYSTEM_ACCOUNT_ID } from '../../config';
 import { TransactionService } from '../transaction.service';
 import GicGiftModel from '../../models/gic/gic_gift';
 import { GICAchievementService } from './gic_achievement.service';
+import { SocketService } from '../../server-events/index';
 
 @injectable()
 export class GICService {
@@ -41,7 +44,8 @@ export class GICService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
-        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService
+        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService,
+        @inject(ServiceType.Socket) private socketService: SocketService
     ) {}
 
     // FOR CONTESTS
@@ -406,7 +410,7 @@ export class GICService {
         return item.name;
     }
 
-    createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName) {
+    createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName | GicCombineName) {
         let item: ItemDocument = {
             ownerId: userId,
             name: itemName,
@@ -423,23 +427,67 @@ export class GICService {
         return item;
     }
 
-    async forge(userId: Types.ObjectId, s: string) {
-        const FIRST_CASE_LIST = ["KEYCHAIN", "CUP", "FIGURE", "TOTE", "FLASK"]
-        const SECOND_CASE_LIST = ["PROBLEM", "SOLUTION"]
-        if (FIRST_CASE_LIST.includes(s)) {
-            switch(s) {
-                case "KEYCHAIN": {
-                }
-                case "CUP": {
-                }
-                case "FIGURE": {
-                }
-                case "TOTE": {
-                }
-                case "FLASK": {
-                }
-            }
-        } else if (SECOND_CASE_LIST.includes(s)) {
+    async combineMerch(userId: Types.ObjectId, s: string) {
+        const OPTIONS = ["KEYCHAIN", "CUP", "FIGURE", "TOTE", "FLASK"]
+
+        if (!OPTIONS.includes(s)) {
+            throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
         }
+
+        const myItems = (await this.itemService.getUserItems(userId.toString())).filter(x => x.collectionName === "GicReward" && x.name in itemsName)
+        const want = `GIC_${s}` as GicCombineName
+        if (myItems.find(x => x.name === want)) {
+            throw new Error(`You have already used this formula before`)
+        }
+        const needed = [`${s}1`, `${s}2`, `${s}3`, `${s}4`]
+
+        const missing = needed.filter(x => !myItems.find(y => y.name === x))
+        if (missing.length > 0) {
+            throw new Error(`Missing pieces: ${missing}`)
+        }
+
+        await this.itemService.sendItemGIC(this.createGicRewardItem(userId, want))
+        this.socketService.notifyEvent(
+            userId.toString(),
+            `Bạn đã nhận được vật phẩm '${s}'`
+        )
+    }
+
+    async combinePiece(userId: Types.ObjectId, s: string) {
+        const OPTIONS = [
+            "PROBLEM", "SOLUTION", "DESIGN", "PRESENT",
+            "11062023", "14062023", "17062023", "25062023",
+            "KEYCHAIN", "CUP", "FIGURE", "TOTE BAG",
+            "VACUUM FLASK", "IDEA BOARD", "INVITE FRIEND", "BAEMIN TECH",
+            "GDSC IDEA CONTEST 2023", "GOOGLE DEVELOPER STUDENT CLUB HCMUT"
+        ]
+        if (!OPTIONS.includes(s)) {
+            throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
+        }
+        
+        const myItems = (await this.itemService.getUserItems(userId.toString())).filter(x => x.collectionName === "GicReward" && x.name in itemsName)
+        const need = new Map<string, number>()
+        s.split('')
+            .filter(x => x !== " ")
+            .forEach(x => {
+                (need.get(x) != undefined) ?
+                    need.set(x, 1) :
+                    need.set(x, need.get(x) + 1)
+            })
+
+        const have = new Map<string, number>()
+        myItems.forEach(x => {
+            (have.get(x.name) != undefined) ?
+                have.set(x.name, 1) :
+                have.set(x.name, have.get(x.name) + 1)
+        })
+
+        for (const [k, v] of need) {
+            if (have.get(k) == undefined || have.get(k) < v) {
+                throw new Error(`Not enough pieces`)
+            }
+        }
+
+        this.gicAchievementService.combinePieces(userId, s)
     }
 }

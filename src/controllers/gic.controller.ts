@@ -184,11 +184,51 @@ export class GICController extends Controller {
         this.router.post(`/premiumgacha`, this.premiumGacha.bind(this));
         this.router.post(`/premiumgachapack`, this.premiumGachaPack.bind(this));
         this.router.post(`/achievement`, this.acquireAchievement.bind(this));
+
+        // combine merch and piece
+        this.router.post(`/combine/merch`, this.combineMerch.bind(this))
+        this.router.post(`/combine/piece`, this.combinePiece.bind(this))
+        this.router.post(`/add_discord_achievement/`, this.addDiscordAchievement.bind(this))
     }
 
-    async combinePieces(req: Request, res: Response) {
+    async addDiscordAchievement(req: Request, res: Response) {
         try {
-            const pieces = req.body.pieces as GicItemName[]
+            const roles = req.tokenMeta.roles
+            if (!roles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error("Permission denied")
+            }
+
+            const discordId = req.body.discordId as string
+            const achievementId = parseInt(req.body.achievementId)
+            const u = await this.userService.findUserWithDiscordId(discordId)
+            if (!u) {
+                throw new Error(`No user with Discord Id ${discordId}`)
+            }
+
+            this.gicAchievementService.addDiscordAchievement(u._id, achievementId)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+
+    async combineMerch(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const s = req.body.item as string
+            await this.gicService.combineMerch(userId, s)
+            res.composer.success({})
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+
+    async combinePiece(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const s = req.body.item as string
+            await this.gicService.combinePiece(userId, s)
         } catch(error) {
             console.log(error)
             res.composer.badRequest(error.message)
