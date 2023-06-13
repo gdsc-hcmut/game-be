@@ -367,9 +367,9 @@ export class GICAchievementService {
         });
     }
 
-    public async userChangeMoney(userId: Types.ObjectId, d: number) {
+    public async userChangeMoney(userId: Types.ObjectId, amount: number) {
         await this.lock.acquire(userId.toString(), async () => {
-            if (d < 0) {
+            if (amount < 0) {
                 let d = await GICAchievementModel.findOne({
                     userId: userId,
                 });
@@ -379,7 +379,7 @@ export class GICAchievementService {
                         achievements: [],
                     });
                 }
-                d.moneySpent += -d;
+                d.moneySpent += -amount;
                 if (!d.achievements.includes(67) && d.moneySpent >= 5000) {
                     d.achievements.push(67);
                     // 1x normal pack
@@ -444,6 +444,8 @@ export class GICAchievementService {
                     this.gotAPiece(userId, { name: 'MIRROR SR', rare: 'MSR' });
                     this.completedAMission(userId);
                 }
+                d.markModified("achievements")
+                await d.save()
             }
         });
     }
