@@ -51,7 +51,7 @@ export class ItemService {
     }
 
     async getUserItems(userId: string): Promise<ItemDocument[]> {
-        const items = await Item.find({ ownerId: userId });
+        const items = await Item.find({ ownerId: new Types.ObjectId(userId) });
         return items;
     }
 
