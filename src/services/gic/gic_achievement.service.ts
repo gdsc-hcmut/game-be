@@ -1467,6 +1467,7 @@ export class GICAchievementService {
             }
 
             docs.maxMathQuizScore = Math.max(docs.maxMathQuizScore, score);
+            this.gotAPiece(userId, { name: 'CUP4', rare: 'SSR' });
 
             if (
                 !docs.achievements.includes(46) &&
