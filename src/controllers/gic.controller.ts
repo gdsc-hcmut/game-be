@@ -188,10 +188,10 @@ export class GICController extends Controller {
 
     async combinePieces(req: Request, res: Response) {
         try {
-            const pieces = req.body.pieces as GicItemName[]
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const pieces = req.body.pieces as GicItemName[];
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -232,6 +232,7 @@ export class GICController extends Controller {
             const d = await this.gicAchievementService.getAchievementOfUser(
                 userId,
             );
+
             res.composer.success(d ? d : []);
         } catch (error) {
             console.log(error);
@@ -950,9 +951,11 @@ export class GICController extends Controller {
                 throw Error('Permission Error');
             }
 
-            const userId = (await this.userService.findOne({
-                email
-            }))._id;
+            const userId = (
+                await this.userService.findOne({
+                    email,
+                })
+            )._id;
 
             // TODO: GICAchievementService
             if (!body?.data) {
@@ -960,14 +963,17 @@ export class GICController extends Controller {
             }
 
             if ([51, 52, 53].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(userId, body.data.urlCount);
+                this.gicAchievementService.URLCreate(
+                    userId,
+                    body.data.urlCount,
+                );
             }
 
             if ([54, 55].includes(achievementId)) {
                 this.gicAchievementService.URLClick(userId, body.data.size);
             }
 
-            res.composer.success("Sucess");
+            res.composer.success('Sucess');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
