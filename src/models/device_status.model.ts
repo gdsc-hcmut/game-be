@@ -1,9 +1,9 @@
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongoose';
 import _ from 'lodash';
 
 export class DeviceStatus {
-    readonly _id?: ObjectID;
-    deviceId: ObjectID;
+    readonly _id?: ObjectId;
+    deviceId: ObjectId;
     data: string;
     message: string;
     createdAt: number;

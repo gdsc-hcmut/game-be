@@ -292,11 +292,7 @@ export class GICService {
                     );
                 }
             }
-            await this.sendGicGift(
-                userId,
-                "Cup/Figure",
-                ""
-            )
+            await this.sendGicGift(userId, 'Cup/Figure', '');
             return reg;
         });
     }
@@ -760,86 +756,82 @@ export class GICService {
     }
 
     async receiveGameGift(itemId: Types.ObjectId) {
-        const gift = await this.itemService.findOne({ _id: itemId })
+        const gift = await this.itemService.findOne({ _id: itemId });
         if (!gift) {
-            throw new Error(`The requested gift does not exist`)
+            throw new Error(`The requested gift does not exist`);
         }
-        const giftName = gift.name
-        const giftOwner = gift.ownerId
+        const giftName = gift.name;
+        const giftOwner = gift.ownerId;
         const [itemIsNotGift, hasItemWithSameName] = await Promise.all([
-            ( // if the item is not a gift (doesn't start with 'GIC_')
-                async () => {
-                    return !giftName.startsWith("GIC_")
-                }
-            )(),
-            ( // check if another item with the same name has already been received (due to a known bug)
-                async () => {
-                    return await this.itemService.findOne({
+            // if the item is not a gift (doesn't start with 'GIC_')
+            (async () => {
+                return !giftName.startsWith('GIC_');
+            })(),
+            // check if another item with the same name has already been received (due to a known bug)
+            (async () => {
+                return (
+                    (await this.itemService.findOne({
                         ownerId: giftOwner,
                         name: gift.name,
                         isReceived: true,
-                    }) != undefined
-                }
-            )()
-        ])
+                    })) != undefined
+                );
+            })(),
+        ]);
         if (itemIsNotGift) {
-            throw new Error(`The requested item is not a game gift`)
+            throw new Error(`The requested item is not a game gift`);
         }
         if (hasItemWithSameName) {
-            throw new Error(`You have already obtained a similar item`)
+            throw new Error(`You have already obtained a similar item`);
         }
         return this.itemService.findOneAndUpdate(
             { _id: itemId },
             { isReceived: true },
-            { new: true }
-        )
+            { new: true },
+        );
     }
-    
+
     async getAllEventEmails() {
         // all unique people that participated in the event
         const [eventParticipants, contestParticipants] = await Promise.all([
-            (
-                async () => {
-                    const result = await DayRegModel.find({
-                        status: DayRegStatus.REGISTERED
-                    }).populate("registeredBy")
-                    return result.map(x => ({
-                        name: ((x.registeredBy as any).name as string),
-                        email: ((x.registeredBy as any).email as string),
-                    }))
-                }
-            )(),
-            (
-                async () => {
-                    const query = await GICContestRegModel.find({
-                        status: { $ne: ContestRegStatus.CANCELLED }
-                    })
-                    const ans: {
-                        name: string
-                        email: string
-                    }[] = []
-                    query.forEach(team => {
-                        team.members.forEach(mem => {
-                            ans.push({
-                                name: mem.name,
-                                email: mem.email
-                            })
-                        })
-                    })
-                    return ans
-                }
-            )(),
-        ])
+            (async () => {
+                const result = await DayRegModel.find({
+                    status: DayRegStatus.REGISTERED,
+                }).populate('registeredBy');
+                return result.map((x) => ({
+                    name: (x.registeredBy as any).name as string,
+                    email: (x.registeredBy as any).email as string,
+                }));
+            })(),
+            (async () => {
+                const query = await GICContestRegModel.find({
+                    status: { $ne: ContestRegStatus.CANCELLED },
+                });
+                const ans: {
+                    name: string;
+                    email: string;
+                }[] = [];
+                query.forEach((team) => {
+                    team.members.forEach((mem) => {
+                        ans.push({
+                            name: mem.name,
+                            email: mem.email,
+                        });
+                    });
+                });
+                return ans;
+            })(),
+        ]);
         let ans: {
-            name: string
-            email: string
-        }[] = []
-        const participants = eventParticipants.concat(contestParticipants)
-        participants.forEach(participant => {
-            if (!ans.find(x => x.email === participant.email)) {
-                ans.push(participant)
+            name: string;
+            email: string;
+        }[] = [];
+        const participants = eventParticipants.concat(contestParticipants);
+        participants.forEach((participant) => {
+            if (!ans.find((x) => x.email === participant.email)) {
+                ans.push(participant);
             }
-        })
-        return ans
+        });
+        return ans;
     }
 }

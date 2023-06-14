@@ -1,4 +1,3 @@
-// import { ObjectID } from 'mongodb';
 // import _ from 'lodash';
 
 // export class Room{

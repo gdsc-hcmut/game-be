@@ -1,34 +1,7 @@
-import { injectable, inject } from 'inversify';
-import { Collection, ObjectID, ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 import _ from 'lodash';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import moment from 'moment';
-
-import { DatabaseService } from './database.service';
-import User, { USER_FORBIDDEN_FIELDS } from '../models/user.model';
-import { ErrorUserInvalid } from '../lib/errors';
-import {
-    HASH_ROUNDS,
-    SocialAccountType,
-    VERIRY_CODE_TTL,
-    VERIFY_CODE_LENGTH,
-    EMAIL_SENDER,
-} from '../config';
-// import { BundleService } from './bundle.service';
-import { ServiceType } from '../types';
-import { randomPassword, encodeObjectId } from '../lib/helper';
-// import { MailService } from '.';
-import { UserDocument } from '../models/user.model';
-import GameSession, {
-    GameSessionDocument,
-    LevelInfo,
-} from '../models/game_session.modal';
-import levels from '../game/levels.json';
-import { generateGameField } from '../game/game-logic';
 import ClubDay, { ClubDayDocument } from '../models/club_day';
 
-let INIT_LEVEL = 0;
 @injectable()
 export class ClubDayService {
     constructor() {}
@@ -40,6 +13,7 @@ export class ClubDayService {
     ): Promise<ClubDayDocument> {
         let newClubDay = new ClubDay();
         newClubDay.userId = userId;
+        ``;
         newClubDay.name = name;
         newClubDay.studentId = studentId;
         newClubDay.save();
