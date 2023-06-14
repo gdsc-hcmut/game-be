@@ -22,12 +22,14 @@ import {
     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
+    SEMINAR_1_30_MINUTE_REMINDER_EMAIL,
 } from '../constant';
 import * as crypto from 'crypto';
 import { IS_PRODUCTION } from '../config';
 import { TokenDocument } from '../models/token.model';
 import _ from 'lodash';
 import { GicItemName } from '../services/gic/utils';
+import { scheduleJob } from 'node-schedule';
 
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
@@ -189,6 +191,37 @@ export class GICController extends Controller {
         this.router.post(`/combine/merch`, this.combineMerch.bind(this))
         this.router.post(`/combine/piece`, this.combinePiece.bind(this))
         this.router.post(`/add_discord_achievement/`, this.addDiscordAchievement.bind(this))
+        
+        // schedule sending emails
+        scheduleJob("0 0 18 14 6 *", this.send30MinutesReminderSeminar1.bind(this))
+    }
+    
+    // job scheduling
+    async send30MinutesReminderSeminar1() {
+        const a = await Promise.all(
+            (await this.gicService.findDayRegistrations({
+                status: { $ne: DayRegStatus.CANCELLED },
+                day: 2
+            })).map(r => (async () => r.populate("registeredBy"))())
+        )
+        await Promise.all(
+            a.map(u => (
+                async () => {
+                    const name = (u.registeredBy as any).name as string
+                    const email = (u.registeredBy as any).email as string
+                    try {
+                        console.log(`Sending seminar 1 reminder (30 minutes) to email: ${email}`)
+                        await this.mailService.sendToOne(
+                            email,
+                            `[GDSC Idea Contest 2023] Còn 30 phút nữa đến sự kiện '${EVENT_NAME_LIST[1]}'`,
+                            SEMINAR_1_30_MINUTE_REMINDER_EMAIL(name)
+                        )
+                    } catch(err) {
+                        console.log(`Sending seminar 1 reminder (30 minutes) to email: ${email} failed ${err.message}`)
+                    }
+                }
+            )())
+        )
     }
 
     async addDiscordAchievement(req: Request, res: Response) {
