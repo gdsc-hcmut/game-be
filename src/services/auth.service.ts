@@ -12,8 +12,7 @@ import { NextFunction } from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
-// import { Collection, ObjectID, ObjectId } from 'mongodb';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 import passportGoogle from 'passport-google-oauth20';
 import {
     GOOGLE_CLIENT_ID,

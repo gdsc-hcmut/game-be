@@ -15,7 +15,6 @@
 //     // BundleService,
 // } from '../services';
 // import _ from 'lodash';
-// import { ObjectID } from 'mongodb';
 
 // @injectable()
 // export class MeController extends Controller {

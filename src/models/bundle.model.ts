@@ -1,6 +1,7 @@
-import { ObjectID } from 'mongodb';
-import { User } from './user.model';
+import { ObjectId } from 'mongoose';
+import User from './user.model';
 import { PrivacyType } from '../types';
+import mongoose from 'mongoose';
 
 export enum FileType {
     NOTE = 'note',
@@ -14,7 +15,7 @@ export enum BundlePrivacy {
 }
 
 export interface File {
-    readonly _id?: ObjectID;
+    readonly _id?: ObjectId;
     readonly slug?: string;
     type: FileType;
     language: string;
@@ -25,22 +26,22 @@ export interface File {
     isDeleted: boolean;
     // isPublished: boolean;
     isLocked: boolean;
-    bundle?: ObjectID;
+    bundle?: ObjectId;
 }
 
 export interface Bundle {
-    readonly _id?: ObjectID;
+    readonly _id?: ObjectId;
     slug?: string;
     name: string;
     description: string;
     privacy: PrivacyType;
-    user: User | ObjectID;
+    user: typeof User | ObjectId;
     pin: string;
-    files: File[] | ObjectID[];
+    files: File[] | ObjectId[];
     createdAt: number;
     isDeleted: boolean;
-    likes: { user: ObjectID; createdAt: number; ip: string }[];
-    views: { user: ObjectID; createdAt: number; ip: string }[];
+    likes: { user: ObjectId; createdAt: number; ip: string }[];
+    views: { user: ObjectId; createdAt: number; ip: string }[];
 }
 
 export function fillDefaultFileValue(file: File): File {

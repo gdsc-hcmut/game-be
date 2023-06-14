@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { EventTypes } from './event-types';
-import { ObjectId } from 'mongodb';
 import { GameService, ItemService, TransactionService } from '../services';
 import { ClubDayService, UserService } from '../services';
 

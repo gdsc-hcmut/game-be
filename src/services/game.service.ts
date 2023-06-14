@@ -1,24 +1,11 @@
 import { injectable, inject } from 'inversify';
-import { Collection, ObjectID, ObjectId } from 'mongodb';
 import _ from 'lodash';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import moment from 'moment';
 
 import { DatabaseService } from './database.service';
-import User, { USER_FORBIDDEN_FIELDS } from '../models/user.model';
+import User from '../models/user.model';
 import { ErrorUserInvalid } from '../lib/errors';
-import {
-    HASH_ROUNDS,
-    SocialAccountType,
-    VERIRY_CODE_TTL,
-    VERIFY_CODE_LENGTH,
-    EMAIL_SENDER,
-} from '../config';
-// import { BundleService } from './bundle.service';
+
 import { ServiceType } from '../types';
-import { randomPassword, encodeObjectId } from '../lib/helper';
-// import { MailService } from '.';
 import { UserDocument } from '../models/user.model';
 import GameSession, {
     GameSessionDocument,
@@ -31,8 +18,6 @@ import { Types } from 'mongoose';
 let INIT_LEVEL = 0;
 @injectable()
 export class GameService {
-    private userCollection: Collection;
-
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Bundle) private bundleService: BundleService, // @inject(ServiceType.Mail) private mailService: MailService,
     ) {}

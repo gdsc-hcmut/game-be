@@ -13,7 +13,6 @@ import {
     TransactionService,
     GameService,
 } from '../services';
-import { ObjectID, ObjectId } from 'mongodb';
 import {
     EMAIL_SENDER,
     IS_PRODUCTION,
@@ -93,9 +92,9 @@ export class UserController extends Controller {
                     discordId: e.discordId,
                 };
             });
-            users?.slice(0, 3).forEach(user => {
+            users?.slice(0, 3).forEach((user) => {
                 // TODO: add to GIC achievement
-            })
+            });
             const leaderboard = new Leaderboard({
                 createdAt: Date.now(),
                 ranking: users,
@@ -111,42 +110,42 @@ export class UserController extends Controller {
                     try {
                         let usersList = IS_PRODUCTION
                             ? [
-                                '64759bb7a477b67094c3104d',
-                                '64759be8a477b67094c31093',
-                                '64759c2da477b67094c310a0',
-                                '64759c79a477b67094c310a3',
-                                '64759caca477b67094c310a8',
-                                '64759d2da477b67094c310b9',
-                                '64759d6aa477b67094c310fa',
-                                '64759dafa477b67094c31129',
-                                '64759dcba477b67094c3112c',
-                                '64759e09a477b67094c3112f',
-                                '64759e46a477b67094c31132',
-                                '64759e76a477b67094c31135',
-                                '64759e9fa477b67094c31138',
-                                '64759ecca477b67094c3113d',
-                                '64759ef2a477b67094c31140',
-                                '64759f28a477b67094c31145',
-                                '64759f5da477b67094c31148',
-                                '64759f89a477b67094c3114b',
-                                '64759fb7a477b67094c3114e',
-                                '64759fe4a477b67094c31151',
-                                '6475a011a477b67094c31154',
-                                '6475a039a477b67094c31157',
-                                '6475a062a477b67094c3115a',
-                                '6475a08aa477b67094c3115f',
-                                '6475a0bda477b67094c31162',
-                            ]
+                                  '64759bb7a477b67094c3104d',
+                                  '64759be8a477b67094c31093',
+                                  '64759c2da477b67094c310a0',
+                                  '64759c79a477b67094c310a3',
+                                  '64759caca477b67094c310a8',
+                                  '64759d2da477b67094c310b9',
+                                  '64759d6aa477b67094c310fa',
+                                  '64759dafa477b67094c31129',
+                                  '64759dcba477b67094c3112c',
+                                  '64759e09a477b67094c3112f',
+                                  '64759e46a477b67094c31132',
+                                  '64759e76a477b67094c31135',
+                                  '64759e9fa477b67094c31138',
+                                  '64759ecca477b67094c3113d',
+                                  '64759ef2a477b67094c31140',
+                                  '64759f28a477b67094c31145',
+                                  '64759f5da477b67094c31148',
+                                  '64759f89a477b67094c3114b',
+                                  '64759fb7a477b67094c3114e',
+                                  '64759fe4a477b67094c31151',
+                                  '6475a011a477b67094c31154',
+                                  '6475a039a477b67094c31157',
+                                  '6475a062a477b67094c3115a',
+                                  '6475a08aa477b67094c3115f',
+                                  '6475a0bda477b67094c31162',
+                              ]
                             : [
-                                '647590c4287db5254fabbc40',
-                                '647592a0287db5254fabbc43',
-                                '647594c2287db5254fabbc46',
-                                '647594cc287db5254fabbc49',
-                                '647594da287db5254fabbc4c',
-                            ];
+                                  '647590c4287db5254fabbc40',
+                                  '647592a0287db5254fabbc43',
+                                  '647594c2287db5254fabbc46',
+                                  '647594cc287db5254fabbc49',
+                                  '647594da287db5254fabbc4c',
+                              ];
                         let userId =
                             usersList[
-                            randomIntFromInterval(0, usersList.length)
+                                randomIntFromInterval(0, usersList.length)
                             ];
                         const user = await this.userService.findById(
                             new Types.ObjectId(userId),
@@ -174,7 +173,7 @@ export class UserController extends Controller {
                         }
 
                         user.save();
-                    } catch (err) { }
+                    } catch (err) {}
                 }, randomIntFromInterval(1, 100) * 1000);
             });
 
@@ -234,13 +233,13 @@ export class UserController extends Controller {
     async resetAllScore() {
         try {
             await this.userService.resetPrivate();
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async triggerResetDaily() {
         try {
             await this.userService.resetAvailableCoin();
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async triggerLeaderboard() {
@@ -316,7 +315,7 @@ export class UserController extends Controller {
                     200,
                     `Receive 200Gcoin for 10st place in Math Quiz Leaderboard Daily`,
                 );
-        } catch (error) { }
+        } catch (error) {}
     }
 
     async verifyAccountRequest(req: Request, res: Response) {

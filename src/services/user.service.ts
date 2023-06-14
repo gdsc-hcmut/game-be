@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { Collection, ObjectID } from 'mongodb';
+import { Collection, ObjectId as ObjectID } from 'mongodb';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
@@ -331,7 +331,7 @@ export class UserService {
     }
 
     async findUserWithDiscordId(id: string) {
-        return await User.findOne({ discordId: id })
+        return await User.findOne({ discordId: id });
     }
 
     async getUserBalance(userId: Types.ObjectId): Promise<number> {
