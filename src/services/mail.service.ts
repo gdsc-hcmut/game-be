@@ -8,7 +8,7 @@ export class MailService {
     auth: Auth.JWT
     gmail: gmail_v1.Gmail
     MAXIMUM_BACKOFF_TIME: number = 32000
-    NUM_RETRY: number = 25
+    NUM_RETRY: number = 64
 
     constructor() {
         this.init()
