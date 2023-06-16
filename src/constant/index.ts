@@ -3014,6 +3014,7 @@ export function CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(
 
 export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
     receiver: string,
+    eventDate: string,
     eventName: string,
     eventTime: string,
     eventDescription: string,
@@ -3363,7 +3364,7 @@ export function DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
 																				font-variant: normal;
 																				text-decoration: none;
 																			"
-																			>Ngày 11/06: </span
+																			>Ngày ${eventDate}: </span
 																		><span
 																			style="
 																				font-size: 12pt;
