@@ -202,7 +202,7 @@ export class GICController extends Controller {
         
         // schedule sending emails
         scheduleJob("0 0 18 14 6 *", this.send30MinutesReminderSeminar1.bind(this))
-        scheduleJob("0 0 16 16 6 *", this.send1DayReminderSeminar2.bind(this))
+        scheduleJob("0 15 16 16 6 *", this.send1DayReminderSeminar2.bind(this))
         scheduleJob("0 0 8 17 6 *", this.send30MinutesReminderSeminar2.bind(this))
     }
     
@@ -250,7 +250,7 @@ export class GICController extends Controller {
                         console.log(`Sending seminar 2 reminder (1 day) to email: ${email}`)
                         await this.mailService.sendToOne(
                             email,
-                            `[GDSC Idea Contest 2023] Còn 30 phút nữa đến sự kiện '${EVENT_NAME_LIST[2]}'`,
+                            `[GDSC Idea Contest 2023] Còn 1 ngày nữa đến sự kiện '${EVENT_NAME_LIST[2]}'`,
                             SEMINAR_2_1_DAY_REMINDER_EMAIL(name)
                         )
                     } catch(err) {
