@@ -23,6 +23,7 @@ import {
     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
     SEMINAR_1_30_MINUTE_REMINDER_EMAIL,
+    SEMINAR_2_1_DAY_REMINDER_EMAIL,
     SEMINAR_2_3O_MINUTE_REMINDER_EMAIL,
 } from '../constant';
 import * as crypto from 'crypto';
@@ -201,6 +202,7 @@ export class GICController extends Controller {
         
         // schedule sending emails
         scheduleJob("0 0 18 14 6 *", this.send30MinutesReminderSeminar1.bind(this))
+        scheduleJob("0 0 16 16 6 *", this.send1DayReminderSeminar2.bind(this))
         scheduleJob("0 0 8 17 6 *", this.send30MinutesReminderSeminar2.bind(this))
     }
     
@@ -231,14 +233,41 @@ export class GICController extends Controller {
             )())
         )
     }
-    
-    async send30MinutesReminderSeminar2() {
-        const a = (await Promise.all(
+
+    async send1DayReminderSeminar2() {
+        const a = await Promise.all(
             (await this.gicService.findDayRegistrations({
                 status: { $ne: DayRegStatus.CANCELLED },
                 day: 3
             })).map(r => (async () => r.populate("registeredBy"))())
-        )).filter(x => (x.registeredBy as any).email === "truongquochung312@gmail.com")
+        )
+        await Promise.all(
+            a.map(u => (
+                async () => {
+                    const name = (u.registeredBy as any).name as string
+                    const email = (u.registeredBy as any).email as string
+                    try {
+                        console.log(`Sending seminar 2 reminder (1 day) to email: ${email}`)
+                        await this.mailService.sendToOne(
+                            email,
+                            `[GDSC Idea Contest 2023] Còn 30 phút nữa đến sự kiện '${EVENT_NAME_LIST[2]}'`,
+                            SEMINAR_2_1_DAY_REMINDER_EMAIL(name)
+                        )
+                    } catch(err) {
+                        console.log(`Sending seminar 2 reminder (1 day) to email: ${email} failed ${err.message}`)
+                    }
+                }
+            )())
+        )
+    }
+    
+    async send30MinutesReminderSeminar2() {
+        const a = await Promise.all(
+            (await this.gicService.findDayRegistrations({
+                status: { $ne: DayRegStatus.CANCELLED },
+                day: 3
+            })).map(r => (async () => r.populate("registeredBy"))())
+        )
         await Promise.all(
             a.map(u => (
                 async () => {
