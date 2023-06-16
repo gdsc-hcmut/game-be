@@ -34,6 +34,12 @@ import { scheduleJob } from 'node-schedule';
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
 
+const EVENT_DATE_LIST = [
+    "11/06",
+    "14/06",
+    "17/06"
+]
+
 const EVENT_NAME_LIST = [
     'GIC Opening Day',
     'Seminar 1: Designing Your Idea',
@@ -835,6 +841,7 @@ export class GICController extends Controller {
                     }"`,
                     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
+                        EVENT_DATE_LIST[day - 1],
                         EVENT_NAME_LIST[day - 1],
                         EVENT_TIME_LIST[day - 1],
                         EVENT_DESCRIPTION_LIST[day - 1],
