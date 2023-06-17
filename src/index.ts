@@ -29,7 +29,7 @@ import {
 import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
-import { FileUploadService } from './services/file-upload.service';
+// import { FileUploadService } from './services/file-upload.service';
 // import { CacheService } from './services/cache.service';
 import { GICService } from './services/gic/gic.service';
 import { MailService } from './services/mail.service';
@@ -76,10 +76,10 @@ container
     .bind<DiscordService>(ServiceType.Discord)
     .to(DiscordService)
     .inSingletonScope();
-container
-    .bind<FileUploadService>(ServiceType.FileUpload)
-    .to(FileUploadService)
-    .inSingletonScope();
+// container
+//     .bind<FileUploadService>(ServiceType.FileUpload)
+//     .to(FileUploadService)
+//     .inSingletonScope();
 // container
 //     .bind<CacheService>(ServiceType.Cache)
 //     .to(CacheService)

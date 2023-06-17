@@ -13,7 +13,7 @@ import { UploadValidator } from '../lib/upload-validator/upload-validator';
 import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-validator-strategies';
 import { MailService } from '../services/mail.service';
 import { USER_ROLES } from '../models/user.model';
-import { FileUploadService } from '../services/file-upload.service';
+// import { FileUploadService } from '../services/file-upload.service';
 import { GICAchievementService } from '../services/gic/gic_achievement.service';
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
@@ -100,8 +100,8 @@ export class GICController extends Controller {
         @inject(ServiceType.GIC) private gicService: GICService,
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Mail) private mailService: MailService,
-        @inject(ServiceType.FileUpload)
-        private fileUploadService: FileUploadService,
+        // @inject(ServiceType.FileUpload)
+        // private fileUploadService: FileUploadService,
         @inject(ServiceType.GICAchievement)
         private gicAchievementService: GICAchievementService,
     ) {
@@ -131,12 +131,12 @@ export class GICController extends Controller {
             this.viewAchievement.bind(this),
         );
 
-        this.router.post(
-            `/contest/register`,
-            authService.authenticate(),
-            fileUploader.any(),
-            this.registerContest.bind(this),
-        );
+        // this.router.post(
+        //     `/contest/register`,
+        //     authService.authenticate(),
+        //     fileUploader.any(),
+        //     this.registerContest.bind(this),
+        // );
         this.router.post(
             `/contest/unregister`,
             authService.authenticate(),
@@ -519,121 +519,121 @@ export class GICController extends Controller {
 
     // API'S FOR CONTEST
 
-    async registerContest(req: Request, res: Response) {
-        try {
-            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
+    // async registerContest(req: Request, res: Response) {
+    //     try {
+    //         blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
 
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
+    //         const userId = new Types.ObjectId(req.tokenMeta.userId);
 
-            // block spamming
-            if (IS_PRODUCTION) {
-                await this.gicService.rateLimitOnContestRegistration(userId);
-            }
+    //         // block spamming
+    //         if (IS_PRODUCTION) {
+    //             await this.gicService.rateLimitOnContestRegistration(userId);
+    //         }
 
-            const user = await this.userService.findById(userId);
-            const members = JSON.parse(req.body.members) as any[];
-            const { ideaName } = req.body;
-            if (!ideaName) {
-                throw new Error(`Idea name is missing`);
-            }
-            if (!members) {
-                throw new Error(`Missing members field`);
-            }
-            if (members.length > 3) {
-                throw new Error(`A team can consist of at most 3 people`);
-            }
+    //         const user = await this.userService.findById(userId);
+    //         const members = JSON.parse(req.body.members) as any[];
+    //         const { ideaName } = req.body;
+    //         if (!ideaName) {
+    //             throw new Error(`Idea name is missing`);
+    //         }
+    //         if (!members) {
+    //             throw new Error(`Missing members field`);
+    //         }
+    //         if (members.length > 3) {
+    //             throw new Error(`A team can consist of at most 3 people`);
+    //         }
 
-            let selfPresent = false;
-            for (const [i, mem] of members.entries()) {
-                if (!mem[`name`])
-                    throw new Error(`Member ${i + 1} missing fullname`);
-                if (!mem[`email`])
-                    throw new Error(`Member ${i + 1} missing email`);
-                if (!mem[`school`])
-                    throw new Error(`Member ${i + 1} missing school`);
-                if (!mem[`major`])
-                    throw new Error(`Member ${i + 1} missing major`);
-                mem[`confirmed`] = mem.email === user.email;
-                selfPresent = selfPresent || mem[`confirmed`];
-            }
+    //         let selfPresent = false;
+    //         for (const [i, mem] of members.entries()) {
+    //             if (!mem[`name`])
+    //                 throw new Error(`Member ${i + 1} missing fullname`);
+    //             if (!mem[`email`])
+    //                 throw new Error(`Member ${i + 1} missing email`);
+    //             if (!mem[`school`])
+    //                 throw new Error(`Member ${i + 1} missing school`);
+    //             if (!mem[`major`])
+    //                 throw new Error(`Member ${i + 1} missing major`);
+    //             mem[`confirmed`] = mem.email === user.email;
+    //             selfPresent = selfPresent || mem[`confirmed`];
+    //         }
 
-            // all emails must be unique
-            if (new Set(members.map((x) => x.email)).size != members.length) {
-                throw new Error(`Given emails are not unique`);
-            }
+    //         // all emails must be unique
+    //         if (new Set(members.map((x) => x.email)).size != members.length) {
+    //             throw new Error(`Given emails are not unique`);
+    //         }
 
-            if (!selfPresent) {
-                throw new Error(`Team doesn't contain yourself`);
-            }
+    //         if (!selfPresent) {
+    //             throw new Error(`Team doesn't contain yourself`);
+    //         }
 
-            new UploadValidator(new UploadIdeaDescriptionValidation()).validate(
-                req.files as Express.Multer.File[],
-            );
+    //         new UploadValidator(new UploadIdeaDescriptionValidation()).validate(
+    //             req.files as Express.Multer.File[],
+    //         );
 
-            // check if any users are already in a contest, or the person registering
-            // has registered another idea
-            await Promise.all(
-                members.map((mem) =>
-                    (async () => {
-                        if (await this.gicService.emailHasTeam(mem.email)) {
-                            throw new Error(
-                                `A user on your team already has a team`,
-                            );
-                        }
-                        if (
-                            mem.email === user.email &&
-                            (await this.gicService.userHasRegisteredContest(
-                                userId,
-                            ))
-                        ) {
-                            throw new Error(
-                                `You have already registered your idea`,
-                            );
-                        }
-                    })(),
-                ),
-            );
+    //         // check if any users are already in a contest, or the person registering
+    //         // has registered another idea
+    //         await Promise.all(
+    //             members.map((mem) =>
+    //                 (async () => {
+    //                     if (await this.gicService.emailHasTeam(mem.email)) {
+    //                         throw new Error(
+    //                             `A user on your team already has a team`,
+    //                         );
+    //                     }
+    //                     if (
+    //                         mem.email === user.email &&
+    //                         (await this.gicService.userHasRegisteredContest(
+    //                             userId,
+    //                         ))
+    //                     ) {
+    //                         throw new Error(
+    //                             `You have already registered your idea`,
+    //                         );
+    //                     }
+    //                 })(),
+    //             ),
+    //         );
 
-            const result = await this.gicService.registerContest(
-                userId,
-                ideaName,
-                members,
-                req.files as Express.Multer.File[],
-                new NoFileCompression(),
-            );
+    //         const result = await this.gicService.registerContest(
+    //             userId,
+    //             ideaName,
+    //             members,
+    //             req.files as Express.Multer.File[],
+    //             new NoFileCompression(),
+    //         );
 
-            // TODO: send confirmation email, different for the person who registered and others
-            for (const m of members) {
-                if (m.confirmed) {
-                    this.mailService.sendToOne(
-                        m.email,
-                        '[GDSC Idea Contest 2023] Đăng ký dự thi thành công',
-                        CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
-                    );
-                } else {
-                    this.mailService.sendToOne(
-                        m.email,
-                        '[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi',
-                        CONTEST_CONFIRMATION_EMAIL(
-                            m.name,
-                            ideaName,
-                            aes256_encrypt(
-                                JSON.stringify({
-                                    regId: result._id,
-                                    email: m.email,
-                                }),
-                            ),
-                        ),
-                    );
-                }
-            }
+    //         // TODO: send confirmation email, different for the person who registered and others
+    //         for (const m of members) {
+    //             if (m.confirmed) {
+    //                 this.mailService.sendToOne(
+    //                     m.email,
+    //                     '[GDSC Idea Contest 2023] Đăng ký dự thi thành công',
+    //                     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
+    //                 );
+    //             } else {
+    //                 this.mailService.sendToOne(
+    //                     m.email,
+    //                     '[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi',
+    //                     CONTEST_CONFIRMATION_EMAIL(
+    //                         m.name,
+    //                         ideaName,
+    //                         aes256_encrypt(
+    //                             JSON.stringify({
+    //                                 regId: result._id,
+    //                                 email: m.email,
+    //                             }),
+    //                         ),
+    //                     ),
+    //                 );
+    //             }
+    //         }
 
-            res.composer.success(result);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         res.composer.success(result);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async unregisterContest(req: Request, res: Response) {
         try {
