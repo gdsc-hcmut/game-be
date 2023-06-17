@@ -1,11 +1,11 @@
 {
-    "name": "bugs-backend",
+    "name": "game-be",
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
     "type": "commonjs",
     "scripts": {
-        "start": "yarn build && node dist/src/index.js",
+        "start": "node dist/src/index.js",
         "ts": "ts-node src/index.ts",
         "dev": "cross-env WORKING_DIR=. nodemon",
         "build": "tsc",
@@ -18,7 +18,9 @@
         "test": "cross-env NODE_ENV=test ts-mocha tests/index.ts --exit --timeout 20000",
         "test:dev": "nodemon --watch . --exec 'yarn test'",
         "gendata": "ts-node scripts/generate-data.ts",
-        "gendata:dev": "cross-env NODE_ENV=test nodemon --watch . --exec 'yarn gendata'"
+        "gendata:dev": "cross-env NODE_ENV=test nodemon --watch . --exec 'yarn gendata'",
+        "up": "docker-compose up -d",
+        "down": "docker-compose down"
     },
     "dependencies": {
         "@google-cloud/local-auth": "^2.1.0",

@@ -1,18 +1,18 @@
-FROM node:10-alpine
-
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-WORKDIR /home/node/app
-
-COPY package.json ./package.json
+FROM node:16-alpine as builder
+WORKDIR /app
+COPY package.json ./
+COPY yarn.lock ./
 RUN yarn install
+COPY . .
+RUN yarn run build
 
-COPY --chown=node:node . .
-RUN yarn build
-
-ENV PORT 5000
-ENV NODE_ENV production
-ENV WORKING_DIR /home/node/app
-
-EXPOSE 5000
-
+FROM node:16-alpine AS server
+WORKDIR /app
+COPY package.json ./
+COPY yarn.lock ./
+COPY .env ./
+COPY googleServiceAccountKey.json ./
+RUN yarn install --production
+COPY --from=builder ./app/dist ./dist
+EXPOSE 1201
 CMD ["yarn", "start"]

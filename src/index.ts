@@ -30,7 +30,7 @@ import { ServiceType } from './types';
 
 import { SocketService } from './server-events';
 import { FileUploadService } from './services/file-upload.service';
-import { CacheService } from './services/cache.service';
+// import { CacheService } from './services/cache.service';
 import { GICService } from './services/gic/gic.service';
 import { MailService } from './services/mail.service';
 import { GICAchievementService } from './services/gic/gic_achievement.service';
@@ -80,10 +80,10 @@ container
     .bind<FileUploadService>(ServiceType.FileUpload)
     .to(FileUploadService)
     .inSingletonScope();
-container
-    .bind<CacheService>(ServiceType.Cache)
-    .to(CacheService)
-    .inSingletonScope();
+// container
+//     .bind<CacheService>(ServiceType.Cache)
+//     .to(CacheService)
+//     .inSingletonScope();
 container.bind<GICService>(ServiceType.GIC).to(GICService).inSingletonScope();
 container
     .bind<MailService>(ServiceType.Mail)

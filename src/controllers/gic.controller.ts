@@ -146,18 +146,18 @@ export class GICController extends Controller {
             `/contest/myregistration`,
             this.getRegisteredContest.bind(this),
         );
-        this.router.get(
-            `/contest/download`,
-            this.downloadIdeaDescription.bind(this),
-        );
+        // this.router.get(
+        //     `/contest/download`,
+        //     this.downloadIdeaDescription.bind(this),
+        // );
         this.router.get(
             `/contest/allregistrations`,
             this.getAllContestRegistrations.bind(this),
         );
-        this.router.get(
-            `/contest/downloadadmin/:registrationId`,
-            this.downloadIdeaAdmin.bind(this),
-        );
+        // this.router.get(
+        //     `/contest/downloadadmin/:registrationId`,
+        //     this.downloadIdeaAdmin.bind(this),
+        // );
 
         this.router.post('/day/register/:day', this.registerDay.bind(this));
         this.router.post('/day/unregister/:day', this.unregisterDay.bind(this));
@@ -186,53 +186,59 @@ export class GICController extends Controller {
         this.router.post(`/achievement`, this.acquireAchievement.bind(this));
 
         // combine merch and piece
-        this.router.post(`/combine/merch`, this.combineMerch.bind(this))
-        this.router.post(`/combine/piece`, this.combinePiece.bind(this))
-        this.router.post(`/add_discord_achievement/`, this.addDiscordAchievement.bind(this))
+        this.router.post(`/combine/merch`, this.combineMerch.bind(this));
+        this.router.post(`/combine/piece`, this.combinePiece.bind(this));
+        this.router.post(
+            `/add_discord_achievement/`,
+            this.addDiscordAchievement.bind(this),
+        );
     }
 
     async addDiscordAchievement(req: Request, res: Response) {
         try {
-            const roles = req.tokenMeta.roles
+            const roles = req.tokenMeta.roles;
             if (!roles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error("Permission denied")
+                throw new Error('Permission denied');
             }
 
-            const discordId = req.body.discordId as string
-            const achievementId = parseInt(req.body.achievementId)
-            const u = await this.userService.findUserWithDiscordId(discordId)
+            const discordId = req.body.discordId as string;
+            const achievementId = parseInt(req.body.achievementId);
+            const u = await this.userService.findUserWithDiscordId(discordId);
             if (!u) {
-                throw new Error(`No user with Discord Id ${discordId}`)
+                throw new Error(`No user with Discord Id ${discordId}`);
             }
 
-            this.gicAchievementService.addDiscordAchievement(u._id, achievementId)
-            res.composer.success({})
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            this.gicAchievementService.addDiscordAchievement(
+                u._id,
+                achievementId,
+            );
+            res.composer.success({});
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async combineMerch(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const s = req.body.item as string
-            await this.gicService.combineMerch(userId, s)
-            res.composer.success({})
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const s = req.body.item as string;
+            await this.gicService.combineMerch(userId, s);
+            res.composer.success({});
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async combinePiece(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const s = req.body.item as string
-            await this.gicService.combinePiece(userId, s)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const s = req.body.item as string;
+            await this.gicService.combinePiece(userId, s);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -454,33 +460,33 @@ export class GICController extends Controller {
         }
     }
 
-    async downloadIdeaAdmin(req: Request, res: Response) {
-        try {
-            const userRoles = req.tokenMeta.roles;
-            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission`);
-            }
+    // async downloadIdeaAdmin(req: Request, res: Response) {
+    //     try {
+    //         const userRoles = req.tokenMeta.roles;
+    //         if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+    //             throw new Error(`You don't have permission`);
+    //         }
 
-            const regId = new Types.ObjectId(req.params.registrationId);
-            const reg = await this.gicService.findContestRegById(regId);
-            if (!reg) {
-                throw new Error(`Registration doesn't exist`);
-            }
+    //         const regId = new Types.ObjectId(req.params.registrationId);
+    //         const reg = await this.gicService.findContestRegById(regId);
+    //         if (!reg) {
+    //             throw new Error(`Registration doesn't exist`);
+    //         }
 
-            const file = await this.fileUploadService.downloadFile(
-                reg.ideaDescription,
-            );
-            res.setHeader(
-                'Content-Disposition',
-                `attachment; filename=${file.originalName}`,
-            );
-            res.setHeader('Content-Type', `${file.mimetype}`);
-            res.end(file.buffer);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         const file = await this.fileUploadService.downloadFile(
+    //             reg.ideaDescription,
+    //         );
+    //         res.setHeader(
+    //             'Content-Disposition',
+    //             `attachment; filename=${file.originalName}`,
+    //         );
+    //         res.setHeader('Content-Type', `${file.mimetype}`);
+    //         res.end(file.buffer);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async getAllDayRegistrations(req: Request, res: Response) {
         try {
@@ -665,32 +671,32 @@ export class GICController extends Controller {
         }
     }
 
-    async downloadIdeaDescription(req: Request, res: Response) {
-        try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const user = await this.userService.findById(userId);
+    // async downloadIdeaDescription(req: Request, res: Response) {
+    //     try {
+    //         const userId = new Types.ObjectId(req.tokenMeta.userId);
+    //         const user = await this.userService.findById(userId);
 
-            const reg = await this.gicService.findCurrentContestRegistration(
-                user.email,
-            );
-            if (!reg) {
-                throw new Error(`Contest registration not found`);
-            }
+    //         const reg = await this.gicService.findCurrentContestRegistration(
+    //             user.email,
+    //         );
+    //         if (!reg) {
+    //             throw new Error(`Contest registration not found`);
+    //         }
 
-            const file = await this.fileUploadService.downloadFile(
-                reg.ideaDescription,
-            );
-            res.setHeader(
-                'Content-Disposition',
-                `attachment; filename=${file.originalName}`,
-            );
-            res.setHeader('Content-Type', `${file.mimetype}`);
-            res.end(file.buffer);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         const file = await this.fileUploadService.downloadFile(
+    //             reg.ideaDescription,
+    //         );
+    //         res.setHeader(
+    //             'Content-Disposition',
+    //             `attachment; filename=${file.originalName}`,
+    //         );
+    //         res.setHeader('Content-Type', `${file.mimetype}`);
+    //         res.end(file.buffer);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async confirmContest(req: Request, res: Response) {
         try {
@@ -991,9 +997,11 @@ export class GICController extends Controller {
                 throw Error('Permission Error');
             }
 
-            const userId = (await this.userService.findOne({
-                email
-            }))._id;
+            const userId = (
+                await this.userService.findOne({
+                    email,
+                })
+            )._id;
 
             // TODO: GICAchievementService
             if (!body?.data) {
@@ -1001,14 +1009,17 @@ export class GICController extends Controller {
             }
 
             if ([51, 52, 53].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(userId, body.data.urlCount);
+                this.gicAchievementService.URLCreate(
+                    userId,
+                    body.data.urlCount,
+                );
             }
 
             if ([54, 55].includes(achievementId)) {
                 this.gicAchievementService.URLClick(userId, body.data.size);
             }
 
-            res.composer.success("Sucess");
+            res.composer.success('Sucess');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

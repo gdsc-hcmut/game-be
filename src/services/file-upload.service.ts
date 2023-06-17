@@ -1,16 +1,16 @@
-import { injectable, inject } from "inversify";
-import admin from "firebase-admin";
-import serviceAccount from "../../googleServiceAccountKey.json";
-import { DownloadFileInfo } from "../types";
-import { Bucket } from "@google-cloud/storage";
-import { v4 as uuidv4 } from "uuid"
-import { FileCompressionStrategy } from "../lib/file-compression/strategies";
-import getRawBody from "raw-body";
-import AttachmentModel from "../models/attachment.model";
-import { Types } from "mongoose";
-import { ServiceType } from "../types";
-import { CacheService } from "./cache.service";
-import { Multer } from "multer";
+import { injectable, inject } from 'inversify';
+import admin from 'firebase-admin';
+import serviceAccount from '../../googleServiceAccountKey.json';
+import { DownloadFileInfo } from '../types';
+import { Bucket } from '@google-cloud/storage';
+import { v4 as uuidv4 } from 'uuid';
+import { FileCompressionStrategy } from '../lib/file-compression/strategies';
+import getRawBody from 'raw-body';
+import AttachmentModel from '../models/attachment.model';
+import { Types } from 'mongoose';
+import { ServiceType } from '../types';
+// import { CacheService } from "./cache.service";
+import { Multer } from 'multer';
 
 @injectable()
 export class FileUploadService {
@@ -21,11 +21,12 @@ export class FileUploadService {
     bucket: Bucket;
     CACHE_EXPIRATION_TIME: number = 60 * 15; // 15 minutes
 
-    constructor(@inject(ServiceType.Cache) private cacheService: CacheService) {
-        console.log("[FileUploadService] Construct");
+    // constructor(@inject(ServiceType.Cache) private cacheService: CacheService) {
+    constructor() {
+        console.log('[FileUploadService] Construct');
         admin.initializeApp({
             credential: admin.credential.cert(
-                serviceAccount as admin.ServiceAccount
+                serviceAccount as admin.ServiceAccount,
             ),
             storageBucket: process.env.STORAGE_BUCKET,
         });
@@ -34,17 +35,15 @@ export class FileUploadService {
 
     async uploadFiles(
         files: Express.Multer.File[],
-        compressionStrategy: FileCompressionStrategy
+        compressionStrategy: FileCompressionStrategy,
     ) {
         const res = await Promise.all(
             files.map((file) =>
                 (async () => {
-                    const refName = `${
-                        file.originalname
-                    }_${uuidv4()}`;
+                    const refName = `${file.originalname}_${uuidv4()}`;
                     const f = this.bucket.file(refName);
                     const compressedBuffer = await compressionStrategy.compress(
-                        file
+                        file,
                     );
                     await f.save(compressedBuffer, {
                         contentType: file.mimetype,
@@ -55,43 +54,43 @@ export class FileUploadService {
                         refName: refName,
                         mimetype: file.mimetype,
                     });
-                })()
-            )
+                })(),
+            ),
         );
 
         return res;
     }
 
-    async downloadFile(id: Types.ObjectId): Promise<DownloadFileInfo> {
-        const doc = await AttachmentModel.findById(id);
-        if (!doc) {
-            return null;
-        }
+    // async downloadFile(id: Types.ObjectId): Promise<DownloadFileInfo> {
+    //     const doc = await AttachmentModel.findById(id);
+    //     if (!doc) {
+    //         return null;
+    //     }
 
-        const { originalName, refName, mimetype } = doc;
-        const buffer = Buffer.from(
-            await this.cacheService.getWithPopulate(
-                `attachments ${refName}`,
-                async () => {
-                    const file = this.bucket.file(refName);
-                    return (await getRawBody(file.createReadStream())).toString(
-                        "base64"
-                    );
-                },
-                {
-                    EX: this.CACHE_EXPIRATION_TIME,
-                }
-            ),
-            "base64"
-        );
+    //     const { originalName, refName, mimetype } = doc;
+    //     const buffer = Buffer.from(
+    //         await this.cacheService.getWithPopulate(
+    //             `attachments ${refName}`,
+    //             async () => {
+    //                 const file = this.bucket.file(refName);
+    //                 return (await getRawBody(file.createReadStream())).toString(
+    //                     'base64',
+    //                 );
+    //             },
+    //             {
+    //                 EX: this.CACHE_EXPIRATION_TIME,
+    //             },
+    //         ),
+    //         'base64',
+    //     );
 
-        return {
-            originalName: originalName,
-            refName: refName,
-            mimetype: mimetype,
-            buffer: buffer,
-        };
-    }
+    //     return {
+    //         originalName: originalName,
+    //         refName: refName,
+    //         mimetype: mimetype,
+    //         buffer: buffer,
+    //     };
+    // }
 
     /**
      * try to delete attachments and return whether they were deleted successfully or not
@@ -110,8 +109,8 @@ export class FileUploadService {
                     const file = this.bucket.file(refName);
                     await file.delete();
                     return true;
-                })()
-            )
+                })(),
+            ),
         );
 
         return ans;
