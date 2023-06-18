@@ -592,9 +592,7 @@ export class GICController extends Controller {
             }
 
             const regId = new Types.ObjectId(req.params.registrationId);
-            const reg = (
-                await this.gicService.findContestRegById(regId)
-            ).populate('registeredBy');
+            const reg = await this.gicService.findContestRegByIdPopulate(regId);
             if (!reg) {
                 throw new Error(`Registration doesn't exist`);
             }
