@@ -574,7 +574,10 @@ export class GICController extends Controller {
                     await this.gicService.findContestRegs()
                 ).map((r) => (async () => await r.populate('registeredBy'))()),
             );
-            res.composer.success(result);
+            let responses = result.filter(
+                (e) => e.status === ContestRegStatus.REGISTERED,
+            );
+            res.composer.success(responses);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
