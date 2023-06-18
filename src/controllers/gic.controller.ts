@@ -612,8 +612,6 @@ export class GICController extends Controller {
 
     async registerContest(req: Request, res: Response) {
         try {
-            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
-
             const userId = new Types.ObjectId(req.tokenMeta.userId);
 
             // block spamming
