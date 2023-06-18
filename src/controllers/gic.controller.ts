@@ -36,11 +36,7 @@ import { scheduleJob } from 'node-schedule';
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
 
-const EVENT_DATE_LIST = [
-    "11/06",
-    "14/06",
-    "17/06"
-]
+const EVENT_DATE_LIST = ['11/06', '14/06', '17/06'];
 
 const EVENT_NAME_LIST = [
     'GIC Opening Day',
@@ -165,6 +161,10 @@ export class GICController extends Controller {
             this.getAllContestRegistrations.bind(this),
         );
         this.router.get(
+            `/contest/allregistrations/:registrationId`,
+            this.getContestRegistrations.bind(this),
+        );
+        this.router.get(
             `/contest/downloadadmin/:registrationId`,
             this.downloadIdeaAdmin.bind(this),
         );
@@ -196,140 +196,170 @@ export class GICController extends Controller {
         this.router.post(`/achievement`, this.acquireAchievement.bind(this));
 
         // combine merch and piece
-        this.router.post(`/combine/merch`, this.combineMerch.bind(this))
-        this.router.post(`/combine/piece`, this.combinePiece.bind(this))
-        this.router.post(`/add_discord_achievement/`, this.addDiscordAchievement.bind(this))
-        
+        this.router.post(`/combine/merch`, this.combineMerch.bind(this));
+        this.router.post(`/combine/piece`, this.combinePiece.bind(this));
+        this.router.post(
+            `/add_discord_achievement/`,
+            this.addDiscordAchievement.bind(this),
+        );
+
         // schedule sending emails
-        scheduleJob("0 0 18 14 6 *", this.send30MinutesReminderSeminar1.bind(this))
-        scheduleJob("0 15 16 16 6 *", this.send1DayReminderSeminar2.bind(this))
-        scheduleJob("0 0 8 17 6 *", this.send30MinutesReminderSeminar2.bind(this))
+        scheduleJob(
+            '0 0 18 14 6 *',
+            this.send30MinutesReminderSeminar1.bind(this),
+        );
+        scheduleJob('0 15 16 16 6 *', this.send1DayReminderSeminar2.bind(this));
+        scheduleJob(
+            '0 0 8 17 6 *',
+            this.send30MinutesReminderSeminar2.bind(this),
+        );
     }
-    
+
     // job scheduling
     async send30MinutesReminderSeminar1() {
         const a = await Promise.all(
-            (await this.gicService.findDayRegistrations({
-                status: { $ne: DayRegStatus.CANCELLED },
-                day: 2
-            })).map(r => (async () => r.populate("registeredBy"))())
-        )
+            (
+                await this.gicService.findDayRegistrations({
+                    status: { $ne: DayRegStatus.CANCELLED },
+                    day: 2,
+                })
+            ).map((r) => (async () => r.populate('registeredBy'))()),
+        );
         await Promise.all(
-            a.map(u => (
-                async () => {
-                    const name = (u.registeredBy as any).name as string
-                    const email = (u.registeredBy as any).email as string
+            a.map((u) =>
+                (async () => {
+                    const name = (u.registeredBy as any).name as string;
+                    const email = (u.registeredBy as any).email as string;
                     try {
-                        console.log(`Sending seminar 1 reminder (30 minutes) to email: ${email}`)
+                        console.log(
+                            `Sending seminar 1 reminder (30 minutes) to email: ${email}`,
+                        );
                         await this.mailService.sendToOne(
                             email,
                             `[GDSC Idea Contest 2023] Còn 30 phút nữa đến sự kiện '${EVENT_NAME_LIST[1]}'`,
-                            SEMINAR_1_30_MINUTE_REMINDER_EMAIL(name)
-                        )
-                    } catch(err) {
-                        console.log(`Sending seminar 1 reminder (30 minutes) to email: ${email} failed ${err.message}`)
+                            SEMINAR_1_30_MINUTE_REMINDER_EMAIL(name),
+                        );
+                    } catch (err) {
+                        console.log(
+                            `Sending seminar 1 reminder (30 minutes) to email: ${email} failed ${err.message}`,
+                        );
                     }
-                }
-            )())
-        )
+                })(),
+            ),
+        );
     }
 
     async send1DayReminderSeminar2() {
         const a = await Promise.all(
-            (await this.gicService.findDayRegistrations({
-                status: { $ne: DayRegStatus.CANCELLED },
-                day: 3
-            })).map(r => (async () => r.populate("registeredBy"))())
-        )
+            (
+                await this.gicService.findDayRegistrations({
+                    status: { $ne: DayRegStatus.CANCELLED },
+                    day: 3,
+                })
+            ).map((r) => (async () => r.populate('registeredBy'))()),
+        );
         await Promise.all(
-            a.map(u => (
-                async () => {
-                    const name = (u.registeredBy as any).name as string
-                    const email = (u.registeredBy as any).email as string
+            a.map((u) =>
+                (async () => {
+                    const name = (u.registeredBy as any).name as string;
+                    const email = (u.registeredBy as any).email as string;
                     try {
-                        console.log(`Sending seminar 2 reminder (1 day) to email: ${email}`)
+                        console.log(
+                            `Sending seminar 2 reminder (1 day) to email: ${email}`,
+                        );
                         await this.mailService.sendToOne(
                             email,
                             `[GDSC Idea Contest 2023] Còn 1 ngày nữa đến sự kiện '${EVENT_NAME_LIST[2]}'`,
-                            SEMINAR_2_1_DAY_REMINDER_EMAIL(name)
-                        )
-                    } catch(err) {
-                        console.log(`Sending seminar 2 reminder (1 day) to email: ${email} failed ${err.message}`)
+                            SEMINAR_2_1_DAY_REMINDER_EMAIL(name),
+                        );
+                    } catch (err) {
+                        console.log(
+                            `Sending seminar 2 reminder (1 day) to email: ${email} failed ${err.message}`,
+                        );
                     }
-                }
-            )())
-        )
+                })(),
+            ),
+        );
     }
-    
+
     async send30MinutesReminderSeminar2() {
         const a = await Promise.all(
-            (await this.gicService.findDayRegistrations({
-                status: { $ne: DayRegStatus.CANCELLED },
-                day: 3
-            })).map(r => (async () => r.populate("registeredBy"))())
-        )
+            (
+                await this.gicService.findDayRegistrations({
+                    status: { $ne: DayRegStatus.CANCELLED },
+                    day: 3,
+                })
+            ).map((r) => (async () => r.populate('registeredBy'))()),
+        );
         await Promise.all(
-            a.map(u => (
-                async () => {
-                    const name = (u.registeredBy as any).name as string
-                    const email = (u.registeredBy as any).email as string
+            a.map((u) =>
+                (async () => {
+                    const name = (u.registeredBy as any).name as string;
+                    const email = (u.registeredBy as any).email as string;
                     try {
-                        console.log(`Sending seminar 2 reminder (30 minutes) to email: ${email}`)
+                        console.log(
+                            `Sending seminar 2 reminder (30 minutes) to email: ${email}`,
+                        );
                         await this.mailService.sendToOne(
                             email,
                             `[GDSC Idea Contest 2023] Còn 30 phút nữa đến sự kiện '${EVENT_NAME_LIST[2]}'`,
-                            SEMINAR_2_3O_MINUTE_REMINDER_EMAIL(name)
-                        )
-                    } catch(err) {
-                        console.log(`Sending seminar 2 reminder (30 minutes) to email: ${email} failed ${err.message}`)
+                            SEMINAR_2_3O_MINUTE_REMINDER_EMAIL(name),
+                        );
+                    } catch (err) {
+                        console.log(
+                            `Sending seminar 2 reminder (30 minutes) to email: ${email} failed ${err.message}`,
+                        );
                     }
-                }
-            )())
-        )
+                })(),
+            ),
+        );
     }
 
     async addDiscordAchievement(req: Request, res: Response) {
         try {
-            const roles = req.tokenMeta.roles
+            const roles = req.tokenMeta.roles;
             if (!roles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error("Permission denied")
+                throw new Error('Permission denied');
             }
 
-            const discordId = req.body.discordId as string
-            const achievementId = parseInt(req.body.achievementId)
-            const u = await this.userService.findUserWithDiscordId(discordId)
+            const discordId = req.body.discordId as string;
+            const achievementId = parseInt(req.body.achievementId);
+            const u = await this.userService.findUserWithDiscordId(discordId);
             if (!u) {
-                throw new Error(`No user with Discord Id ${discordId}`)
+                throw new Error(`No user with Discord Id ${discordId}`);
             }
 
-            this.gicAchievementService.addDiscordAchievement(u._id, achievementId)
-            res.composer.success({})
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            this.gicAchievementService.addDiscordAchievement(
+                u._id,
+                achievementId,
+            );
+            res.composer.success({});
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async combineMerch(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const s = req.body.item as string
-            await this.gicService.combineMerch(userId, s)
-            res.composer.success({})
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const s = req.body.item as string;
+            await this.gicService.combineMerch(userId, s);
+            res.composer.success({});
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async combinePiece(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const s = req.body.item as string
-            await this.gicService.combinePiece(userId, s)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const s = req.body.item as string;
+            await this.gicService.combinePiece(userId, s);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -545,6 +575,27 @@ export class GICController extends Controller {
                 ).map((r) => (async () => await r.populate('registeredBy'))()),
             );
             res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getContestRegistrations(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles;
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`You don't have permission`);
+            }
+
+            const regId = new Types.ObjectId(req.params.registrationId);
+            const reg = (
+                await this.gicService.findContestRegById(regId)
+            ).populate('registeredBy');
+            if (!reg) {
+                throw new Error(`Registration doesn't exist`);
+            }
+            res.composer.success(reg);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
@@ -1087,9 +1138,11 @@ export class GICController extends Controller {
                 throw Error('Permission Error');
             }
 
-            const userId = (await this.userService.findOne({
-                email
-            }))._id;
+            const userId = (
+                await this.userService.findOne({
+                    email,
+                })
+            )._id;
 
             // TODO: GICAchievementService
             if (!body?.data) {
@@ -1097,14 +1150,17 @@ export class GICController extends Controller {
             }
 
             if ([51, 52, 53].includes(achievementId)) {
-                this.gicAchievementService.URLCreate(userId, body.data.urlCount);
+                this.gicAchievementService.URLCreate(
+                    userId,
+                    body.data.urlCount,
+                );
             }
 
             if ([54, 55].includes(achievementId)) {
                 this.gicAchievementService.URLClick(userId, body.data.size);
             }
 
-            res.composer.success("Sucess");
+            res.composer.success('Sucess');
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
