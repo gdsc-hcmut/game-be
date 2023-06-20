@@ -1,0 +1,11 @@
+[user]
+	name = Viet-Duc Nguyen
+	email = duc.nv291@gmail.com
+[commit]
+	template = /Users/lap15859-local/.gitmessage
+[alias]
+	adog = log --all --decorate --oneline --graph
+[pull]
+	rebase = true
+[core]
+	autocrlf = false
