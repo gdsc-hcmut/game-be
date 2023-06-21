@@ -34,9 +34,31 @@ import { TransactionService } from '../transaction.service';
 import GicGiftModel from '../../models/gic/gic_gift';
 import { GICAchievementService } from './gic_achievement.service';
 import { SocketService } from '../../server-events/index';
+import AsyncLock from 'async-lock';
+import GICVoteModel, { GICVoteStatus } from '../../models/gic/gic_vote.model';
+
+// const TOP_15_TEAMS: Types.ObjectId[] = [
+//     new Types.ObjectId("6488a4b602105d6d34c6b627"), // PomoStudy
+//     new Types.ObjectId("648b3bb3bfc578caa43a9328"), // UniSpace
+//     new Types.ObjectId("648c6e1c77a97363e8d3df96"), // JobTask
+//     new Types.ObjectId("648d991a77a97363e8d41c64"), // Jessica AI Bot
+//     new Types.ObjectId("648dc46d77a97363e8d42796"), // SWiM
+//     new Types.ObjectId("648defea77a97363e8d43243"), // Phan mem ho tro hoan thanh muc tieu
+//     new Types.ObjectId("648ec1de77a97363e8d4461a"), // MATCHMATE
+//     new Types.ObjectId("648edb2bc529ad68ab29da75"), // FutureConnect
+//     new Types.ObjectId("648ef470c529ad68ab29dd4b"), // Braille Music Access
+//     new Types.ObjectId("648efb34c529ad68ab29df2f"), // Polock
+//     new Types.ObjectId("648efd2bc529ad68ab29e05f"), // InformE
+//     new Types.ObjectId("648efdf3c529ad68ab29e0ae"), // HeyGuide!
+//     new Types.ObjectId("648efed6c529ad68ab29e10f"), // ICAS (Improving communication among students)
+//     new Types.ObjectId("648eff8dc529ad68ab29e1a6"), // MediFind
+//     new Types.ObjectId("648f0035c529ad68ab29e279"), // SchoMasters
+// ]
 
 @injectable()
 export class GICService {
+    private voteLock: AsyncLock
+
     constructor(
         @inject(ServiceType.FileUpload)
         private fileUploadService: FileUploadService,
@@ -46,7 +68,9 @@ export class GICService {
         private transactionService: TransactionService,
         @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService,
         @inject(ServiceType.Socket) private socketService: SocketService
-    ) {}
+    ) {
+        this.voteLock = new AsyncLock()
+    }
 
     // FOR CONTESTS
 
@@ -498,5 +522,88 @@ export class GICService {
         }
 
         this.gicAchievementService.combinePieces(userId, s)
+    }
+    
+    // voting
+    async voteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
+        return await this.voteLock.acquire(userId.toString(), async () => {
+            const precheckData = await Promise.all([
+                ( // if the requested team does not exist
+                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED} }) == undefined
+                )(),
+                ( // if the user has voted for this team before
+                    async () => await GICVoteModel.findOne({
+                        userId: userId,
+                        ideaId: ideaId,
+                        status: { $ne: GICVoteStatus.CANCELLED }
+                    }) != undefined
+                )(),
+                ( // if the user has voted for two teams already
+                    async () => (await GICVoteModel.count({
+                        userId: userId,
+                        status: { $ne: GICVoteStatus.CANCELLED }
+                    })) == 2
+                )(),
+            ])
+            
+            if (precheckData[0]) {
+                throw new Error(`The requested idea does not exist`)
+            }
+            if (precheckData[1]) {
+                throw new Error(`You have already voted for this team`)
+            }
+            if (precheckData[2]) {
+                throw new Error(`You have voted for two teams already, please undo your votes to vote for this team`)
+            }
+            return await GICVoteModel.create({
+                userId: userId,
+                ideaId: ideaId,
+                votedAt: Date.now(),
+                status: GICVoteStatus.ACTIVE
+            })
+        })
+    }
+    
+    async unvoteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
+        return await this.voteLock.acquire(userId.toString(), async () => {
+            const precheckData = await Promise.all([
+                ( // if the requested team does not exist
+                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED } }) == undefined
+                )(),
+                ( // if the user has not voted for this team before
+                    async () => await GICVoteModel.findOne({
+                        userId: userId,
+                        ideaId: ideaId,
+                        status: { $ne: GICVoteStatus.CANCELLED }
+                    }) == undefined
+                )()
+            ])
+            if (precheckData[0]) {
+                throw new Error(`The requested team is not found`)
+            }
+            if (precheckData[1]) {
+                throw new Error(`You have not voted for this team yet`)
+            }
+            return await GICVoteModel.findOneAndUpdate(
+                { userId: userId, ideaId: ideaId },
+                { status: GICVoteStatus.CANCELLED },
+                { new: true }
+            )
+        })
+    }
+    
+    async allVotesBy(userId: Types.ObjectId) {
+        return await this.voteLock.acquire(userId.toString(), async () => {
+            return await GICVoteModel.find({
+                userId: userId,
+                status: { $ne: GICVoteStatus.CANCELLED }
+            }).populate("ideaId")
+        })
+    }
+    
+    async allIdeas() {
+        return await GICContestRegModel.find({
+            status: { $ne: ContestRegStatus.CANCELLED}
+        })
     }
 }

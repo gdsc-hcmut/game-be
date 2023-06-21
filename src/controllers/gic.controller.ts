@@ -204,6 +204,66 @@ export class GICController extends Controller {
         scheduleJob("0 0 18 14 6 *", this.send30MinutesReminderSeminar1.bind(this))
         scheduleJob("0 15 16 16 6 *", this.send1DayReminderSeminar2.bind(this))
         scheduleJob("0 0 8 17 6 *", this.send30MinutesReminderSeminar2.bind(this))
+        
+        // voting
+        this.router.post("/contest/vote/:ideaId", this.voteTeam.bind(this))
+        this.router.post("/contest/unvote/:ideaId", this.unvoteTeam.bind(this))
+        this.router.get("/contest/myvotes", this.myVotes.bind(this))
+        this.router.get("/contest/allideas", this.allIdeas.bind(this))
+    }
+    
+    async voteTeam(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const ideaId = new Types.ObjectId(req.params.ideaId)
+            const result = await this.gicService.voteTeam(userId, ideaId)
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async unvoteTeam(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const ideaId = new Types.ObjectId(req.params.ideaId)
+            const result = await this.gicService.unvoteTeam(userId, ideaId)
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async myVotes(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const result = await this.gicService.allVotesBy(userId)
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
+    }
+    
+    async allIdeas(req: Request, res: Response) {
+        try {
+            const result = (await this.gicService.allIdeas()) as any
+            for (let i = 0; i < result.length; i++) {
+                for (let j = 0; j < result[i].members.length; j++) {
+                    result[i].members[j] = _.pick(result[i].members[j], [
+                        "name",
+                        "school",
+                        "major",
+                    ])
+                }
+            }
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
     
     // job scheduling
@@ -612,6 +672,7 @@ export class GICController extends Controller {
 
     async registerContest(req: Request, res: Response) {
         try {
+            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
             const userId = new Types.ObjectId(req.tokenMeta.userId);
 
             // block spamming
