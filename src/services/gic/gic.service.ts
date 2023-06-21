@@ -26,7 +26,7 @@ import {
     premiumGachaRarity,
     random,
     GicCombineName,
-    itemsName
+    itemsName,
 } from './utils';
 import { UserService } from '../user.service';
 import { SYSTEM_ACCOUNT_ID } from '../../config';
@@ -66,8 +66,9 @@ export class GICService {
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Transaction)
         private transactionService: TransactionService,
-        @inject(ServiceType.GICAchievement) private gicAchievementService: GICAchievementService,
-        @inject(ServiceType.Socket) private socketService: SocketService
+        @inject(ServiceType.GICAchievement)
+        private gicAchievementService: GICAchievementService,
+        @inject(ServiceType.Socket) private socketService: SocketService,
     ) {
         this.voteLock = new AsyncLock()
     }
@@ -149,6 +150,10 @@ export class GICService {
 
     async findContestRegById(id: Types.ObjectId) {
         return await GICContestRegModel.findById(id);
+    }
+
+    async findContestRegByIdPopulate(id: Types.ObjectId) {
+        return await GICContestRegModel.findById(id).populate('registeredBy');
     }
 
     // FOR DAY REGISTRATION
@@ -316,14 +321,14 @@ export class GICService {
             GACHA_COST,
             `Transfer ${GACHA_COST}coin to gacha`,
         );
-        const name = this.getRandomItemWithRare(gachaRarity)
+        const name = this.getRandomItemWithRare(gachaRarity);
         const item = await this.sendItemGIC(
-            this.createGicRewardItem(
-                userId,
-                name
-            ),
+            this.createGicRewardItem(userId, name),
         );
-        this.gicAchievementService.singleGacha(userId, gicItems.find(x => x.name === name))
+        this.gicAchievementService.singleGacha(
+            userId,
+            gicItems.find((x) => x.name === name),
+        );
         return item;
     }
 
@@ -339,20 +344,15 @@ export class GICService {
             `Transfer ${GACHA_COST_PACK}coin to x10 gacha`,
         );
         let items: ItemDocument[] = [];
-        let itemsForAchievement: GicItem[] = []
+        let itemsForAchievement: GicItem[] = [];
         for (let i = 0; i < 10; i++) {
-            const name = this.getRandomItemWithRare(gachaRarity)
+            const name = this.getRandomItemWithRare(gachaRarity);
             items.push(
-                await this.sendItemGIC(
-                    this.createGicRewardItem(
-                        userId,
-                        name
-                    ),
-                ),
+                await this.sendItemGIC(this.createGicRewardItem(userId, name)),
             );
-            itemsForAchievement.push(gicItems.find(x => x.name === name))
+            itemsForAchievement.push(gicItems.find((x) => x.name === name));
         }
-        this.gicAchievementService.packGacha(userId, itemsForAchievement)
+        this.gicAchievementService.packGacha(userId, itemsForAchievement);
 
         return items;
     }
@@ -368,14 +368,14 @@ export class GICService {
             GACHA_COST,
             `Transfer ${GACHA_COST}coin to premium gacha`,
         );
-        const name = this.getRandomItemWithRare(premiumGachaRarity)
+        const name = this.getRandomItemWithRare(premiumGachaRarity);
         const item = await this.sendItemGIC(
-            this.createGicRewardItem(
-                userId,
-                name
-            ),
+            this.createGicRewardItem(userId, name),
         );
-        this.gicAchievementService.singlePremiumGacha(userId, gicItems.find(x => x.name === name))
+        this.gicAchievementService.singlePremiumGacha(
+            userId,
+            gicItems.find((x) => x.name === name),
+        );
         return item;
     }
 
@@ -391,20 +391,19 @@ export class GICService {
             `Transfer ${PREMIUM_GACHA_COST_PACK}coin to x10 premium gacha`,
         );
         let items: ItemDocument[] = [];
-        let itemsForAchievement: GicItem[] = []
+        let itemsForAchievement: GicItem[] = [];
         for (let i = 0; i < 10; i++) {
-            const name: GicItemName = this.getRandomItemWithRare(premiumGachaRarity)
+            const name: GicItemName =
+                this.getRandomItemWithRare(premiumGachaRarity);
             items.push(
-                await this.sendItemGIC(
-                    this.createGicRewardItem(
-                        userId,
-                        name
-                    ),
-                ),
+                await this.sendItemGIC(this.createGicRewardItem(userId, name)),
             );
-            itemsForAchievement.push(gicItems.find(x => x.name === name))
+            itemsForAchievement.push(gicItems.find((x) => x.name === name));
         }
-        this.gicAchievementService.premiumPackGacha(userId, itemsForAchievement)
+        this.gicAchievementService.premiumPackGacha(
+            userId,
+            itemsForAchievement,
+        );
 
         return items;
     }
@@ -434,7 +433,10 @@ export class GICService {
         return item.name;
     }
 
-    createGicRewardItem(userId: Types.ObjectId, itemName: GicItemName | GicCombineName) {
+    createGicRewardItem(
+        userId: Types.ObjectId,
+        itemName: GicItemName | GicCombineName,
+    ) {
         let item: ItemDocument = {
             ownerId: userId,
             name: itemName,
@@ -452,76 +454,107 @@ export class GICService {
     }
 
     async combineMerch(userId: Types.ObjectId, s: string) {
-        const OPTIONS = ["KEYCHAIN", "CUP", "FIGURE", "TOTE", "FLASK"]
+        const OPTIONS = ['KEYCHAIN', 'CUP', 'FIGURE', 'TOTE', 'FLASK'];
 
         if (!OPTIONS.includes(s)) {
-            throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
+            throw new Error(
+                `Unknown option: ${s}. Available options are: ${OPTIONS}`,
+            );
         }
 
-        const allGicItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward")
-        const myPiece = allGicItems.filter(x => itemsName.find(y => y === x.name))
-        const want = `GIC_${s}` as GicCombineName
-        const needed = [`${s}1`, `${s}2`, `${s}3`, `${s}4`]
-        
-        if (allGicItems.find(x => x.name === want)) {
-            throw new Error(`You already have this item...`)
+        const allGicItems = (
+            await this.itemService.getItemsOfUser(userId)
+        ).filter((x) => x.collectionName === 'GicReward');
+        const myPiece = allGicItems.filter((x) =>
+            itemsName.find((y) => y === x.name),
+        );
+        const want = `GIC_${s}` as GicCombineName;
+        const needed = [`${s}1`, `${s}2`, `${s}3`, `${s}4`];
+
+        if (allGicItems.find((x) => x.name === want)) {
+            throw new Error(`You already have this item...`);
         }
 
-        const missing = needed.filter(x => !myPiece.find(y => y.name === x))
+        const missing = needed.filter(
+            (x) => !myPiece.find((y) => y.name === x),
+        );
         if (missing.length > 0) {
-            throw new Error(`Missing pieces: ${missing}`)
+            throw new Error(`Missing pieces: ${missing}`);
         }
 
-        await this.itemService.sendItemGIC(this.createGicRewardItem(userId, want))
+        await this.itemService.sendItemGIC(
+            this.createGicRewardItem(userId, want),
+        );
         // delete items that were used to combine
-        await Promise.all(needed.map(x => (
-            async () => {
-                await this.itemService.deleteOneGicItemOfUser(userId, x)
-            }
-        )()))
+        await Promise.all(
+            needed.map((x) =>
+                (async () => {
+                    await this.itemService.deleteOneGicItemOfUser(userId, x);
+                })(),
+            ),
+        );
         this.socketService.notifyEvent(
             userId.toString(),
-            `Bạn đã nhận được vật phẩm '${s}'`
-        )
+            `Bạn đã nhận được vật phẩm '${s}'`,
+        );
     }
 
     async combinePiece(userId: Types.ObjectId, s: string) {
         const OPTIONS = [
-            "PROBLEM", "SOLUTION", "DESIGN", "PRESENT",
-            "11062023", "14062023", "17062023", "25062023",
-            "KEYCHAIN", "CUP", "FIGURE", "TOTE BAG",
-            "VACUUM FLASK", "IDEA BOARD", "INVITE FRIEND", "BAEMIN TECH",
-            "GDSC IDEA CONTEST 2023", "GOOGLE DEVELOPER STUDENT CLUB HCMUT"
-        ]
+            'PROBLEM',
+            'SOLUTION',
+            'DESIGN',
+            'PRESENT',
+            '11062023',
+            '14062023',
+            '17062023',
+            '25062023',
+            'KEYCHAIN',
+            'CUP',
+            'FIGURE',
+            'TOTE BAG',
+            'VACUUM FLASK',
+            'IDEA BOARD',
+            'INVITE FRIEND',
+            'BAEMIN TECH',
+            'GDSC IDEA CONTEST 2023',
+            'GOOGLE DEVELOPER STUDENT CLUB HCMUT',
+        ];
         if (!OPTIONS.includes(s)) {
-            throw new Error(`Unknown option: ${s}. Available options are: ${OPTIONS}`)
+            throw new Error(
+                `Unknown option: ${s}. Available options are: ${OPTIONS}`,
+            );
         }
-        
-        const allGicItems = (await this.itemService.getItemsOfUser(userId)).filter(x => x.collectionName === "GicReward")
-        const myPiece = allGicItems.filter(x => itemsName.find(y => y === x.name))
-        const need = new Map<string, number>()
-        s.split('')
-            .filter(x => x !== " ")
-            .forEach(x => {
-                (need.get(x) != undefined) ?
-                    need.set(x, 1) :
-                    need.set(x, need.get(x) + 1)
-            })
 
-        const have = new Map<string, number>()
-        myPiece.forEach(x => {
-            (have.get(x.name) != undefined) ?
-                have.set(x.name, 1) :
-                have.set(x.name, have.get(x.name) + 1)
-        })
+        const allGicItems = (
+            await this.itemService.getItemsOfUser(userId)
+        ).filter((x) => x.collectionName === 'GicReward');
+        const myPiece = allGicItems.filter((x) =>
+            itemsName.find((y) => y === x.name),
+        );
+        const need = new Map<string, number>();
+        s.split('')
+            .filter((x) => x !== ' ')
+            .forEach((x) => {
+                need.get(x) != undefined
+                    ? need.set(x, 1)
+                    : need.set(x, need.get(x) + 1);
+            });
+
+        const have = new Map<string, number>();
+        myPiece.forEach((x) => {
+            have.get(x.name) != undefined
+                ? have.set(x.name, 1)
+                : have.set(x.name, have.get(x.name) + 1);
+        });
 
         for (const [k, v] of need) {
             if (have.get(k) == undefined || have.get(k) < v) {
-                throw new Error(`Not enough pieces`)
+                throw new Error(`Not enough pieces`);
             }
         }
 
-        this.gicAchievementService.combinePieces(userId, s)
+        this.gicAchievementService.combinePieces(userId, s);
     }
     
     // voting
