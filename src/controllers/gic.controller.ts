@@ -30,7 +30,6 @@ import * as crypto from 'crypto';
 import { IS_PRODUCTION } from '../config';
 import { TokenDocument } from '../models/token.model';
 import _ from 'lodash';
-import { GicItemName } from '../services/gic/utils';
 import { scheduleJob } from 'node-schedule';
 
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
@@ -219,6 +218,17 @@ export class GICController extends Controller {
         this.router.post("/contest/unvote/:ideaId", this.unvoteTeam.bind(this))
         this.router.get("/contest/myvotes", this.myVotes.bind(this))
         this.router.get("/contest/allideas", this.allIdeas.bind(this))
+        this.router.get("/contest/leaderboard", this.getLeaderboard.bind(this))
+    }
+    
+    async getLeaderboard(req: Request, res: Response) {
+        try {
+            const result = await this.gicService.getTopVotedTeams()
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
     
     async voteTeam(req: Request, res: Response) {
@@ -244,6 +254,7 @@ export class GICController extends Controller {
             res.composer.badRequest(error.message)
         }
     }
+    
     
     async myVotes(req: Request, res: Response) {
         try {

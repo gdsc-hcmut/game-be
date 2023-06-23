@@ -46,6 +46,7 @@ class ClientUser {
     private transactionService: TransactionService;
     private itemService: ItemService;
     private gicAchievementService: GICAchievementService;
+    private gicService: GICService
 
     constructor(
         userId: string,
@@ -55,6 +56,7 @@ class ClientUser {
         transactionService: TransactionService,
         itemService: ItemService,
         gicAchievementService: GICAchievementService,
+        gicService: GICService
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -66,6 +68,7 @@ class ClientUser {
         this.transactionService = transactionService;
         this.itemService = itemService;
         this.gicAchievementService = gicAchievementService;
+        this.gicService = gicService
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -403,6 +406,18 @@ class ClientUser {
             });
         // trigger
         this.sockets[socketId].scoreQuiz = 0;
+    }
+    
+    async notifyVoted(connectedUser: ConnectedUser) {
+        const data = await this.gicService.getTopVotedTeams()
+        console.debug(`data: `, data)
+        Object.keys(connectedUser).forEach(userKey => {
+            Object.keys(connectedUser[userKey].sockets).forEach(socketKey => {
+                console.debug(`emitting event to user ${userKey} - socket ${socketKey}`)
+                const socket = connectedUser[userKey].sockets[socketKey].socket
+                socket.emit(EventTypes.GIC_VOTE, data)
+            })
+        })
     }
 
     //#endregion
