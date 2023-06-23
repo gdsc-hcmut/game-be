@@ -620,7 +620,7 @@ export class GICService {
             }
             this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.findOneAndUpdate(
-                { userId: userId, ideaId: ideaId },
+                { userId: userId, ideaId: ideaId, status: { $ne: GICVoteStatus.CANCELLED } },
                 { status: GICVoteStatus.CANCELLED },
                 { new: true }
             )
@@ -673,5 +673,10 @@ export class GICService {
                 }
             }
         ])
+    }
+    
+    async getGiftOfUsers(userId: Types.ObjectId) {
+        return (await this.itemService.getItemsOfUser(userId))
+            .filter(x => x.collectionName === 'GicReward' && x.name.startsWith("GIC_"))
     }
 }
