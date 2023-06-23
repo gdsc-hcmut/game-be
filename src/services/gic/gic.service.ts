@@ -620,7 +620,7 @@ export class GICService {
             }
             this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.findOneAndUpdate(
-                { userId: userId, ideaId: ideaId },
+                { userId: userId, ideaId: ideaId, status: { $ne: GICVoteStatus.CANCELLED } },
                 { status: GICVoteStatus.CANCELLED },
                 { new: true }
             )
