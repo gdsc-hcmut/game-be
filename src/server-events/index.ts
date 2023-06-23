@@ -30,6 +30,7 @@ import { Socket } from 'socket.io';
 import { TokenDocument } from '../models/token.model';
 import { GICAchievementService } from '../services/gic/gic_achievement.service';
 import { lazyInject } from '../container';
+import { GICService } from '../services/gic/gic.service';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -54,6 +55,7 @@ export class SocketService {
     private trackingDevice: TrackingDevice;
     @lazyInject(ServiceType.GICAchievement)
     private gicAchievementService: GICAchievementService;
+    @lazyInject(ServiceType.GIC) private gicService: GICService
     constructor(
         // @inject(ServiceType.MQTT) private mqttService: MQTTService,
         // @inject(ServiceType.Device) private deviceService: DeviceService,
@@ -102,6 +104,7 @@ export class SocketService {
                 this.transactionService,
                 this.itemService,
                 this.gicAchievementService,
+                this.gicService
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
@@ -162,6 +165,15 @@ export class SocketService {
             if (userId == key) this.connectedUser[key].notifyEvent(message);
         });
     };
+    
+    notifyVoted(userId: string) {
+        Object.keys(this.connectedUser).map((key: any, index: any) => {
+            console.log(userId, key, 'keyy');
+            if (userId == key) {
+                this.connectedUser[key].notifyVoted(this.connectedUser);
+            }
+        });
+    }
 
     initialize = (socketServer: Socket) => {
         this.socketIOServer = socketServer;

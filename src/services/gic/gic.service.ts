@@ -560,7 +560,7 @@ export class GICService {
     // voting
     async voteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
         return await this.voteLock.acquire(userId.toString(), async () => {
-            const precheckData = await Promise.all([
+            const [teamNotExist, userAlreadyVoted, voteMaxLimit] = await Promise.all([
                 ( // if the requested team does not exist
                     async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED} }) == undefined
                 )(),
@@ -579,15 +579,16 @@ export class GICService {
                 )(),
             ])
             
-            if (precheckData[0]) {
+            if (teamNotExist) {
                 throw new Error(`The requested idea does not exist`)
             }
-            if (precheckData[1]) {
+            if (userAlreadyVoted) {
                 throw new Error(`You have already voted for this team`)
             }
-            if (precheckData[2]) {
+            if (voteMaxLimit) {
                 throw new Error(`You have voted for two teams already, please undo your votes to vote for this team`)
             }
+            this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.create({
                 userId: userId,
                 ideaId: ideaId,
@@ -599,7 +600,7 @@ export class GICService {
     
     async unvoteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
         return await this.voteLock.acquire(userId.toString(), async () => {
-            const precheckData = await Promise.all([
+            const [teamNotExist, userHasNotVoted] = await Promise.all([
                 ( // if the requested team does not exist
                     async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED } }) == undefined
                 )(),
@@ -611,12 +612,13 @@ export class GICService {
                     }) == undefined
                 )()
             ])
-            if (precheckData[0]) {
+            if (teamNotExist) {
                 throw new Error(`The requested team is not found`)
             }
-            if (precheckData[1]) {
+            if (userHasNotVoted) {
                 throw new Error(`You have not voted for this team yet`)
             }
+            this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.findOneAndUpdate(
                 { userId: userId, ideaId: ideaId },
                 { status: GICVoteStatus.CANCELLED },
@@ -638,5 +640,38 @@ export class GICService {
         return await GICContestRegModel.find({
             status: { $ne: ContestRegStatus.CANCELLED}
         })
+    }
+    
+    async getTopVotedTeams() {
+        return await GICVoteModel.aggregate([
+            {
+                $match: {
+                    status: { $ne: GICVoteStatus.CANCELLED }
+                }
+            },
+            {
+                $lookup: {
+                    from: "gic_contest_regs",
+                    localField: "ideaId",
+                    foreignField: "_id",
+                    as: "idea"
+                }
+            },
+            {
+                $unwind: { path: "$idea" }
+            },
+            {
+                $group: {
+                    _id: "$ideaId",
+                    ideaName: { $first: "$idea.ideaName" },
+                    voteCount: { $count: {} }
+                }
+            },
+            {
+                $sort: {
+                    "voteCount": -1
+                }
+            }
+        ])
     }
 }

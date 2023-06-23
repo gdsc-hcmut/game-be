@@ -15,4 +15,5 @@ export const EventTypes = {
     MATH_QUIZ_RANKING: 'MATH_QUIZ_RANKING',
     GIC_REWARD: 'GIC_REWARD',
     NOTIFY_GIC: 'NOTIFY_GIC',
+    GIC_VOTE: 'GIC_VOTE'
 };
