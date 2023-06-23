@@ -674,4 +674,9 @@ export class GICService {
             }
         ])
     }
+    
+    async getGiftOfUsers(userId: Types.ObjectId) {
+        return (await this.itemService.getItemsOfUser(userId))
+            .filter(x => x.collectionName === 'GicReward' && x.name.startsWith("GIC_"))
+    }
 }

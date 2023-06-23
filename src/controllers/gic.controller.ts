@@ -201,6 +201,7 @@ export class GICController extends Controller {
             `/add_discord_achievement/`,
             this.addDiscordAchievement.bind(this),
         );
+        this.router.get(`/mygifts`, this.getMyGifts.bind(this))
 
         // schedule sending emails
         scheduleJob(
@@ -219,6 +220,17 @@ export class GICController extends Controller {
         this.router.get("/contest/myvotes", this.myVotes.bind(this))
         this.router.get("/contest/allideas", this.allIdeas.bind(this))
         this.router.get("/contest/leaderboard", this.getLeaderboard.bind(this))
+    }
+    
+    async getMyGifts(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId)
+            const result = await this.gicService.getGiftOfUsers(userId)
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
     
     async getLeaderboard(req: Request, res: Response) {
