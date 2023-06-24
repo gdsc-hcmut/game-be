@@ -770,7 +770,7 @@ export class GICService {
                 async () => {
                     return !giftName.startsWith("GIC_")
                 }
-            ),
+            )(),
             ( // check if another item with the same name has already been received (due to a known bug)
                 async () => {
                     return await this.itemService.findOne({
@@ -779,7 +779,7 @@ export class GICService {
                         isReceived: true,
                     }) != undefined
                 }
-            )
+            )()
         ])
         if (itemIsNotGift) {
             throw new Error(`The requested item is not a game gift`)
