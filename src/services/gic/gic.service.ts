@@ -616,7 +616,7 @@ export class GICService {
                     async () => await GICVoteModel.findOne({
                         userId: userId,
                         ideaId: ideaId,
-                        status: ContestRegStatus.REGISTERED
+                        status: GICVoteStatus.ACTIVE
                     }) == undefined
                 )()
             ])
@@ -628,7 +628,7 @@ export class GICService {
             }
             this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.findOneAndUpdate(
-                { userId: userId, ideaId: ideaId, status: ContestRegStatus.REGISTERED },
+                { userId: userId, ideaId: ideaId, status: GICVoteStatus.ACTIVE },
                 { status: GICVoteStatus.CANCELLED },
                 { new: true }
             )
@@ -639,7 +639,7 @@ export class GICService {
         return await this.voteLock.acquire(userId.toString(), async () => {
             return await GICVoteModel.find({
                 userId: userId,
-                status: ContestRegStatus.REGISTERED
+                status: GICVoteStatus.ACTIVE
             }).populate("ideaId")
         })
     }
@@ -654,7 +654,7 @@ export class GICService {
         return await GICVoteModel.aggregate([
             {
                 $match: {
-                    status: ContestRegStatus.REGISTERED
+                    status: GICVoteStatus.ACTIVE
                 }
             },
             {
