@@ -120,6 +120,7 @@ export class GICController extends Controller {
         this.router.get(`/allmail`, this.getAllMail.bind(this));
         this.router.get(`/myqr`, this.getMyQr.bind(this));
         this.router.post(`/checkin`, this.checkin.bind(this));
+        this.router.get(`/getideaboardid`, this.getIdeaBoardId.bind(this));
         this.router.get(`/allcheckin`, this.getAllCheckin.bind(this));
         this.router.get(`/gicgift`, this.getGicGift.bind(this));
         this.router.get(`/allgicgift`, this.getAllUserGicGift.bind(this));
@@ -201,7 +202,7 @@ export class GICController extends Controller {
             `/add_discord_achievement/`,
             this.addDiscordAchievement.bind(this),
         );
-        this.router.get(`/mygifts`, this.getMyGifts.bind(this))
+        this.router.get(`/mygifts`, this.getMyGifts.bind(this));
 
         // schedule sending emails
         scheduleJob(
@@ -213,88 +214,106 @@ export class GICController extends Controller {
             '0 0 8 17 6 *',
             this.send30MinutesReminderSeminar2.bind(this),
         );
-        
+
         // voting
-        this.router.post("/contest/vote/:ideaId", this.voteTeam.bind(this))
-        this.router.post("/contest/unvote/:ideaId", this.unvoteTeam.bind(this))
-        this.router.get("/contest/myvotes", this.myVotes.bind(this))
-        this.router.get("/contest/allideas", this.allIdeas.bind(this))
-        this.router.get("/contest/leaderboard", this.getLeaderboard.bind(this))
+        this.router.post('/contest/vote/:ideaId', this.voteTeam.bind(this));
+        this.router.post('/contest/unvote/:ideaId', this.unvoteTeam.bind(this));
+        this.router.get('/contest/myvotes', this.myVotes.bind(this));
+        this.router.get('/contest/allideas', this.allIdeas.bind(this));
+        this.router.get('/contest/leaderboard', this.getLeaderboard.bind(this));
     }
-    
+
+    async getIdeaBoardId(req: Request, res: Response) {
+        try {
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const result = await this.gicService.findOneDayRegistration({
+                registeredBy: userId,
+                status: DayRegStatus.CHECKIN,
+            });
+            if (!result) {
+                throw new Error(`You haven't checked in yet`);
+            }
+            res.composer.success(
+                result.ideaBoardId === undefined ? 1 : result.ideaBoardId,
+            );
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
     async getMyGifts(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const result = await this.gicService.getGiftOfUsers(userId)
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const result = await this.gicService.getGiftOfUsers(userId);
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async getLeaderboard(req: Request, res: Response) {
         try {
-            const result = await this.gicService.getTopVotedTeams()
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const result = await this.gicService.getTopVotedTeams();
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async voteTeam(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const ideaId = new Types.ObjectId(req.params.ideaId)
-            const result = await this.gicService.voteTeam(userId, ideaId)
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const ideaId = new Types.ObjectId(req.params.ideaId);
+            const result = await this.gicService.voteTeam(userId, ideaId);
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async unvoteTeam(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const ideaId = new Types.ObjectId(req.params.ideaId)
-            const result = await this.gicService.unvoteTeam(userId, ideaId)
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const ideaId = new Types.ObjectId(req.params.ideaId);
+            const result = await this.gicService.unvoteTeam(userId, ideaId);
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
-    
+
     async myVotes(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId)
-            const result = await this.gicService.allVotesBy(userId)
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const result = await this.gicService.allVotesBy(userId);
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
-    
+
     async allIdeas(req: Request, res: Response) {
         try {
-            const result = (await this.gicService.allIdeas()) as any
+            const result = (await this.gicService.allIdeas()) as any;
             for (let i = 0; i < result.length; i++) {
                 for (let j = 0; j < result[i].members.length; j++) {
                     result[i].members[j] = _.pick(result[i].members[j], [
-                        "name",
-                        "school",
-                        "major",
-                    ])
+                        'name',
+                        'school',
+                        'major',
+                    ]);
                 }
             }
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 

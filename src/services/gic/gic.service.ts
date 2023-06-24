@@ -1,13 +1,15 @@
 import { injectable, inject } from 'inversify';
 import _ from 'lodash';
-import { Types } from 'mongoose';
+import { FilterQuery, Types, UpdateQuery } from 'mongoose';
 import { ServiceType } from '../../types';
 import { FileUploadService } from '../file-upload.service';
 import { FileCompressionStrategy } from '../../lib/file-compression/strategies';
 import GICContestRegModel, {
     ContestRegStatus,
+    GICContestRegDocument,
 } from '../../models/gic/contest_registration.model';
 import DayRegModel, {
+    DayRegDocument,
     DayRegStatus,
 } from '../../models/gic/day_registration.model';
 import { ItemService } from '../item.service';
@@ -38,23 +40,23 @@ import AsyncLock from 'async-lock';
 import GICVoteModel, { GICVoteStatus } from '../../models/gic/gic_vote.model';
 
 const TEAMS_TO_VOTE: Types.ObjectId[] = [
-    new Types.ObjectId("6488a4b602105d6d34c6b627"), // PomoStudy
-    new Types.ObjectId("648b3bb3bfc578caa43a9328"), // UniSpace
-    new Types.ObjectId("648c6e1c77a97363e8d3df96"), // JobTask
-    new Types.ObjectId("648d991a77a97363e8d41c64"), // Jessica AI Bot
-    new Types.ObjectId("648dc46d77a97363e8d42796"), // SWiM
-    new Types.ObjectId("648defea77a97363e8d43243"), // Phan mem ho tro hoan thanh muc tieu
-    new Types.ObjectId("648efb34c529ad68ab29df2f"), // Polock
-    new Types.ObjectId("648efd2bc529ad68ab29e05f"), // InformE
-    new Types.ObjectId("648efdf3c529ad68ab29e0ae"), // HeyGuide!
-    new Types.ObjectId("648efed6c529ad68ab29e10f"), // ICAS (Improving communication among students)
-    new Types.ObjectId("648f0035c529ad68ab29e279"), // SchoMasters
-]
+    new Types.ObjectId('6488a4b602105d6d34c6b627'), // PomoStudy
+    new Types.ObjectId('648b3bb3bfc578caa43a9328'), // UniSpace
+    new Types.ObjectId('648c6e1c77a97363e8d3df96'), // JobTask
+    new Types.ObjectId('648d991a77a97363e8d41c64'), // Jessica AI Bot
+    new Types.ObjectId('648dc46d77a97363e8d42796'), // SWiM
+    new Types.ObjectId('648defea77a97363e8d43243'), // Phan mem ho tro hoan thanh muc tieu
+    new Types.ObjectId('648efb34c529ad68ab29df2f'), // Polock
+    new Types.ObjectId('648efd2bc529ad68ab29e05f'), // InformE
+    new Types.ObjectId('648efdf3c529ad68ab29e0ae'), // HeyGuide!
+    new Types.ObjectId('648efed6c529ad68ab29e10f'), // ICAS (Improving communication among students)
+    new Types.ObjectId('648f0035c529ad68ab29e279'), // SchoMasters
+];
 
 @injectable()
 export class GICService {
-    private voteLock: AsyncLock
-    private checkinLock: AsyncLock
+    private voteLock: AsyncLock;
+    private checkinLock: AsyncLock;
 
     constructor(
         @inject(ServiceType.FileUpload)
@@ -67,8 +69,8 @@ export class GICService {
         private gicAchievementService: GICAchievementService,
         @inject(ServiceType.Socket) private socketService: SocketService,
     ) {
-        this.voteLock = new AsyncLock()
-        this.checkinLock = new AsyncLock()
+        this.voteLock = new AsyncLock();
+        this.checkinLock = new AsyncLock();
     }
 
     // FOR CONTESTS
@@ -96,7 +98,7 @@ export class GICService {
         });
     }
 
-    async findContestRegs(query: any = {}) {
+    async findContestRegs(query: FilterQuery<GICContestRegDocument> = {}) {
         return GICContestRegModel.find(query);
     }
 
@@ -142,8 +144,11 @@ export class GICService {
         return (await this.findCurrentContestRegistration(email)) != null;
     }
 
-    async findOneContestRegAndUpdate(x: any, y: any) {
-        return await GICContestRegModel.findOneAndUpdate(x, y);
+    async findOneContestRegAndUpdate(
+        query: FilterQuery<GICContestRegDocument>,
+        update: UpdateQuery<GICContestRegDocument>,
+    ) {
+        return await GICContestRegModel.findOneAndUpdate(query, update);
     }
 
     async findContestRegById(id: Types.ObjectId) {
@@ -188,8 +193,12 @@ export class GICService {
         }
     }
 
-    async findDayRegistrations(x: any) {
-        return await DayRegModel.find(x);
+    async findDayRegistrations(query: FilterQuery<DayRegDocument>) {
+        return await DayRegModel.find(query);
+    }
+
+    async findOneDayRegistration(query: FilterQuery<DayRegDocument>) {
+        return await DayRegModel.findOne(query);
     }
 
     async userHasRegisteredDay(userId: Types.ObjectId, day: number) {
@@ -212,8 +221,11 @@ export class GICService {
         );
     }
 
-    async findOneDayRegAndUpdate(x: any, y: any) {
-        return await DayRegModel.findOneAndUpdate(x, y);
+    async findOneDayRegAndUpdate(
+        query: FilterQuery<DayRegDocument>,
+        update: UpdateQuery<DayRegDocument>,
+    ) {
+        return await DayRegModel.findOneAndUpdate(query, update);
     }
 
     async findDayRegById(id: Types.ObjectId) {
@@ -221,24 +233,27 @@ export class GICService {
     }
 
     async checkin(userId: Types.ObjectId) {
-        return await this.checkinLock.acquire("CHECKIN", async () => {
+        return await this.checkinLock.acquire('CHECKIN', async () => {
             if (await this.userHasCheckinDay(userId, 5)) {
                 throw new Error(`User has already checkin to Idea Showcase`);
             }
             const maxIdeaBoardId = await DayRegModel.aggregate([
                 {
                     $match: {
-                        status: DayRegStatus.CHECKIN
-                    }
+                        status: DayRegStatus.CHECKIN,
+                    },
                 },
                 {
                     $group: {
                         _id: null,
-                        max: { $max: "$ideaBoardId" }
-                    }
-                }
-            ])
-            const nxt = maxIdeaBoardId[0]?.max == undefined ? 1 : maxIdeaBoardId[0]?.max + 1
+                        max: { $max: '$ideaBoardId' },
+                    },
+                },
+            ]);
+            const nxt =
+                maxIdeaBoardId[0]?.max == undefined
+                    ? 1
+                    : maxIdeaBoardId[0]?.max + 1;
             const reg = await DayRegModel.findOneAndUpdate(
                 {
                     registeredBy: userId,
@@ -248,7 +263,7 @@ export class GICService {
                 {
                     status: DayRegStatus.CHECKIN,
                     checkinAt: Date.now(),
-                    ideaBoardId: nxt
+                    ideaBoardId: nxt,
                 },
             );
             if (!reg) {
@@ -260,7 +275,11 @@ export class GICService {
                     invitedBy: reg.invitedBy,
                 });
                 if (invited.length == 1) {
-                    this.sendGicGift(reg.invitedBy, 'Keychain', 'Invite 1 friend');
+                    this.sendGicGift(
+                        reg.invitedBy,
+                        'Keychain',
+                        'Invite 1 friend',
+                    );
                 } else if (invited.length == 3) {
                     this.sendGicGift(
                         reg.invitedBy,
@@ -269,7 +288,7 @@ export class GICService {
                     );
                 }
             }
-        })
+        });
     }
 
     async findAllCheckin() {
@@ -571,139 +590,162 @@ export class GICService {
 
         this.gicAchievementService.combinePieces(userId, s);
     }
-    
+
     // voting
     async voteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
-        if (TEAMS_TO_VOTE.every(x => !x.equals(ideaId))) {
-            throw new Error(`Cannot vote for this team`)
+        if (TEAMS_TO_VOTE.every((x) => !x.equals(ideaId))) {
+            throw new Error(`Cannot vote for this team`);
         }
         return await this.voteLock.acquire(userId.toString(), async () => {
-            const [userNotCheckin, teamNotExist, userAlreadyVoted, voteMaxLimit] = await Promise.all([
-                ( // if the user hasn't check in
-                    async () => await DayRegModel.findOne({ registeredBy: userId, day: 5, status: DayRegStatus.CHECKIN }) != undefined
-                ),
-                ( // if the requested team does not exist
-                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: ContestRegStatus.REGISTERED }) == undefined
-                )(),
-                ( // if the user has voted for this team before
-                    async () => await GICVoteModel.findOne({
+            const [
+                userNotCheckin,
+                teamNotExist,
+                userAlreadyVoted,
+                voteMaxLimit,
+            ] = await Promise.all([
+                // if the user hasn't check in
+                async () =>
+                    (await DayRegModel.findOne({
+                        registeredBy: userId,
+                        day: 5,
+                        status: DayRegStatus.CHECKIN,
+                    })) != undefined,
+                // if the requested team does not exist
+                (async () =>
+                    (await GICContestRegModel.findOne({
+                        _id: ideaId,
+                        status: ContestRegStatus.REGISTERED,
+                    })) == undefined)(),
+                // if the user has voted for this team before
+                (async () =>
+                    (await GICVoteModel.findOne({
                         userId: userId,
                         ideaId: ideaId,
-                        status: GICVoteStatus.ACTIVE
-                    }) != undefined
-                )(),
-                ( // if the user has voted for three teams already
-                    async () => (await GICVoteModel.count({
+                        status: GICVoteStatus.ACTIVE,
+                    })) != undefined)(),
+                // if the user has voted for three teams already
+                (async () =>
+                    (await GICVoteModel.count({
                         userId: userId,
-                        status: GICVoteStatus.ACTIVE
-                    })) == 3
-                )(),
-            ])
-            
+                        status: GICVoteStatus.ACTIVE,
+                    })) == 3)(),
+            ]);
+
             if (userNotCheckin) {
-                throw new Error(`Please checkin before voting`)
+                throw new Error(`Please checkin before voting`);
             }
             if (teamNotExist) {
-                throw new Error(`The requested idea does not exist`)
+                throw new Error(`The requested idea does not exist`);
             }
             if (userAlreadyVoted) {
-                throw new Error(`You have already voted for this team`)
+                throw new Error(`You have already voted for this team`);
             }
             if (voteMaxLimit) {
-                throw new Error(`You have voted for three teams already, please undo your votes to vote for this team`)
+                throw new Error(
+                    `You have voted for three teams already, please undo your votes to vote for this team`,
+                );
             }
-            this.socketService.notifyVoted(userId.toString())
+            this.socketService.notifyVoted(userId.toString());
             return await GICVoteModel.create({
                 userId: userId,
                 ideaId: ideaId,
                 votedAt: Date.now(),
-                status: GICVoteStatus.ACTIVE
-            })
-        })
+                status: GICVoteStatus.ACTIVE,
+            });
+        });
     }
-    
+
     async unvoteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
-        if (TEAMS_TO_VOTE.every(x => !x.equals(ideaId))) {
-            throw new Error(`Cannot vote for this team`)
+        if (TEAMS_TO_VOTE.every((x) => !x.equals(ideaId))) {
+            throw new Error(`Cannot vote for this team`);
         }
         return await this.voteLock.acquire(userId.toString(), async () => {
             const [teamNotExist, userHasNotVoted] = await Promise.all([
-                ( // if the requested team does not exist
-                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: ContestRegStatus.REGISTERED }) == undefined
-                )(),
-                ( // if the user has not voted for this team before
-                    async () => await GICVoteModel.findOne({
+                // if the requested team does not exist
+                (async () =>
+                    (await GICContestRegModel.findOne({
+                        _id: ideaId,
+                        status: ContestRegStatus.REGISTERED,
+                    })) == undefined)(),
+                // if the user has not voted for this team before
+                (async () =>
+                    (await GICVoteModel.findOne({
                         userId: userId,
                         ideaId: ideaId,
-                        status: GICVoteStatus.ACTIVE
-                    }) == undefined
-                )()
-            ])
+                        status: GICVoteStatus.ACTIVE,
+                    })) == undefined)(),
+            ]);
             if (teamNotExist) {
-                throw new Error(`The requested team is not found`)
+                throw new Error(`The requested team is not found`);
             }
             if (userHasNotVoted) {
-                throw new Error(`You have not voted for this team yet`)
+                throw new Error(`You have not voted for this team yet`);
             }
-            this.socketService.notifyVoted(userId.toString())
+            this.socketService.notifyVoted(userId.toString());
             return await GICVoteModel.findOneAndUpdate(
-                { userId: userId, ideaId: ideaId, status: GICVoteStatus.ACTIVE },
+                {
+                    userId: userId,
+                    ideaId: ideaId,
+                    status: GICVoteStatus.ACTIVE,
+                },
                 { status: GICVoteStatus.CANCELLED },
-                { new: true }
-            )
-        })
+                { new: true },
+            );
+        });
     }
-    
+
     async allVotesBy(userId: Types.ObjectId) {
         return await this.voteLock.acquire(userId.toString(), async () => {
             return await GICVoteModel.find({
                 userId: userId,
-                status: GICVoteStatus.ACTIVE
-            }).populate("ideaId")
-        })
+                status: GICVoteStatus.ACTIVE,
+            }).populate('ideaId');
+        });
     }
-    
+
     async allIdeas() {
         return await GICContestRegModel.find({
-            status: ContestRegStatus.REGISTERED
-        })
+            status: ContestRegStatus.REGISTERED,
+        });
     }
-    
+
     async getTopVotedTeams() {
         return await GICVoteModel.aggregate([
             {
                 $match: {
-                    status: GICVoteStatus.ACTIVE
-                }
+                    status: GICVoteStatus.ACTIVE,
+                },
             },
             {
                 $lookup: {
-                    from: "gic_contest_regs",
-                    localField: "ideaId",
-                    foreignField: "_id",
-                    as: "idea"
-                }
+                    from: 'gic_contest_regs',
+                    localField: 'ideaId',
+                    foreignField: '_id',
+                    as: 'idea',
+                },
             },
             {
-                $unwind: { path: "$idea" }
+                $unwind: { path: '$idea' },
             },
             {
                 $group: {
-                    _id: "$ideaId",
-                    ideaName: { $first: "$idea.ideaName" },
-                    voteCount: { $count: {} }
-                }
+                    _id: '$ideaId',
+                    ideaName: { $first: '$idea.ideaName' },
+                    voteCount: { $count: {} },
+                },
             },
             {
                 $sort: {
-                    "voteCount": -1
-                }
-            }
-        ])
+                    voteCount: -1,
+                },
+            },
+        ]);
     }
-    
+
     async getGiftOfUsers(userId: Types.ObjectId) {
-        return (await this.itemService.getItemsOfUser(userId))
-            .filter(x => x.collectionName === 'GicReward' && x.name.startsWith("GIC_"))
+        return (await this.itemService.getItemsOfUser(userId)).filter(
+            (x) =>
+                x.collectionName === 'GicReward' && x.name.startsWith('GIC_'),
+        );
     }
 }
