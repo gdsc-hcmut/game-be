@@ -204,7 +204,7 @@ export class GICController extends Controller {
         );
         
         // game gifts and idea board gifts
-        this.router.post(`/admin_get_game_gifts/:userId`, this.getGameGiftOfUser.bind(this));
+        this.router.post(`/admin_get_game_gifts`, this.getGameGiftOfUser.bind(this));
         this.router.post(`/admin_receive_game_gifts`, this.receiveGameGift.bind(this))
         this.router.post(`/admin_get_idea_board_id`, this.getIdeaBoardId.bind(this))
 
