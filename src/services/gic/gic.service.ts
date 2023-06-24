@@ -613,7 +613,7 @@ export class GICService {
                         registeredBy: userId,
                         day: 5,
                         status: DayRegStatus.CHECKIN,
-                    })) != undefined,
+                    })) == undefined,
                 // if the requested team does not exist
                 (async () =>
                     (await GICContestRegModel.findOne({
