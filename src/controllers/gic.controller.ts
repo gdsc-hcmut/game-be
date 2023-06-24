@@ -303,7 +303,7 @@ export class GICController extends Controller {
         const a = await Promise.all(
             (
                 await this.gicService.findDayRegistrations({
-                    status: { $ne: DayRegStatus.CANCELLED },
+                    status: DayRegStatus.REGISTERED,
                     day: 2,
                 })
             ).map((r) => (async () => r.populate('registeredBy'))()),
@@ -336,7 +336,7 @@ export class GICController extends Controller {
         const a = await Promise.all(
             (
                 await this.gicService.findDayRegistrations({
-                    status: { $ne: DayRegStatus.CANCELLED },
+                    status: DayRegStatus.REGISTERED,
                     day: 3,
                 })
             ).map((r) => (async () => r.populate('registeredBy'))()),
@@ -369,7 +369,7 @@ export class GICController extends Controller {
         const a = await Promise.all(
             (
                 await this.gicService.findDayRegistrations({
-                    status: { $ne: DayRegStatus.CANCELLED },
+                    status: DayRegStatus.REGISTERED,
                     day: 3,
                 })
             ).map((r) => (async () => r.populate('registeredBy'))()),
@@ -725,7 +725,7 @@ export class GICController extends Controller {
                 (
                     await this.gicService.findDayRegistrations({
                         day: day,
-                        status: { $ne: DayRegStatus.CANCELLED },
+                        status: DayRegStatus.REGISTERED,
                     })
                 ).map((r) => (async () => await r.populate('registeredBy'))()),
             );

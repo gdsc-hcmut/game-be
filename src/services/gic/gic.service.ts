@@ -121,7 +121,7 @@ export class GICService {
 
     async findCurrentContestRegistration(email: string) {
         return await GICContestRegModel.findOne({
-            status: { $ne: ContestRegStatus.CANCELLED },
+            status: ContestRegStatus.REGISTERED,
             members: {
                 $elemMatch: {
                     email: email,
@@ -135,7 +135,7 @@ export class GICService {
         return (
             (await GICContestRegModel.findOne({
                 registeredBy: userId,
-                status: { $ne: ContestRegStatus.CANCELLED },
+                status: ContestRegStatus.REGISTERED,
             })) != null
         );
     }
@@ -565,19 +565,19 @@ export class GICService {
                     async () => await DayRegModel.findOne({ registeredBy: userId, day: 5, status: DayRegStatus.CHECKIN }) != undefined
                 ),
                 ( // if the requested team does not exist
-                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED} }) == undefined
+                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: ContestRegStatus.REGISTERED }) == undefined
                 )(),
                 ( // if the user has voted for this team before
                     async () => await GICVoteModel.findOne({
                         userId: userId,
                         ideaId: ideaId,
-                        status: { $ne: GICVoteStatus.CANCELLED }
+                        status: GICVoteStatus.ACTIVE
                     }) != undefined
                 )(),
                 ( // if the user has voted for three teams already
                     async () => (await GICVoteModel.count({
                         userId: userId,
-                        status: { $ne: GICVoteStatus.CANCELLED }
+                        status: GICVoteStatus.ACTIVE
                     })) == 3
                 )(),
             ])
@@ -608,13 +608,13 @@ export class GICService {
         return await this.voteLock.acquire(userId.toString(), async () => {
             const [teamNotExist, userHasNotVoted] = await Promise.all([
                 ( // if the requested team does not exist
-                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED } }) == undefined
+                    async () => await GICContestRegModel.findOne({ _id: ideaId, status: ContestRegStatus.REGISTERED }) == undefined
                 )(),
                 ( // if the user has not voted for this team before
                     async () => await GICVoteModel.findOne({
                         userId: userId,
                         ideaId: ideaId,
-                        status: { $ne: GICVoteStatus.CANCELLED }
+                        status: ContestRegStatus.REGISTERED
                     }) == undefined
                 )()
             ])
@@ -626,7 +626,7 @@ export class GICService {
             }
             this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.findOneAndUpdate(
-                { userId: userId, ideaId: ideaId, status: { $ne: GICVoteStatus.CANCELLED } },
+                { userId: userId, ideaId: ideaId, status: ContestRegStatus.REGISTERED },
                 { status: GICVoteStatus.CANCELLED },
                 { new: true }
             )
@@ -637,14 +637,14 @@ export class GICService {
         return await this.voteLock.acquire(userId.toString(), async () => {
             return await GICVoteModel.find({
                 userId: userId,
-                status: { $ne: GICVoteStatus.CANCELLED }
+                status: ContestRegStatus.REGISTERED
             }).populate("ideaId")
         })
     }
     
     async allIdeas() {
         return await GICContestRegModel.find({
-            status: { $ne: ContestRegStatus.CANCELLED}
+            status: ContestRegStatus.REGISTERED
         })
     }
     
@@ -652,7 +652,7 @@ export class GICService {
         return await GICVoteModel.aggregate([
             {
                 $match: {
-                    status: { $ne: GICVoteStatus.CANCELLED }
+                    status: ContestRegStatus.REGISTERED
                 }
             },
             {
