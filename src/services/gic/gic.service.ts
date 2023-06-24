@@ -560,7 +560,10 @@ export class GICService {
     // voting
     async voteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
         return await this.voteLock.acquire(userId.toString(), async () => {
-            const [teamNotExist, userAlreadyVoted, voteMaxLimit] = await Promise.all([
+            const [userNotCheckin, teamNotExist, userAlreadyVoted, voteMaxLimit] = await Promise.all([
+                ( // if the user hasn't check in
+                    async () => await DayRegModel.findOne({ registeredBy: userId, day: 5, status: DayRegStatus.CHECKIN }) != undefined
+                ),
                 ( // if the requested team does not exist
                     async () => await GICContestRegModel.findOne({ _id: ideaId, status: { $ne: ContestRegStatus.CANCELLED} }) == undefined
                 )(),
@@ -571,14 +574,17 @@ export class GICService {
                         status: { $ne: GICVoteStatus.CANCELLED }
                     }) != undefined
                 )(),
-                ( // if the user has voted for two teams already
+                ( // if the user has voted for three teams already
                     async () => (await GICVoteModel.count({
                         userId: userId,
                         status: { $ne: GICVoteStatus.CANCELLED }
-                    })) == 2
+                    })) == 3
                 )(),
             ])
             
+            if (userNotCheckin) {
+                throw new Error(`Please checkin before voting`)
+            }
             if (teamNotExist) {
                 throw new Error(`The requested idea does not exist`)
             }
@@ -586,7 +592,7 @@ export class GICService {
                 throw new Error(`You have already voted for this team`)
             }
             if (voteMaxLimit) {
-                throw new Error(`You have voted for two teams already, please undo your votes to vote for this team`)
+                throw new Error(`You have voted for three teams already, please undo your votes to vote for this team`)
             }
             this.socketService.notifyVoted(userId.toString())
             return await GICVoteModel.create({
