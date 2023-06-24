@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { ObjectId, Types } from 'mongoose';
+import { FilterQuery, ObjectId, QueryOptions, Types, UpdateQuery } from 'mongoose';
 import Item, { ItemDocument } from '../models/item.model';
 import RandomPool, { RandomPoolDocument } from '../models/random_pool.model';
 import { GicItemName, GicRare, GicRarity, gicItems, random } from './gic/utils';
@@ -70,6 +70,14 @@ export class ItemService {
         console.log('Send Item', itemData);
         const item = await this.createNewItem(itemData);
         return item;
+    }
+    
+    async findOne(query: FilterQuery<ItemDocument>) {
+        return await Item.findOne(query)
+    }
+    
+    async findOneAndUpdate(query: FilterQuery<ItemDocument>, update: UpdateQuery<ItemDocument>, options: QueryOptions<ItemDocument> = {}) {
+        return await Item.findOneAndUpdate(query, update, options)
     }
 
     getRandomItemWithRare(rarity: GicRarity): GicItemName {

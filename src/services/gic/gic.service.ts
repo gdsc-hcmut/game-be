@@ -278,19 +278,24 @@ export class GICService {
                     invitedBy: reg.invitedBy,
                 });
                 if (invited.length == 1) {
-                    this.sendGicGift(
+                    await this.sendGicGift(
                         reg.invitedBy,
                         'Keychain',
                         'Invite 1 friend',
                     );
                 } else if (invited.length == 3) {
-                    this.sendGicGift(
+                    await this.sendGicGift(
                         reg.invitedBy,
                         'Cup/Figure',
                         'Invite 3 friend',
                     );
                 }
             }
+            await this.sendGicGift(
+                userId,
+                "Cup/Figure",
+                ""
+            )
             return reg;
         });
     }
@@ -746,10 +751,44 @@ export class GICService {
         ]);
     }
 
-    async getGiftOfUsers(userId: Types.ObjectId) {
+    async getGameGiftsOfUser(userId: Types.ObjectId) {
         return (await this.itemService.getItemsOfUser(userId)).filter(
             (x) =>
                 x.collectionName === 'GicReward' && x.name.startsWith('GIC_'),
         );
+    }
+    
+    async receiveGameGift(userId: Types.ObjectId, itemId: Types.ObjectId) {
+        const gift = await this.itemService.findOne({ _id: itemId, ownerId: userId })
+        if (!gift) {
+            throw new Error(`The requested gift does not exist`)
+        }
+        const [itemIsNotGift, hasItemWithSameName] = await Promise.all([
+            ( // if the item is not a gift (doesn't start with 'GIC_')
+                async () => {
+                    return !gift.name.startsWith("GIC_")
+                }
+            ),
+            ( // check if another item with the same name has already been received (due to a known bug)
+                async () => {
+                    return await this.itemService.findOne({
+                        ownerId: userId,
+                        name: gift.name,
+                        isReceived: true,
+                    }) != undefined
+                }
+            )
+        ])
+        if (itemIsNotGift) {
+            throw new Error(`The requested item is not a game gift`)
+        }
+        if (hasItemWithSameName) {
+            throw new Error(`You have already obtained a similar item`)
+        }
+        return this.itemService.findOneAndUpdate(
+            { _id: itemId },
+            { isReceived: true },
+            { new: true }
+        )
     }
 }
