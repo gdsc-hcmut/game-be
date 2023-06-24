@@ -310,9 +310,8 @@ export class GICController extends Controller {
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
                 throw new Error(`Missing admin permission`)
             }
-            const userId = new Types.ObjectId(req.body.userId)
             const itemId = new Types.ObjectId(req.body.itemId)
-            const result = await this.gicService.receiveGameGift(userId, itemId)
+            const result = await this.gicService.receiveGameGift(itemId)
             res.composer.success(result)
         } catch(error) {
             console.log(error)

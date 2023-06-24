@@ -758,21 +758,23 @@ export class GICService {
         );
     }
     
-    async receiveGameGift(userId: Types.ObjectId, itemId: Types.ObjectId) {
-        const gift = await this.itemService.findOne({ _id: itemId, ownerId: userId })
+    async receiveGameGift(itemId: Types.ObjectId) {
+        const gift = await this.itemService.findOne({ _id: itemId })
         if (!gift) {
             throw new Error(`The requested gift does not exist`)
         }
+        const giftName = gift.name
+        const giftOwner = gift.ownerId
         const [itemIsNotGift, hasItemWithSameName] = await Promise.all([
             ( // if the item is not a gift (doesn't start with 'GIC_')
                 async () => {
-                    return !gift.name.startsWith("GIC_")
+                    return !giftName.startsWith("GIC_")
                 }
             ),
             ( // check if another item with the same name has already been received (due to a known bug)
                 async () => {
                     return await this.itemService.findOne({
-                        ownerId: userId,
+                        ownerId: giftOwner,
                         name: gift.name,
                         isReceived: true,
                     }) != undefined
