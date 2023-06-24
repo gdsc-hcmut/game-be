@@ -121,7 +121,6 @@ export class GICController extends Controller {
         this.router.get(`/allmail`, this.getAllMail.bind(this));
         this.router.get(`/myqr`, this.getMyQr.bind(this));
         this.router.post(`/checkin`, this.checkin.bind(this));
-        this.router.get(`/getideaboardid`, this.getIdeaBoardId.bind(this));
         this.router.get(`/allcheckin`, this.getAllCheckin.bind(this));
         this.router.get(`/gicgift`, this.getGicGift.bind(this));
         this.router.get(`/allgicgift`, this.getAllUserGicGift.bind(this));
@@ -203,7 +202,11 @@ export class GICController extends Controller {
             `/add_discord_achievement/`,
             this.addDiscordAchievement.bind(this),
         );
-        this.router.get(`/mygifts`, this.getMyGifts.bind(this));
+        
+        // game gifts and idea board gifts
+        this.router.post(`/admin_get_game_gifts/:userId`, this.getGameGiftOfUser.bind(this));
+        this.router.post(`/admin_receive_game_gifts`, this.receiveGameGift.bind(this))
+        this.router.post(`/admin_get_idea_board_id`, this.getIdeaBoardId.bind(this))
 
         // schedule sending emails
         scheduleJob(
@@ -260,31 +263,60 @@ export class GICController extends Controller {
 
     async getIdeaBoardId(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const result = await this.gicService.findOneDayRegistration({
-                registeredBy: userId,
-                status: DayRegStatus.CHECKIN,
-            });
-            if (!result) {
-                throw new Error(`You haven't checked in yet`);
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`Missing admin permission`)
             }
-            res.composer.success(
-                result.ideaBoardId === undefined ? 1 : result.ideaBoardId,
-            );
+            const { qrCode } = req.body
+            const data = JSON.parse(aes256_decrypt(qrCode as string))
+            const userId = new Types.ObjectId(data.userId)
+            const reg = await this.gicService.findOneDayRegistration({
+                registeredBy: userId,
+                status: "CHECKIN",
+            })
+            if (!reg) {
+                throw new Error(`User hasn't checked in yet`)
+            }
+            if (reg.ideaBoardId === undefined) {
+                throw new Error(`This is probably an old document, which doesn't have idea board id on registration document`)
+            }
+            res.composer.success(reg.ideaBoardId)
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
         }
     }
 
-    async getMyGifts(req: Request, res: Response) {
+    async getGameGiftOfUser(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const result = await this.gicService.getGiftOfUsers(userId);
-            res.composer.success(result);
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`Missing admin permission`)
+            }
+            const { qrCode } = req.body
+            const data = JSON.parse(aes256_decrypt(qrCode as string))
+            const userId = new Types.ObjectId(data.userId)
+            const result = await this.gicService.getGameGiftsOfUser(userId)
+            res.composer.success(result)
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
+        }
+    }
+    
+    async receiveGameGift(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`Missing admin permission`)
+            }
+            const userId = new Types.ObjectId(req.body.userId)
+            const itemId = new Types.ObjectId(req.body.itemId)
+            const result = await this.gicService.receiveGameGift(userId, itemId)
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
         }
     }
 
