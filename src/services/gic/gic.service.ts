@@ -54,6 +54,7 @@ const TEAMS_TO_VOTE: Types.ObjectId[] = [
 @injectable()
 export class GICService {
     private voteLock: AsyncLock
+    private checkinLock: AsyncLock
 
     constructor(
         @inject(ServiceType.FileUpload)
@@ -67,6 +68,7 @@ export class GICService {
         @inject(ServiceType.Socket) private socketService: SocketService,
     ) {
         this.voteLock = new AsyncLock()
+        this.checkinLock = new AsyncLock()
     }
 
     // FOR CONTESTS
@@ -219,38 +221,55 @@ export class GICService {
     }
 
     async checkin(userId: Types.ObjectId) {
-        if (await this.userHasCheckinDay(userId, 5)) {
-            throw new Error(`User has already checkin to Idea Showcase`);
-        }
-        const reg = await DayRegModel.findOneAndUpdate(
-            {
-                registeredBy: userId,
-                day: 5,
-                status: DayRegStatus.REGISTERED,
-            },
-            {
-                status: DayRegStatus.CHECKIN,
-                checkinAt: Date.now(),
-            },
-        );
-        if (!reg) {
-            throw new Error(`User has not registered for Idea Showcase`);
-        }
-        if (reg.invitedBy) {
-            const invited = await DayRegModel.find({
-                day: 5,
-                invitedBy: reg.invitedBy,
-            });
-            if (invited.length == 1) {
-                this.sendGicGift(reg.invitedBy, 'Keychain', 'Invite 1 friend');
-            } else if (invited.length == 3) {
-                this.sendGicGift(
-                    reg.invitedBy,
-                    'Cup/Figure',
-                    'Invite 3 friend',
-                );
+        return await this.checkinLock.acquire("CHECKIN", async () => {
+            if (await this.userHasCheckinDay(userId, 5)) {
+                throw new Error(`User has already checkin to Idea Showcase`);
             }
-        }
+            const maxIdeaBoardId = await DayRegModel.aggregate([
+                {
+                    $match: {
+                        status: DayRegStatus.CHECKIN
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        max: { $max: "$ideaBoardId" }
+                    }
+                }
+            ])
+            const nxt = maxIdeaBoardId[0]?.max == undefined ? 1 : maxIdeaBoardId[0]?.max + 1
+            const reg = await DayRegModel.findOneAndUpdate(
+                {
+                    registeredBy: userId,
+                    day: 5,
+                    status: DayRegStatus.REGISTERED,
+                },
+                {
+                    status: DayRegStatus.CHECKIN,
+                    checkinAt: Date.now(),
+                    ideaBoardId: nxt
+                },
+            );
+            if (!reg) {
+                throw new Error(`User has not registered for Idea Showcase`);
+            }
+            if (reg.invitedBy) {
+                const invited = await DayRegModel.find({
+                    day: 5,
+                    invitedBy: reg.invitedBy,
+                });
+                if (invited.length == 1) {
+                    this.sendGicGift(reg.invitedBy, 'Keychain', 'Invite 1 friend');
+                } else if (invited.length == 3) {
+                    this.sendGicGift(
+                        reg.invitedBy,
+                        'Cup/Figure',
+                        'Invite 3 friend',
+                    );
+                }
+            }
+        })
     }
 
     async findAllCheckin() {
