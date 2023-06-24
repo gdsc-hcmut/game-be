@@ -4,7 +4,7 @@ import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import moment from 'moment';
-import mongoose, { ObjectId, Types } from 'mongoose';
+import mongoose, { FilterQuery, ObjectId, Types } from 'mongoose';
 import { DatabaseService } from './database.service';
 import { USER_FORBIDDEN_FIELDS } from '../models/user.model';
 import { ErrorBalance, ErrorBidInvalid, ErrorUserInvalid } from '../lib/errors';
@@ -354,7 +354,7 @@ export class UserService {
         return user;
     }
 
-    async findOne(query: any = {}, keepAll = false): Promise<UserDocument> {
+    async findOne(query: FilterQuery<UserDocument> = {}, keepAll = false): Promise<UserDocument> {
         const user = (await User.findOne(query)) as UserDocument;
 
         if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');

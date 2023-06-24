@@ -207,6 +207,7 @@ export class GICController extends Controller {
         this.router.post(`/admin_get_game_gifts`, this.getGameGiftOfUser.bind(this));
         this.router.post(`/admin_receive_game_gifts`, this.receiveGameGift.bind(this))
         this.router.post(`/admin_get_idea_board_id`, this.getIdeaBoardId.bind(this))
+        this.router.post(`/admin_get_qr_by_email`, this.getQrByEmail.bind(this))
 
         // schedule sending emails
         scheduleJob(
@@ -259,6 +260,25 @@ export class GICController extends Controller {
                 })(),
             ),
         );
+    }
+    
+    async getQrByEmail(req: Request, res: Response) {
+        try {
+            const userRoles = req.tokenMeta.roles
+            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+                throw new Error(`Missing admin permission`)
+            }
+            const { email } = req.body
+            const user = await this.userService.findOne({ email: email })
+            if (!user) {
+                throw new Error(`User with the specified email doesn't exist`)
+            }
+            const result = aes256_encrypt(JSON.stringify({ userId: user._id.toString() }))
+            res.composer.success(result)
+        } catch(error) {
+            console.log(error)
+            res.composer.badRequest(error.message)
+        }
     }
 
     async getIdeaBoardId(req: Request, res: Response) {
