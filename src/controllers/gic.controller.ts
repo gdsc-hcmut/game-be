@@ -614,9 +614,7 @@ export class GICController extends Controller {
     async getGicGift(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-
             const gifts = await this.gicService.findAllUserGicGift(userId);
-
             res.composer.success(gifts);
         } catch (error) {
             console.log(error);

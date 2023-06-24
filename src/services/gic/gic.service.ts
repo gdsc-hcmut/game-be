@@ -278,19 +278,24 @@ export class GICService {
                     invitedBy: reg.invitedBy,
                 });
                 if (invited.length == 1) {
-                    this.sendGicGift(
+                    await this.sendGicGift(
                         reg.invitedBy,
                         'Keychain',
                         'Invite 1 friend',
                     );
                 } else if (invited.length == 3) {
-                    this.sendGicGift(
+                    await this.sendGicGift(
                         reg.invitedBy,
                         'Cup/Figure',
                         'Invite 3 friend',
                     );
                 }
             }
+            await this.sendGicGift(
+                userId,
+                "Cup/Figure",
+                ""
+            )
             return reg;
         });
     }
