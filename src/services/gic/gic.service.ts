@@ -265,6 +265,9 @@ export class GICService {
                     checkinAt: Date.now(),
                     ideaBoardId: nxt,
                 },
+                {
+                    new: true,
+                },
             );
             if (!reg) {
                 throw new Error(`User has not registered for Idea Showcase`);
@@ -288,6 +291,7 @@ export class GICService {
                     );
                 }
             }
+            return reg;
         });
     }
 

@@ -566,7 +566,9 @@ export class GICController extends Controller {
             if (!decodedData.userId) {
                 throw Error('QrCode not valid');
             }
-            const check = await this.gicService.checkin(decodedData.userId);
+            const check = await this.gicService.checkin(
+                new Types.ObjectId(decodedData.userId as string),
+            );
             res.composer.success(check);
         } catch (error) {
             console.log(error);
