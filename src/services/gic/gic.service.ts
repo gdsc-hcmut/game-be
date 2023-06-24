@@ -275,6 +275,7 @@ export class GICService {
             if (reg.invitedBy) {
                 const invited = await DayRegModel.find({
                     day: 5,
+                    status: DayRegStatus.CHECKIN,
                     invitedBy: reg.invitedBy,
                 });
                 if (invited.length == 1) {
@@ -757,7 +758,7 @@ export class GICService {
                 x.collectionName === 'GicReward' && x.name.startsWith('GIC_'),
         );
     }
-    
+
     async receiveGameGift(itemId: Types.ObjectId) {
         const gift = await this.itemService.findOne({ _id: itemId })
         if (!gift) {
