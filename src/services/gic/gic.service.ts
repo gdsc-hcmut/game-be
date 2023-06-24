@@ -608,12 +608,12 @@ export class GICService {
                 voteMaxLimit,
             ] = await Promise.all([
                 // if the user hasn't check in
-                async () =>
+                (async () =>
                     (await DayRegModel.findOne({
                         registeredBy: userId,
                         day: 5,
                         status: DayRegStatus.CHECKIN,
-                    })) == undefined,
+                    })) == undefined)(),
                 // if the requested team does not exist
                 (async () =>
                     (await GICContestRegModel.findOne({
