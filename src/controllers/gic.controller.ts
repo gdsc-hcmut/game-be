@@ -22,6 +22,7 @@ import {
     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_1_3_REGISTRATION_SUCCESSFUL_EMAIL,
     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL,
+    IDEA_SHOWCASE_1_DAY_REMINDER_EMAIL,
     SEMINAR_1_30_MINUTE_REMINDER_EMAIL,
     SEMINAR_2_1_DAY_REMINDER_EMAIL,
     SEMINAR_2_3O_MINUTE_REMINDER_EMAIL,
@@ -214,6 +215,7 @@ export class GICController extends Controller {
             '0 0 8 17 6 *',
             this.send30MinutesReminderSeminar2.bind(this),
         );
+        scheduleJob('0 40 19 24 6 *', this.send1DayReminderIdeaShowcase.bind(this))
 
         // voting
         this.router.post('/contest/vote/:ideaId', this.voteTeam.bind(this));
@@ -221,6 +223,39 @@ export class GICController extends Controller {
         this.router.get('/contest/myvotes', this.myVotes.bind(this));
         this.router.get('/contest/allideas', this.allIdeas.bind(this));
         this.router.get('/contest/leaderboard', this.getLeaderboard.bind(this));
+    }
+    
+    async send1DayReminderIdeaShowcase() {
+        const a = await Promise.all(
+            (
+                await this.gicService.findDayRegistrations({
+                    status: DayRegStatus.REGISTERED,
+                    day: 5,
+                })
+            ).map((r) => (async () => r.populate('registeredBy'))()),
+        )
+        await Promise.all(
+            a.map((u) =>
+                (async () => {
+                    const name = (u.registeredBy as any).name as string;
+                    const email = (u.registeredBy as any).email as string;
+                    try {
+                        console.log(
+                            `Sending Idea Showcase reminder (1 day) to email: ${email}`,
+                        );
+                        await this.mailService.sendToOne(
+                            email,
+                            `[GDSC Idea Contest 2023] Còn 1 ngày nữa đến sự kiện 'Idea Showcase'`,
+                            IDEA_SHOWCASE_1_DAY_REMINDER_EMAIL(name),
+                        );
+                    } catch (err) {
+                        console.log(
+                            `Sending Idea Showcase reminder (1 day) to email: ${email} failed ${err.message}`,
+                        );
+                    }
+                })(),
+            ),
+        );
     }
 
     async getIdeaBoardId(req: Request, res: Response) {
