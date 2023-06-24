@@ -37,23 +37,19 @@ import { SocketService } from '../../server-events/index';
 import AsyncLock from 'async-lock';
 import GICVoteModel, { GICVoteStatus } from '../../models/gic/gic_vote.model';
 
-// const TOP_15_TEAMS: Types.ObjectId[] = [
-//     new Types.ObjectId("6488a4b602105d6d34c6b627"), // PomoStudy
-//     new Types.ObjectId("648b3bb3bfc578caa43a9328"), // UniSpace
-//     new Types.ObjectId("648c6e1c77a97363e8d3df96"), // JobTask
-//     new Types.ObjectId("648d991a77a97363e8d41c64"), // Jessica AI Bot
-//     new Types.ObjectId("648dc46d77a97363e8d42796"), // SWiM
-//     new Types.ObjectId("648defea77a97363e8d43243"), // Phan mem ho tro hoan thanh muc tieu
-//     new Types.ObjectId("648ec1de77a97363e8d4461a"), // MATCHMATE
-//     new Types.ObjectId("648edb2bc529ad68ab29da75"), // FutureConnect
-//     new Types.ObjectId("648ef470c529ad68ab29dd4b"), // Braille Music Access
-//     new Types.ObjectId("648efb34c529ad68ab29df2f"), // Polock
-//     new Types.ObjectId("648efd2bc529ad68ab29e05f"), // InformE
-//     new Types.ObjectId("648efdf3c529ad68ab29e0ae"), // HeyGuide!
-//     new Types.ObjectId("648efed6c529ad68ab29e10f"), // ICAS (Improving communication among students)
-//     new Types.ObjectId("648eff8dc529ad68ab29e1a6"), // MediFind
-//     new Types.ObjectId("648f0035c529ad68ab29e279"), // SchoMasters
-// ]
+const TEAMS_TO_VOTE: Types.ObjectId[] = [
+    new Types.ObjectId("6488a4b602105d6d34c6b627"), // PomoStudy
+    new Types.ObjectId("648b3bb3bfc578caa43a9328"), // UniSpace
+    new Types.ObjectId("648c6e1c77a97363e8d3df96"), // JobTask
+    new Types.ObjectId("648d991a77a97363e8d41c64"), // Jessica AI Bot
+    new Types.ObjectId("648dc46d77a97363e8d42796"), // SWiM
+    new Types.ObjectId("648defea77a97363e8d43243"), // Phan mem ho tro hoan thanh muc tieu
+    new Types.ObjectId("648efb34c529ad68ab29df2f"), // Polock
+    new Types.ObjectId("648efd2bc529ad68ab29e05f"), // InformE
+    new Types.ObjectId("648efdf3c529ad68ab29e0ae"), // HeyGuide!
+    new Types.ObjectId("648efed6c529ad68ab29e10f"), // ICAS (Improving communication among students)
+    new Types.ObjectId("648f0035c529ad68ab29e279"), // SchoMasters
+]
 
 @injectable()
 export class GICService {
@@ -559,6 +555,9 @@ export class GICService {
     
     // voting
     async voteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
+        if (TEAMS_TO_VOTE.every(x => !x.equals(ideaId))) {
+            throw new Error(`Cannot vote for this team`)
+        }
         return await this.voteLock.acquire(userId.toString(), async () => {
             const [userNotCheckin, teamNotExist, userAlreadyVoted, voteMaxLimit] = await Promise.all([
                 ( // if the user hasn't check in
@@ -605,6 +604,9 @@ export class GICService {
     }
     
     async unvoteTeam(userId: Types.ObjectId, ideaId: Types.ObjectId) {
+        if (TEAMS_TO_VOTE.every(x => !x.equals(ideaId))) {
+            throw new Error(`Cannot vote for this team`)
+        }
         return await this.voteLock.acquire(userId.toString(), async () => {
             const [teamNotExist, userHasNotVoted] = await Promise.all([
                 ( // if the requested team does not exist
