@@ -7607,3 +7607,1349 @@ export function SEMINAR_2_3O_MINUTE_REMINDER_EMAIL(
 
     `
 }
+
+export function IDEA_SHOWCASE_1_DAY_REMINDER_EMAIL(
+    receiver: string
+) {
+    return `
+    <div dir="ltr">
+	<span
+		id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920m_-1934161694756813377m_-7594954503336563888m_-2568508069012915182m_4624988801002304115m_-3156134251510025338m_6316518805007134942m_-33009856506600168m_-8109249209287040672gmail-docs-internal-guid-8ae7ed1c-7fff-1077-63f5-e6345498190e"
+		><div dir="ltr" style="margin-left: 0pt" align="center">
+			<table style="border: none; border-collapse: collapse">
+				<colgroup>
+					<col width="697" />
+				</colgroup>
+				<tbody>
+					<tr>
+						<td style="vertical-align: top; overflow: hidden">
+							<p
+								dir="ltr"
+								style="line-height: 1.2; margin-top: 0pt; margin-bottom: 0pt">
+								<span
+									style="
+										font-size: 11pt;
+										font-family: 'Google Sans', sans-serif;
+										color: rgb(32, 33, 36);
+										background-color: transparent;
+										font-variant-numeric: normal;
+										font-variant-east-asian: normal;
+										font-variant-alternates: normal;
+									"
+									><span
+										style="
+											border: none;
+											display: inline-block;
+											overflow: hidden;
+											width: 698px;
+											height: 237px;
+										"
+										><img
+											src="https://lh3.googleusercontent.com/drive-viewer/AFGJ81oBexBUkKU7FIVY_c3gOkN5KKr-lYSzp8mYkCz5zQj5GoSZ-sR4LKduSnINaulWm6ozLXF49UbUMRec2hGFxAVhkscVsQ=w1920-h961"
+											alt="image.png"
+											width="699"
+											height="237"
+											style="margin-right: 0px"
+											data-image-whitelisted=""
+											class="CToWUd a6T"
+											data-bit="iit"
+											tabindex="0" /> </span
+								></span>
+							</p>
+							<div
+								class="a6S"
+								dir="ltr"
+								style="opacity: 0.01; left: 652.484px; top: 199px">
+								<div
+									id=":1v6"
+									class="T-I J-J5-Ji aQv T-I-ax7 L3 a5q"
+									role="button"
+									tabindex="0"
+									aria-label="Download attachment image.png"
+									jslog="91252; u014N:cOuCgd,Kr2w4b,xr6bB; 4:WyIjbXNnLWE6ci00NjQyMTEyMjgxMTE2MTQwNTc4IixudWxsLFtdXQ.."
+									data-tooltip-class="a1V"
+									data-tooltip="Download">
+									<div class="akn">
+										<div class="aSK J-J5-Ji aYr"></div>
+									</div>
+								</div>
+								<div
+									id=":1v7"
+									class="T-I J-J5-Ji aQv T-I-ax7 L3 a5q"
+									role="button"
+									tabindex="0"
+									aria-label="Add attachment to Drive image.png"
+									jslog="54185; u014N:cOuCgd,xr6bB; 1:WyIjdGhyZWFkLWE6ci00NjUwMzc0Njk3MTk5NTYxMjE4IixudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxbXV0.; 4:WyIjbXNnLWE6ci00NjQyMTEyMjgxMTE2MTQwNTc4IixudWxsLFtdXQ..; 43:WyJpbWFnZS9wbmciLDQxMTA5Ml0."
+									data-tooltip-class="a1V"
+									data-tooltip="Add to Drive">
+									<div class="akn">
+										<div class="wtScjd J-J5-Ji aYr XG">
+											<div class="T-aT4" style="display: none">
+												<div></div>
+												<div class="T-aT4-JX"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id=":1v9"
+									class="T-I J-J5-Ji aQv T-I-ax7 L3 a5q"
+									role="button"
+									tabindex="0"
+									aria-label="Save a copy to Photos"
+									jslog="54186; u014N:cOuCgd,xr6bB; 1:WyIjdGhyZWFkLWE6ci00NjUwMzc0Njk3MTk5NTYxMjE4IixudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxbXV0.; 4:WyIjbXNnLWE6ci00NjQyMTEyMjgxMTE2MTQwNTc4IixudWxsLFtdXQ..; 43:WyJpbWFnZS9wbmciLDQxMTA5Ml0."
+									data-tooltip-class="a1V"
+									data-tooltip="Save a copy to Photos">
+									<div class="akn">
+										<div class="J-J5-Ji aYr akS">
+											<div class="T-aT4" style="display: none">
+												<div></div>
+												<div class="T-aT4-JX"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056:115"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056:116"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056:118"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416:1ak"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416:1al"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416:1an"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460:64l"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460:64m"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460:64o"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954:1bk"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954:1bl"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954:1bn"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924:1ml"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924:1mm"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924:1mo"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064:az2"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064:az3"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064:az5"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713:2kw"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713:2kx"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713:2kz"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824:aq8"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824:aq9"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824:aqb"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448:2jt"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448:2ju"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448:2jw"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026:ula"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026:ulb"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026:uld"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920:2qc"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920:2qd"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920:2qf"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div dir="ltr" style="opacity: 0.01">
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920m_-1934161694756813377m_-7594954503336563888m_-2568508069012915182m_4624988801002304115m_-3156134251510025338:69u"
+									role="button"
+									aria-label="Download attachment image.png">
+									<div><div></div></div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920m_-1934161694756813377m_-7594954503336563888m_-2568508069012915182m_4624988801002304115m_-3156134251510025338:69v"
+									role="button"
+									aria-label="Add attachment to Drive image.png">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div
+									id="m_-2761030115794188056m_7158573559926132776m_-5135839580185802412m_8453455423576646228m_-4836034643749245000m_-2866088130077848574m_5651059891311247382m_-6678611498037982416m_-7359242913170741097m_6959869984178767616m_-5204224724223243460m_8547990654564590607m_-4950256737232121122m_-8855140196745707954m_1571738345138465560m_-7245619203027857574m_-8587399173516265924m_1807733634597748691m_2630983951910396064m_-8874052193673562173m_-5572269842676354713m_-1135207554348494915m_6292912265874281824m_-238922540227333448m_-6226199907652576094m_-2106880031808774276m_8270289340422095026m_-1121791470051374188m_237812766724536027m_880577506136178920m_-1934161694756813377m_-7594954503336563888m_-2568508069012915182m_4624988801002304115m_-3156134251510025338:69x"
+									role="button"
+									aria-label="Save a copy to Photos">
+									<div>
+										<div>
+											<div style="display: none">
+												<div></div>
+												<div></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<p></p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<br />
+		<div dir="ltr" style="margin-left: 0pt" align="center">
+			<table style="border: none; border-collapse: collapse">
+				<colgroup>
+					<col width="697" />
+				</colgroup>
+				<tbody>
+					<tr style="height: 0pt">
+						<td
+							style="
+								vertical-align: top;
+								background-color: rgb(243, 243, 243);
+								padding: 72pt;
+								padding-bottom: 36pt;
+								overflow: hidden;
+							">
+							<p
+								dir="ltr"
+								style="
+									line-height: 2.16;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 0pt;
+									padding: 0pt 0pt 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Xin chào </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>${receiver}</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>,</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 2.16;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 0pt;
+									padding: 0pt 0pt 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Sự kiện </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>GIC 2023: Idea Showcase</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									đang rất gần kề, ban tổ chức </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>GDSC Idea Contest 2023: THiNK</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									chân thành cảm ơn bạn đã đăng ký tham gia sự kiện. Những đội
+									thi đang dần lộ diện, những ý tưởng đột phá và những giải pháp
+									đang chờ được trình bày. Còn chần chờ gì nữa mà không chuẩn bị
+									tham gia sự kiện!</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 2.16;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>GIC 2023: Idea Showcase:</span
+								>
+							</p>
+							<ul
+								style="
+									margin-top: 0px;
+									margin-bottom: 0px;
+									padding-inline-start: 48px;
+								">
+								<li
+									dir="ltr"
+									style="
+										list-style-type: disc;
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.8;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										"
+										role="presentation">
+										<span
+											style="
+												font-size: 12pt;
+												font-family: Arial;
+												color: rgb(0, 0, 0);
+												background-color: transparent;
+												font-weight: 700;
+												font-style: normal;
+												font-variant: normal;
+												text-decoration: none;
+											"
+											>Thời gian</span
+										><span
+											style="
+												font-size: 12pt;
+												font-family: Arial;
+												color: rgb(0, 0, 0);
+												background-color: transparent;
+												font-weight: 400;
+												font-style: normal;
+												font-variant: normal;
+												text-decoration: none;
+											"
+											>: 08:00 - 12:15 ngày 25/06/2023</span
+										>
+									</p>
+								</li>
+								<li
+									dir="ltr"
+									style="
+										list-style-type: disc;
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.8;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										"
+										role="presentation">
+										<span
+											style="
+												font-size: 12pt;
+												font-family: Arial;
+												color: rgb(0, 0, 0);
+												background-color: transparent;
+												font-weight: 700;
+												font-style: normal;
+												font-variant: normal;
+												text-decoration: none;
+											"
+											>Địa điểm:</span
+										><span
+											style="
+												font-size: 12pt;
+												font-family: Arial;
+												color: rgb(0, 0, 0);
+												background-color: transparent;
+												font-weight: 400;
+												font-style: normal;
+												font-variant: normal;
+												text-decoration: none;
+											">
+											Nhà văn hóa sinh viên Đại học Quốc gia TP.HCM - đường
+											Quảng Trường Sáng Tạo, phường Đông Hòa, thành phố Dĩ An,
+											tỉnh Bình Dương (</span
+										><a
+											href="https://drive.google.com/file/d/1ovIf9PFC-m461edzGZXCe0qEv4ATTrkv/view?usp=sharing"
+											style="text-decoration: none"
+											hspace="streak-track"
+											><span
+												style="
+													font-size: 12pt;
+													font-family: Arial;
+													color: rgb(17, 85, 204);
+													background-color: transparent;
+													font-weight: 400;
+													font-style: normal;
+													font-variant: normal;
+													text-decoration: underline;
+													text-decoration-skip-ink: none;
+												"
+												>sơ đồ nhà văn
+												<span
+													zeum4c14="PR_6_0"
+													data-ddnwab="PR_6_0"
+													aria-invalid="spelling"
+													class="LI ng"
+													>hoá</span
+												>
+												sinh viên</span
+											></a
+										><span
+											style="
+												font-size: 12pt;
+												font-family: Arial;
+												color: rgb(0, 0, 0);
+												background-color: transparent;
+												font-weight: 400;
+												font-style: normal;
+												font-variant: normal;
+												text-decoration: none;
+											"
+											>)</span
+										>
+									</p>
+								</li>
+							</ul>
+							<p
+								dir="ltr"
+								style="
+									line-height: 2.16;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Ngoài ra, thông tin chi tiết và những sự kiện trong chuỗi
+									cuộc thi </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>GDSC Idea Contest 2023: THiNK</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									đã được đăng tải tại website cuộc thi </span
+								><a
+									href="http://gdsc.app/"
+									style="text-decoration: none"
+									hspace="streak-track"
+									><span
+										style="
+											font-size: 12pt;
+											font-family: Arial;
+											color: rgb(17, 85, 204);
+											background-color: transparent;
+											font-weight: 400;
+											font-style: normal;
+											font-variant: normal;
+											text-decoration: underline;
+											text-decoration-skip-ink: none;
+											vertical-align: baseline;
+											white-space: pre-wrap;
+										"
+										>gdsc.app</span
+									></a
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>. Bạn có thể xem thêm nhé!</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.8;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Ngoài ra, thông tin chi tiết và những sự kiện trong chuỗi
+									cuộc thi </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>GDSC Idea Contest 2023: THiNK</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									">
+									đã được đăng tải tại website cuộc thi
+									<a
+										href="http://gdsc.app"
+										target="_blank"
+										data-saferedirecturl="https://www.google.com/url?q=http://gdsc.app&amp;source=gmail&amp;ust=1687683349196000&amp;usg=AOvVaw0npazauUXmt_AFZ5wecIsP"
+										hspace="streak-track"
+										>gdsc.app</a
+									>. Bạn có thể xem thêm nhé!</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.8;
+									text-align: center;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<a
+									href="https://streaklinks.com/Bjpa0PrxMU27lQNamQT-Uk6h/https%3A%2F%2Fgdsc.app%2Fevent%2Fidea-showcase"
+									style="
+										display: block;
+										padding: 0.75rem 1.25rem;
+										border-radius: 0.5rem;
+										color: rgb(255, 255, 255);
+										text-transform: uppercase;
+										font-size: 1rem;
+										text-decoration-line: none;
+										background-color: rgba(232, 99, 87, 0.906);
+										margin: 0.5rem auto;
+										width: fit-content;
+										font-family: Arial, sans-serif;
+									"
+									target="_blank"
+									data-saferedirecturl="https://www.google.com/url?q=https://streaklinks.com/Bjpa0PrxMU27lQNamQT-Uk6h/https%253A%252F%252Fgdsc.app%252Fevent%252Fidea-showcase&amp;source=gmail&amp;ust=1687683349196000&amp;usg=AOvVaw3QcmkL0usRycaNDxhRj6Qx"
+									hspace="streak-track"
+									><b>GIC 2023: Idea Showcase</b></a
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.8;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Đặc biệt trong sự kiện, ban tổ chức chúng mình sẽ còn có thêm
+									nhiều phần quà thú vị cho các bạn tham gia thêm vào đó là
+									những gian hàng hết sức thú vị từ nhà tài trợ </span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 700;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>BEAMIN Tech</span
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>, đừng lỡ hẹn bạn nhé!</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.8;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Hẹn gặp bạn ở ngày chung kết.</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.8;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 10pt;
+								">
+								<span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(0, 0, 0);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: none;
+									"
+									>Cảm ơn./.</span
+								>
+							</p>
+							<p
+								dir="ltr"
+								style="
+									line-height: 2.38464;
+									text-align: justify;
+									margin-top: 0pt;
+									margin-bottom: 0pt;
+								">
+								<span class="gmail_signature_prefix" style="text-align: start"
+									>--</span
+								><br style="text-align: start" />
+							</p>
+							<div dir="ltr" class="gmail_signature">
+								<div dir="ltr">
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.9872;
+											text-align: justify;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										">
+										<span
+											style="
+												background-color: transparent;
+												color: rgb(66, 133, 244);
+												font-family: 'Google Sans', sans-serif;
+												font-size: 13pt;
+												font-weight: 700;
+											"
+											>Google Developer Student Club - HCMUT</span
+										><br />
+									</p>
+									<p dir="ltr">
+										<span
+											style="
+												background-color: transparent;
+												color: rgb(85, 85, 85);
+												font-family: 'Google Sans', sans-serif;
+												font-size: 11pt;
+											"
+											>Ho Chi Minh City University of Technology</span
+										>
+									</p>
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.5;
+											text-align: justify;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										">
+										<span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(85, 85, 85);
+												background-color: transparent;
+												font-weight: 700;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>Email:</span
+										><span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(85, 85, 85);
+												background-color: transparent;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>&nbsp;</span
+										><span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(17, 85, 204);
+												background-color: transparent;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											><a href="mailto:external@gdschcmut.dev" target="_blank"
+												>external@gdschcmut.dev</a
+											></span
+										>
+									</p>
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.5;
+											text-align: justify;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										">
+										<span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(85, 85, 85);
+												background-color: transparent;
+												font-weight: 700;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>Facebook:</span
+										><a
+											href="https://streaklinks.com/Bjpa0PjJyY_8GKiY4QrQggQZ/https%3A%2F%2Fwww.facebook.com%2Fdscxhcmut%2F"
+											target="_blank"
+											data-saferedirecturl="https://www.google.com/url?q=https://streaklinks.com/Bjpa0PjJyY_8GKiY4QrQggQZ/https%253A%252F%252Fwww.facebook.com%252Fdscxhcmut%252F&amp;source=gmail&amp;ust=1687683349196000&amp;usg=AOvVaw10AaRk6vHQnt1oMmX1W0Ax"
+											hspace="streak-track"
+											><span
+												style="
+													font-size: 10pt;
+													font-family: 'Google Sans', sans-serif;
+													background-color: transparent;
+													font-weight: 700;
+													font-style: italic;
+													vertical-align: baseline;
+												"
+												>&nbsp;</span
+											><span
+												style="
+													font-size: 10pt;
+													font-family: 'Google Sans', sans-serif;
+													background-color: transparent;
+													font-style: italic;
+													vertical-align: baseline;
+												"
+												>https://www.<wbr />facebook.com/dscxhcmut/</span
+											></a
+										>
+									</p>
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.5;
+											text-align: justify;
+											margin-top: 0pt;
+											margin-bottom: 0pt;
+										">
+										<span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(85, 85, 85);
+												background-color: transparent;
+												font-weight: 700;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>Address:</span
+										><span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												color: rgb(85, 85, 85);
+												background-color: transparent;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>&nbsp;268 Ly Thuong Kiet, Ward 14, District 10, Ho Chi
+											Minh City</span
+										>
+									</p>
+									<p
+										dir="ltr"
+										style="
+											line-height: 1.9872;
+											text-align: justify;
+											margin-top: 10pt;
+											margin-bottom: 10pt;
+										">
+										<img
+											src="https://lh3.googleusercontent.com/50_mjsumDlf3TxYZftBmOzknUCjZVRutjRs0vLOV3SdtYeSA23aHaxXOXEKuYjX9BnHCkdA8j7FYd_89LWWQFKWt7GOsXe63bsdnd7ebhozFn3XgUumUwMrXom43yk-9-KPGWsULONmi2WElr8X6bR-xCwUSzDKHaAWLuezjcU7C5kpl52zKrhJLWcCpf-g"
+											width="439"
+											height="53"
+											style="
+												background-color: transparent;
+												font-family: Arial;
+												font-size: 11pt;
+												margin-left: 0px;
+												margin-top: 0px;
+											"
+											class="CToWUd"
+											data-bit="iit" />
+									</p>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr style="height: 90pt">
+						<td
+							style="
+								vertical-align: top;
+								background-color: rgb(227, 242, 253);
+								padding: 18pt;
+								overflow: hidden;
+							">
+							<br />
+							<p
+								dir="ltr"
+								style="
+									line-height: 1.2;
+									text-align: center;
+									margin-top: 0pt;
+									margin-bottom: 0pt;
+								">
+								<span
+									style="
+										font-size: 11pt;
+										font-family: 'Google Sans', sans-serif;
+										color: rgb(255, 255, 255);
+										background-color: transparent;
+										font-variant-numeric: normal;
+										font-variant-east-asian: normal;
+										font-variant-alternates: normal;
+										text-decoration-line: underline;
+									"
+									><span
+										style="
+											border: none;
+											display: inline-block;
+											overflow: hidden;
+											width: 101px;
+											height: 48px;
+										"
+										><img
+											src="https://lh3.googleusercontent.com/drive-viewer/AFGJ81o4cmsBDB9UXFovPFdKk-2zzhrFlkcf9WwLP14WzFhJBGwUKXWeSDxZpYc6J0hC0DIoTL_y4UQWiVDNVo7_mcaFz38w=w1920-h961"
+											alt="image.png"
+											width="99"
+											height="48"
+											data-image-whitelisted=""
+											class="CToWUd"
+											data-bit="iit" /></span></span
+								><font color="#888888"
+									><span
+										style="
+											font-size: 11pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(255, 255, 255);
+											background-color: transparent;
+											font-variant-numeric: normal;
+											font-variant-east-asian: normal;
+											font-variant-alternates: normal;
+											text-decoration-line: underline;
+										"
+										><br /><br /></span
+								></font>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table></div></span
+	><font color="#888888"
+		><div dir="ltr" data-smartmail="gmail_signature"></div
+	></font>
+</div>
+
+    `
+}
