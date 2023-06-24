@@ -1046,7 +1046,7 @@ export class GICController extends Controller {
                     DAY_5_REGISTRATION_SUCCESSFUL_EMAIL(
                         user.name,
                         aes256_encrypt(
-                            JSON.stringify({ userId: userId.toString }),
+                            JSON.stringify({ userId: userId.toString() }),
                         ),
                     ),
                 );

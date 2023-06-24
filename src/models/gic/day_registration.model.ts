@@ -13,6 +13,7 @@ export type DayRegDocument = Document & {
     status: DayRegStatus;
     checkinAt: number;
     invitedBy: Types.ObjectId;
+    ideaBoardId: number
 };
 
 const dayRegSchema = new Schema<DayRegDocument>({
@@ -22,6 +23,7 @@ const dayRegSchema = new Schema<DayRegDocument>({
     status: { type: String, enum: DayRegStatus },
     checkinAt: Number,
     invitedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    ideaBoardId: { type: Number, unique: true, required: false }
 });
 
 const DayRegModel = mongoose.model<DayRegDocument>(
