@@ -8953,3 +8953,753 @@ export function IDEA_SHOWCASE_1_DAY_REMINDER_EMAIL(
 
     `
 }
+
+export function THANK_YOU_EMAIL(
+    receiver: string
+) {
+    return `
+    <div
+	id=":1hc"
+	class="Am Al editable LW-avf tS-tW"
+	hidefocus="true"
+	aria-label="Message Body"
+	g_editable="true"
+	role="textbox"
+	aria-multiline="true"
+	contenteditable="true"
+	tabindex="1"
+	itacorner="6,7:1,1,0,0"
+	spellcheck="false"
+	style="direction: ltr; min-height: 652px"
+	aria-owns=":1jy"
+	aria-controls=":1jy"
+	aria-expanded="false">
+	<div dir="ltr" align="center" style="margin-left: 0pt">
+		<table style="border: none; border-collapse: collapse">
+			<colgroup>
+				<col width="816" />
+			</colgroup>
+			<tbody>
+				<tr style="height: 209.25pt">
+					<td style="vertical-align: top; overflow: hidden">
+						<p
+							dir="ltr"
+							style="line-height: 1.2; margin-top: 0pt; margin-bottom: 0pt">
+							<span
+								style="
+									font-size: 11pt;
+									font-family: 'Google Sans', sans-serif;
+									color: rgb(32, 33, 36);
+									background-color: transparent;
+									font-variant-numeric: normal;
+									font-variant-east-asian: normal;
+									font-variant-alternates: normal;
+								"
+								><span
+									style="
+										border: none;
+										display: inline-block;
+										overflow: hidden;
+										width: 816px;
+										height: 276px;
+									"
+									><img
+										src="https://lh3.googleusercontent.com/4FH01t7UqSiT3fe35bqcmamlvQK1Oi2gAMTUpzPMaVZlgkWsWb-ZqnFD5MNcGEjDONfnABVaJs7O1PS_u_g7hQdx_0UQBlnaJ0o6T94xikxWLrXMbnDw9i3VrJ9U9i5eRz7ymJKucBQCaBnMar_8pHVPbtFIM72Kth8kDnTC5ehMF3-MvyCskPRuIUNllkc"
+										width="816"
+										height="276"
+										style="margin-left: 0px; margin-top: 0px" /></span
+							></span>
+						</p>
+						<div dir="ltr" style="opacity: 0.01">
+							<div
+								id="m_-2185341078707151648m_-4896764194897145262m_4393872819365453353m_7953951560543563213:xl"
+								role="button"
+								aria-label="Download attachment">
+								<div><div></div></div>
+							</div>
+						</div>
+						<p></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br />
+	<div dir="ltr" align="center" style="margin-left: 0pt">
+		<table style="border: none; border-collapse: collapse">
+			<colgroup>
+				<col width="816" />
+			</colgroup>
+			<tbody>
+				<tr style="height: 0pt">
+					<td
+						style="
+							vertical-align: top;
+							background-color: rgb(243, 243, 243);
+							padding: 72pt;
+							overflow: hidden;
+						">
+						<p
+							dir="ltr"
+							style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Thân gửi </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>${receiver}</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>,</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="line-height: 1.2; margin-top: 0pt; margin-bottom: 10pt">
+							<b
+								style="font-weight: normal"
+								id="gmail-docs-internal-guid-b5427205-7fff-0445-7b0b-9bd5e1c65fe4"
+								><br
+							/></b>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Đối ngoại Câu lạc bộ </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Google Developer Student Club - HCMUT (GDSC HCMUT)</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: rgb(255, 255, 255);
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>,</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								Trường Đại học Bách khoa - Đại học Quốc gia TP.HCM</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								xin gửi lời chào thân mật và lời cảm ơn chân thành với sự đồng
+								hành của </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>${receiver}</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								cùng </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>GDSC HCMUT</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								trong suốt thời gian qua.</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Cuộc thi </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>“GDSC Idea Contest 2023: THiNK” (GIC)</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								do </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>GDSC HCMUT</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								tổ chức đã diễn ra thành công tốt đẹp và để lại nhiều dư âm tốt
+								đẹp. Để làm được điều này không thể không kể đến sự tham gia
+								nhiệt tình, tinh thần cạnh tranh lành mạnh của toàn thể các thí
+								sinh.</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Toàn thể thành viên </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>GDSC HCMUT</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								xin gửi lời cảm ơn sâu sắc đến </span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 700;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>${receiver}</span
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								">
+								vì đã lựa chọn GIC là nơi để tỏa sáng và thể hiện niềm đam mê
+								của bản thân. Hành trình bạn trải qua, GDSC HCMUT mong rằng đó
+								là những hành trang đẹp, bổ ích hỗ trợ cho bạn trong thời gian
+								sắp tới. Kết quả ngày hôm nay có thể không như bạn mong muốn
+								nhưng qua quá trình bạn tham gia, chúng mình tin rằng trong một
+								ngày không xa, bạn sẽ tỏa sáng. Các bạn có thể xem thêm các hình
+								ảnh, bài viết tổng kết sự kiện tại trang fanpage </span
+							><a
+								href="https://www.facebook.com/dscxhcmut"
+								style="text-decoration: none"
+								hspace="streak-track"
+								><span
+									style="
+										font-size: 12pt;
+										font-family: Arial;
+										color: rgb(17, 85, 204);
+										background-color: transparent;
+										font-weight: 400;
+										font-style: normal;
+										font-variant: normal;
+										text-decoration: underline;
+										text-decoration-skip-ink: none;
+									"
+									>facebook.com/dscxhcmut</span
+								></a
+							><span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>.&nbsp;</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Một lần nữa, GDSC HCMUT chân thành cảm ơn bạn đã tham gia và
+								nhiệt huyết hết mình với cuộc thi. Chúng mình mong rằng bạn vẫn
+								luôn giữ lấy tinh thần sáng tạo, cùng với những kinh nghiệm đã
+								trải qua và tiếp bước vững vàng. Hy vọng sẽ được đồng hành cùng
+								bạn trong các hoạt động sắp tới.</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Kính chúc bạn lời chúc sức khỏe và gặt hái nhiều thành công
+								trong tương lai!</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.8;
+								text-align: justify;
+								margin-top: 0pt;
+								margin-bottom: 10pt;
+							">
+							<span
+								style="
+									font-size: 12pt;
+									font-family: Arial;
+									color: rgb(0, 0, 0);
+									background-color: transparent;
+									font-weight: 400;
+									font-style: normal;
+									font-variant: normal;
+									text-decoration: none;
+								"
+								>Trân trọng./</span
+							>
+						</p>
+						<p
+							dir="ltr"
+							style="line-height: 1.2; margin-top: 0pt; margin-bottom: 10pt">
+							<span class="gmail_signature_prefix">--</span><br />
+						</p>
+						<div dir="ltr" class="gmail_signature">
+							<div dir="ltr">
+								<p
+									dir="ltr"
+									style="
+										line-height: 1.9872;
+										text-align: justify;
+										margin-top: 0pt;
+										margin-bottom: 0pt;
+									">
+									<span
+										style="
+											background-color: transparent;
+											color: rgb(66, 133, 244);
+											font-family: 'Google Sans', sans-serif;
+											font-size: 13pt;
+											font-weight: 700;
+										"
+										>Google Developer Student Club - HCMUT</span
+									><br />
+								</p>
+								<p dir="ltr">
+									<span
+										style="
+											background-color: transparent;
+											color: rgb(85, 85, 85);
+											font-family: 'Google Sans', sans-serif;
+											font-size: 11pt;
+										"
+										>Ho Chi Minh City University of Technology</span
+									>
+								</p>
+								<p
+									dir="ltr"
+									style="
+										line-height: 1.5;
+										text-align: justify;
+										margin-top: 0pt;
+										margin-bottom: 0pt;
+									">
+									<span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(85, 85, 85);
+											background-color: transparent;
+											font-weight: 700;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										>Email:</span
+									><span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(85, 85, 85);
+											background-color: transparent;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										>&nbsp;</span
+									><span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(17, 85, 204);
+											background-color: transparent;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										><a href="mailto:external@gdschcmut.dev" target="_blank"
+											>external@gdschcmut.dev</a
+										></span
+									>
+								</p>
+								<p
+									dir="ltr"
+									style="
+										line-height: 1.5;
+										text-align: justify;
+										margin-top: 0pt;
+										margin-bottom: 0pt;
+									">
+									<span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(85, 85, 85);
+											background-color: transparent;
+											font-weight: 700;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										>Facebook:</span
+									><a
+										href="https://streak-link.com/BdxGwFh8fK8-stME1wcDbGuW/https%3A%2F%2Fwww.facebook.com%2Fdscxhcmut%2F?email=external%40gdschcmut.dev"
+										hspace="streak-track"
+										target="_blank"
+										><span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												background-color: transparent;
+												font-weight: 700;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>&nbsp;</span
+										><span
+											style="
+												font-size: 10pt;
+												font-family: 'Google Sans', sans-serif;
+												background-color: transparent;
+												font-style: italic;
+												vertical-align: baseline;
+											"
+											>https://www.facebook.com/dscxhcmut/</span
+										></a
+									>
+								</p>
+								<p
+									dir="ltr"
+									style="
+										line-height: 1.5;
+										text-align: justify;
+										margin-top: 0pt;
+										margin-bottom: 0pt;
+									">
+									<span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(85, 85, 85);
+											background-color: transparent;
+											font-weight: 700;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										>Address:</span
+									><span
+										style="
+											font-size: 10pt;
+											font-family: 'Google Sans', sans-serif;
+											color: rgb(85, 85, 85);
+											background-color: transparent;
+											font-style: italic;
+											vertical-align: baseline;
+										"
+										>&nbsp;268 Ly Thuong Kiet, Ward 14, District 10, Ho Chi Minh
+										City</span
+									>
+								</p>
+								<p
+									dir="ltr"
+									style="
+										line-height: 1.9872;
+										text-align: justify;
+										margin-top: 10pt;
+										margin-bottom: 10pt;
+									">
+									<img
+										src="https://lh3.googleusercontent.com/50_mjsumDlf3TxYZftBmOzknUCjZVRutjRs0vLOV3SdtYeSA23aHaxXOXEKuYjX9BnHCkdA8j7FYd_89LWWQFKWt7GOsXe63bsdnd7ebhozFn3XgUumUwMrXom43yk-9-KPGWsULONmi2WElr8X6bR-xCwUSzDKHaAWLuezjcU7C5kpl52zKrhJLWcCpf-g"
+										width="439"
+										height="53"
+										style="
+											background-color: transparent;
+											font-family: Arial;
+											font-size: 11pt;
+											margin-left: 0px;
+											margin-top: 0px;
+										" />
+								</p>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr style="height: 90pt">
+					<td
+						style="
+							vertical-align: top;
+							background-color: rgb(227, 242, 253);
+							padding: 18pt;
+							overflow: hidden;
+						">
+						<br />
+						<p
+							dir="ltr"
+							style="
+								line-height: 1.2;
+								text-align: center;
+								margin-top: 0pt;
+								margin-bottom: 0pt;
+							">
+							<span
+								style="
+									font-size: 11pt;
+									font-family: 'Google Sans', sans-serif;
+									color: rgb(255, 255, 255);
+									background-color: transparent;
+									font-variant-numeric: normal;
+									font-variant-east-asian: normal;
+									font-variant-alternates: normal;
+									text-decoration-line: underline;
+								"
+								><span
+									style="
+										border: none;
+										display: inline-block;
+										overflow: hidden;
+										width: 101px;
+										height: 48px;
+									"
+									><img
+										src="https://lh4.googleusercontent.com/kGALsmB6g8G7kxrXtF1eM898HulBxm12ZNUpucjzOGQ2Nw8umk0jPm5RWhPHv21Mj3tEyniq8AUVuSsFzdMClJgWPbLxDYtZMoO-z9qt6-RqD76LGLsubrMoCqxbBo-viCcESTZ9Ip1Rm5cDCwfeDnWCPu8ZDIpycGT8tRo4R1l6v0T10Wg1aW6RiLpQrxw"
+										width="98.72953986652618"
+										height="48"
+										style="margin-left: 0px; margin-top: 0px" /></span></span
+							><span
+								style="
+									font-size: 11pt;
+									font-family: 'Google Sans', sans-serif;
+									color: rgb(255, 255, 255);
+									background-color: transparent;
+									font-variant-numeric: normal;
+									font-variant-east-asian: normal;
+									font-variant-alternates: normal;
+									text-decoration-line: underline;
+								"
+								><br /><br
+							/></span>
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div><br /></div>
+	<br />
+</div>
+    `
+}

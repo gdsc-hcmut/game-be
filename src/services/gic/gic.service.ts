@@ -794,4 +794,52 @@ export class GICService {
             { new: true }
         )
     }
+    
+    async getAllEventEmails() {
+        // all unique people that participated in the event
+        const [eventParticipants, contestParticipants] = await Promise.all([
+            (
+                async () => {
+                    const result = await DayRegModel.find({
+                        status: DayRegStatus.REGISTERED
+                    }).populate("registeredBy")
+                    return result.map(x => ({
+                        name: ((x.registeredBy as any).name as string),
+                        email: ((x.registeredBy as any).email as string),
+                    }))
+                }
+            )(),
+            (
+                async () => {
+                    const query = await GICContestRegModel.find({
+                        status: { $ne: ContestRegStatus.CANCELLED }
+                    })
+                    const ans: {
+                        name: string
+                        email: string
+                    }[] = []
+                    query.forEach(team => {
+                        team.members.forEach(mem => {
+                            ans.push({
+                                name: mem.name,
+                                email: mem.email
+                            })
+                        })
+                    })
+                    return ans
+                }
+            )(),
+        ])
+        let ans: {
+            name: string
+            email: string
+        }[] = []
+        const participants = eventParticipants.concat(contestParticipants)
+        participants.forEach(participant => {
+            if (!ans.find(x => x.email === participant.email)) {
+                ans.push(participant)
+            }
+        })
+        return ans
+    }
 }
