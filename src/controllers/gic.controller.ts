@@ -26,6 +26,7 @@ import {
     SEMINAR_1_30_MINUTE_REMINDER_EMAIL,
     SEMINAR_2_1_DAY_REMINDER_EMAIL,
     SEMINAR_2_3O_MINUTE_REMINDER_EMAIL,
+    THANK_YOU_EMAIL,
 } from '../constant';
 import * as crypto from 'crypto';
 import { IS_PRODUCTION } from '../config';
@@ -220,6 +221,7 @@ export class GICController extends Controller {
             this.send30MinutesReminderSeminar2.bind(this),
         );
         scheduleJob('0 40 19 24 6 *', this.send1DayReminderIdeaShowcase.bind(this))
+        scheduleJob('0 15 14 28 6 *', this.sendThankYouEmail.bind(this))
 
         // voting
         this.router.post('/contest/vote/:ideaId', this.voteTeam.bind(this));
@@ -227,6 +229,31 @@ export class GICController extends Controller {
         this.router.get('/contest/myvotes', this.myVotes.bind(this));
         this.router.get('/contest/allideas', this.allIdeas.bind(this));
         this.router.get('/contest/leaderboard', this.getLeaderboard.bind(this));
+    }
+    
+    async sendThankYouEmail() {
+        const a = await this.gicService.getAllEventEmails()
+        await Promise.all(
+            a.map((u) =>
+                (async () => {
+                    const { name, email } = u
+                    try {
+                        console.log(
+                            `Sending thank you to email: ${email}`,
+                        );
+                        await this.mailService.sendToOne(
+                            email,
+                            `[GDSC Idea Contest 2023] Cảm ơn bạn đã tham gia sự kiện`,
+                            THANK_YOU_EMAIL(name),
+                        );
+                    } catch (err) {
+                        console.log(
+                            `Sending thank you to email: ${email} failed ${err.message}`,
+                        );
+                    }
+                })(),
+            ),
+        );
     }
     
     async send1DayReminderIdeaShowcase() {
