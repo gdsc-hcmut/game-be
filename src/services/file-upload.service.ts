@@ -109,7 +109,7 @@
 //                     const file = this.bucket.file(refName);
 //                     await file.delete();
 //                     return true;
-//                 })(),
+//                 })()
 //             ),
 //         );
 
