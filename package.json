@@ -8,7 +8,7 @@
         "start": "node dist/index.js",
         "ts": "ts-node src/index.ts",
         "dev": "cross-env WORKING_DIR=. nodemon",
-        "build:local": "tsc",
+        "build": "tsc",
         "docker:build": "docker build -t game-be:latest .",
         "docker:run": "docker run -v $(pwd)/.env:/app/.env -v $(pwd)/googleServiceAccountKey.json:/app/googleServiceAccountKey.json -p 1201:1201 --name game-be game-be:latest",
         "deploy:adddummygit": "git init && git add . && git commit -m \"* Deploy\"",
