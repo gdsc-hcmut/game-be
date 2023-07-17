@@ -13,7 +13,7 @@ import { UploadValidator } from '../lib/upload-validator/upload-validator';
 import { UploadIdeaDescriptionValidation } from '../lib/upload-validator/upload-validator-strategies';
 import { MailService } from '../services/mail.service';
 import { USER_ROLES } from '../models/user.model';
-import { FileUploadService } from '../services/file-upload.service';
+// import { FileUploadService } from '../services/file-upload.service';
 import { GICAchievementService } from '../services/gic/gic_achievement.service';
 import { PassThrough } from 'stream';
 import QRCode from 'qrcode';
@@ -107,8 +107,8 @@ export class GICController extends Controller {
         @inject(ServiceType.GIC) private gicService: GICService,
         @inject(ServiceType.User) private userService: UserService,
         @inject(ServiceType.Mail) private mailService: MailService,
-        @inject(ServiceType.FileUpload)
-        private fileUploadService: FileUploadService,
+        // @inject(ServiceType.FileUpload)
+        // private fileUploadService: FileUploadService,
         @inject(ServiceType.GICAchievement)
         private gicAchievementService: GICAchievementService,
     ) {
@@ -138,12 +138,12 @@ export class GICController extends Controller {
             this.viewAchievement.bind(this),
         );
 
-        this.router.post(
-            `/contest/register`,
-            authService.authenticate(),
-            fileUploader.any(),
-            this.registerContest.bind(this),
-        );
+        // this.router.post(
+        //     `/contest/register`,
+        //     authService.authenticate(),
+        //     fileUploader.any(),
+        //     this.registerContest.bind(this),
+        // );
         this.router.post(
             `/contest/unregister`,
             authService.authenticate(),
@@ -153,10 +153,10 @@ export class GICController extends Controller {
             `/contest/myregistration`,
             this.getRegisteredContest.bind(this),
         );
-        this.router.get(
-            `/contest/download`,
-            this.downloadIdeaDescription.bind(this),
-        );
+        // this.router.get(
+        //     `/contest/download`,
+        //     this.downloadIdeaDescription.bind(this),
+        // );
         this.router.get(
             `/contest/allregistrations`,
             this.getAllContestRegistrations.bind(this),
@@ -165,10 +165,10 @@ export class GICController extends Controller {
             `/contest/allregistrations/:registrationId`,
             this.getContestRegistrations.bind(this),
         );
-        this.router.get(
-            `/contest/downloadadmin/:registrationId`,
-            this.downloadIdeaAdmin.bind(this),
-        );
+        // this.router.get(
+        //     `/contest/downloadadmin/:registrationId`,
+        //     this.downloadIdeaAdmin.bind(this),
+        // );
 
         this.router.post('/day/register/:day', this.registerDay.bind(this));
         this.router.post('/day/unregister/:day', this.unregisterDay.bind(this));
@@ -203,12 +203,24 @@ export class GICController extends Controller {
             `/add_discord_achievement/`,
             this.addDiscordAchievement.bind(this),
         );
-        
+
         // game gifts and idea board gifts
-        this.router.post(`/admin_get_game_gifts`, this.getGameGiftOfUser.bind(this));
-        this.router.post(`/admin_receive_game_gifts`, this.receiveGameGift.bind(this))
-        this.router.post(`/admin_get_idea_board_id`, this.getIdeaBoardId.bind(this))
-        this.router.post(`/admin_get_qr_by_email`, this.getQrByEmail.bind(this))
+        this.router.post(
+            `/admin_get_game_gifts`,
+            this.getGameGiftOfUser.bind(this),
+        );
+        this.router.post(
+            `/admin_receive_game_gifts`,
+            this.receiveGameGift.bind(this),
+        );
+        this.router.post(
+            `/admin_get_idea_board_id`,
+            this.getIdeaBoardId.bind(this),
+        );
+        this.router.post(
+            `/admin_get_qr_by_email`,
+            this.getQrByEmail.bind(this),
+        );
 
         // schedule sending emails
         scheduleJob(
@@ -220,8 +232,11 @@ export class GICController extends Controller {
             '0 0 8 17 6 *',
             this.send30MinutesReminderSeminar2.bind(this),
         );
-        scheduleJob('0 40 19 24 6 *', this.send1DayReminderIdeaShowcase.bind(this))
-        scheduleJob('0 15 14 28 6 *', this.sendThankYouEmail.bind(this))
+        scheduleJob(
+            '0 40 19 24 6 *',
+            this.send1DayReminderIdeaShowcase.bind(this),
+        );
+        scheduleJob('0 15 14 28 6 *', this.sendThankYouEmail.bind(this));
 
         // voting
         this.router.post('/contest/vote/:ideaId', this.voteTeam.bind(this));
@@ -230,17 +245,15 @@ export class GICController extends Controller {
         this.router.get('/contest/allideas', this.allIdeas.bind(this));
         this.router.get('/contest/leaderboard', this.getLeaderboard.bind(this));
     }
-    
+
     async sendThankYouEmail() {
-        const a = await this.gicService.getAllEventEmails()
+        const a = await this.gicService.getAllEventEmails();
         await Promise.all(
             a.map((u) =>
                 (async () => {
-                    const { name, email } = u
+                    const { name, email } = u;
                     try {
-                        console.log(
-                            `Sending thank you to email: ${email}`,
-                        );
+                        console.log(`Sending thank you to email: ${email}`);
                         await this.mailService.sendToOne(
                             email,
                             `[GDSC Idea Contest 2023] Cảm ơn bạn đã tham gia sự kiện`,
@@ -255,7 +268,7 @@ export class GICController extends Controller {
             ),
         );
     }
-    
+
     async send1DayReminderIdeaShowcase() {
         const a = await Promise.all(
             (
@@ -264,7 +277,7 @@ export class GICController extends Controller {
                     day: 5,
                 })
             ).map((r) => (async () => r.populate('registeredBy'))()),
-        )
+        );
         await Promise.all(
             a.map((u) =>
                 (async () => {
@@ -288,46 +301,50 @@ export class GICController extends Controller {
             ),
         );
     }
-    
+
     async getQrByEmail(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`Missing admin permission`)
+                throw new Error(`Missing admin permission`);
             }
-            const { email } = req.body
-            const user = await this.userService.findOne({ email: email })
+            const { email } = req.body;
+            const user = await this.userService.findOne({ email: email });
             if (!user) {
-                throw new Error(`User with the specified email doesn't exist`)
+                throw new Error(`User with the specified email doesn't exist`);
             }
-            const result = aes256_encrypt(JSON.stringify({ userId: user._id.toString() }))
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const result = aes256_encrypt(
+                JSON.stringify({ userId: user._id.toString() }),
+            );
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
     async getIdeaBoardId(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`Missing admin permission`)
+                throw new Error(`Missing admin permission`);
             }
-            const { qrCode } = req.body
-            const data = JSON.parse(aes256_decrypt(qrCode as string))
-            const userId = new Types.ObjectId(data.userId)
+            const { qrCode } = req.body;
+            const data = JSON.parse(aes256_decrypt(qrCode as string));
+            const userId = new Types.ObjectId(data.userId);
             const reg = await this.gicService.findOneDayRegistration({
                 registeredBy: userId,
-                status: "CHECKIN",
-            })
+                status: 'CHECKIN',
+            });
             if (!reg) {
-                throw new Error(`User hasn't checked in yet`)
+                throw new Error(`User hasn't checked in yet`);
             }
             if (reg.ideaBoardId === undefined) {
-                throw new Error(`This is probably an old document, which doesn't have idea board id on registration document`)
+                throw new Error(
+                    `This is probably an old document, which doesn't have idea board id on registration document`,
+                );
             }
-            res.composer.success(reg.ideaBoardId)
+            res.composer.success(reg.ideaBoardId);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
@@ -336,33 +353,33 @@ export class GICController extends Controller {
 
     async getGameGiftOfUser(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`Missing admin permission`)
+                throw new Error(`Missing admin permission`);
             }
-            const { qrCode } = req.body
-            const data = JSON.parse(aes256_decrypt(qrCode as string))
-            const userId = new Types.ObjectId(data.userId)
-            const result = await this.gicService.getGameGiftsOfUser(userId)
-            res.composer.success(result)
+            const { qrCode } = req.body;
+            const data = JSON.parse(aes256_decrypt(qrCode as string));
+            const userId = new Types.ObjectId(data.userId);
+            const result = await this.gicService.getGameGiftsOfUser(userId);
+            res.composer.success(result);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
         }
     }
-    
+
     async receiveGameGift(req: Request, res: Response) {
         try {
-            const userRoles = req.tokenMeta.roles
+            const userRoles = req.tokenMeta.roles;
             if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`Missing admin permission`)
+                throw new Error(`Missing admin permission`);
             }
-            const itemId = new Types.ObjectId(req.body.itemId)
-            const result = await this.gicService.receiveGameGift(itemId)
-            res.composer.success(result)
-        } catch(error) {
-            console.log(error)
-            res.composer.badRequest(error.message)
+            const itemId = new Types.ObjectId(req.body.itemId);
+            const result = await this.gicService.receiveGameGift(itemId);
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
         }
     }
 
@@ -818,33 +835,33 @@ export class GICController extends Controller {
         }
     }
 
-    async downloadIdeaAdmin(req: Request, res: Response) {
-        try {
-            const userRoles = req.tokenMeta.roles;
-            if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
-                throw new Error(`You don't have permission`);
-            }
+    // async downloadIdeaAdmin(req: Request, res: Response) {
+    //     try {
+    //         const userRoles = req.tokenMeta.roles;
+    //         if (!userRoles.includes(USER_ROLES.GIC_ADMIN)) {
+    //             throw new Error(`You don't have permission`);
+    //         }
 
-            const regId = new Types.ObjectId(req.params.registrationId);
-            const reg = await this.gicService.findContestRegById(regId);
-            if (!reg) {
-                throw new Error(`Registration doesn't exist`);
-            }
+    //         const regId = new Types.ObjectId(req.params.registrationId);
+    //         const reg = await this.gicService.findContestRegById(regId);
+    //         if (!reg) {
+    //             throw new Error(`Registration doesn't exist`);
+    //         }
 
-            const file = await this.fileUploadService.downloadFile(
-                reg.ideaDescription,
-            );
-            res.setHeader(
-                'Content-Disposition',
-                `attachment; filename=${file.originalName}`,
-            );
-            res.setHeader('Content-Type', `${file.mimetype}`);
-            res.end(file.buffer);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         const file = await this.fileUploadService.downloadFile(
+    //             reg.ideaDescription,
+    //         );
+    //         res.setHeader(
+    //             'Content-Disposition',
+    //             `attachment; filename=${file.originalName}`,
+    //         );
+    //         res.setHeader('Content-Type', `${file.mimetype}`);
+    //         res.end(file.buffer);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async getAllDayRegistrations(req: Request, res: Response) {
         try {
@@ -877,120 +894,121 @@ export class GICController extends Controller {
 
     // API'S FOR CONTEST
 
-    async registerContest(req: Request, res: Response) {
-        try {
-            blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
+    // async registerContest(req: Request, res: Response) {
+    //     try {
+    //         blockIfLaterThan(GIC_TIMESTAMPS.IDEA_SUBMISSION_DEADLINE);
 
-            // block spamming
-            if (IS_PRODUCTION) {
-                await this.gicService.rateLimitOnContestRegistration(userId);
-            }
+    //         const userId = new Types.ObjectId(req.tokenMeta.userId);
 
-            const user = await this.userService.findById(userId);
-            const members = JSON.parse(req.body.members) as any[];
-            const { ideaName } = req.body;
-            if (!ideaName) {
-                throw new Error(`Idea name is missing`);
-            }
-            if (!members) {
-                throw new Error(`Missing members field`);
-            }
-            if (members.length > 3) {
-                throw new Error(`A team can consist of at most 3 people`);
-            }
+    //         // block spamming
+    //         if (IS_PRODUCTION) {
+    //             await this.gicService.rateLimitOnContestRegistration(userId);
+    //         }
 
-            let selfPresent = false;
-            for (const [i, mem] of members.entries()) {
-                if (!mem[`name`])
-                    throw new Error(`Member ${i + 1} missing fullname`);
-                if (!mem[`email`])
-                    throw new Error(`Member ${i + 1} missing email`);
-                if (!mem[`school`])
-                    throw new Error(`Member ${i + 1} missing school`);
-                if (!mem[`major`])
-                    throw new Error(`Member ${i + 1} missing major`);
-                mem[`confirmed`] = mem.email === user.email;
-                selfPresent = selfPresent || mem[`confirmed`];
-            }
+    //         const user = await this.userService.findById(userId);
+    //         const members = JSON.parse(req.body.members) as any[];
+    //         const { ideaName } = req.body;
+    //         if (!ideaName) {
+    //             throw new Error(`Idea name is missing`);
+    //         }
+    //         if (!members) {
+    //             throw new Error(`Missing members field`);
+    //         }
+    //         if (members.length > 3) {
+    //             throw new Error(`A team can consist of at most 3 people`);
+    //         }
 
-            // all emails must be unique
-            if (new Set(members.map((x) => x.email)).size != members.length) {
-                throw new Error(`Given emails are not unique`);
-            }
+    //         let selfPresent = false;
+    //         for (const [i, mem] of members.entries()) {
+    //             if (!mem[`name`])
+    //                 throw new Error(`Member ${i + 1} missing fullname`);
+    //             if (!mem[`email`])
+    //                 throw new Error(`Member ${i + 1} missing email`);
+    //             if (!mem[`school`])
+    //                 throw new Error(`Member ${i + 1} missing school`);
+    //             if (!mem[`major`])
+    //                 throw new Error(`Member ${i + 1} missing major`);
+    //             mem[`confirmed`] = mem.email === user.email;
+    //             selfPresent = selfPresent || mem[`confirmed`];
+    //         }
 
-            if (!selfPresent) {
-                throw new Error(`Team doesn't contain yourself`);
-            }
+    //         // all emails must be unique
+    //         if (new Set(members.map((x) => x.email)).size != members.length) {
+    //             throw new Error(`Given emails are not unique`);
+    //         }
 
-            new UploadValidator(new UploadIdeaDescriptionValidation()).validate(
-                req.files as Express.Multer.File[],
-            );
+    //         if (!selfPresent) {
+    //             throw new Error(`Team doesn't contain yourself`);
+    //         }
 
-            // check if any users are already in a contest, or the person registering
-            // has registered another idea
-            await Promise.all(
-                members.map((mem) =>
-                    (async () => {
-                        if (await this.gicService.emailHasTeam(mem.email)) {
-                            throw new Error(
-                                `A user on your team already has a team`,
-                            );
-                        }
-                        if (
-                            mem.email === user.email &&
-                            (await this.gicService.userHasRegisteredContest(
-                                userId,
-                            ))
-                        ) {
-                            throw new Error(
-                                `You have already registered your idea`,
-                            );
-                        }
-                    })(),
-                ),
-            );
+    //         new UploadValidator(new UploadIdeaDescriptionValidation()).validate(
+    //             req.files as Express.Multer.File[],
+    //         );
 
-            const result = await this.gicService.registerContest(
-                userId,
-                ideaName,
-                members,
-                req.files as Express.Multer.File[],
-                new NoFileCompression(),
-            );
+    //         // check if any users are already in a contest, or the person registering
+    //         // has registered another idea
+    //         await Promise.all(
+    //             members.map((mem) =>
+    //                 (async () => {
+    //                     if (await this.gicService.emailHasTeam(mem.email)) {
+    //                         throw new Error(
+    //                             `A user on your team already has a team`,
+    //                         );
+    //                     }
+    //                     if (
+    //                         mem.email === user.email &&
+    //                         (await this.gicService.userHasRegisteredContest(
+    //                             userId,
+    //                         ))
+    //                     ) {
+    //                         throw new Error(
+    //                             `You have already registered your idea`,
+    //                         );
+    //                     }
+    //                 })(),
+    //             ),
+    //         );
 
-            // TODO: send confirmation email, different for the person who registered and others
-            for (const m of members) {
-                if (m.confirmed) {
-                    this.mailService.sendToOne(
-                        m.email,
-                        '[GDSC Idea Contest 2023] Đăng ký dự thi thành công',
-                        CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
-                    );
-                } else {
-                    this.mailService.sendToOne(
-                        m.email,
-                        '[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi',
-                        CONTEST_CONFIRMATION_EMAIL(
-                            m.name,
-                            ideaName,
-                            aes256_encrypt(
-                                JSON.stringify({
-                                    regId: result._id,
-                                    email: m.email,
-                                }),
-                            ),
-                        ),
-                    );
-                }
-            }
+    //         const result = await this.gicService.registerContest(
+    //             userId,
+    //             ideaName,
+    //             members,
+    //             req.files as Express.Multer.File[],
+    //             new NoFileCompression(),
+    //         );
 
-            res.composer.success(result);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         // TODO: send confirmation email, different for the person who registered and others
+    //         for (const m of members) {
+    //             if (m.confirmed) {
+    //                 this.mailService.sendToOne(
+    //                     m.email,
+    //                     '[GDSC Idea Contest 2023] Đăng ký dự thi thành công',
+    //                     CONTEST_REGISTRATION_SUCCESSFUL_EMAIL(m.name, ideaName),
+    //                 );
+    //             } else {
+    //                 this.mailService.sendToOne(
+    //                     m.email,
+    //                     '[GDSC Idea Contest 2023] Xác nhận đăng ký tham gia dự thi',
+    //                     CONTEST_CONFIRMATION_EMAIL(
+    //                         m.name,
+    //                         ideaName,
+    //                         aes256_encrypt(
+    //                             JSON.stringify({
+    //                                 regId: result._id,
+    //                                 email: m.email,
+    //                             }),
+    //                         ),
+    //                     ),
+    //                 );
+    //             }
+    //         }
+
+    //         res.composer.success(result);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async unregisterContest(req: Request, res: Response) {
         try {
@@ -1028,32 +1046,32 @@ export class GICController extends Controller {
         }
     }
 
-    async downloadIdeaDescription(req: Request, res: Response) {
-        try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const user = await this.userService.findById(userId);
+    // async downloadIdeaDescription(req: Request, res: Response) {
+    //     try {
+    //         const userId = new Types.ObjectId(req.tokenMeta.userId);
+    //         const user = await this.userService.findById(userId);
 
-            const reg = await this.gicService.findCurrentContestRegistration(
-                user.email,
-            );
-            if (!reg) {
-                throw new Error(`Contest registration not found`);
-            }
+    //         const reg = await this.gicService.findCurrentContestRegistration(
+    //             user.email,
+    //         );
+    //         if (!reg) {
+    //             throw new Error(`Contest registration not found`);
+    //         }
 
-            const file = await this.fileUploadService.downloadFile(
-                reg.ideaDescription,
-            );
-            res.setHeader(
-                'Content-Disposition',
-                `attachment; filename=${file.originalName}`,
-            );
-            res.setHeader('Content-Type', `${file.mimetype}`);
-            res.end(file.buffer);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         const file = await this.fileUploadService.downloadFile(
+    //             reg.ideaDescription,
+    //         );
+    //         res.setHeader(
+    //             'Content-Disposition',
+    //             `attachment; filename=${file.originalName}`,
+    //         );
+    //         res.setHeader('Content-Type', `${file.mimetype}`);
+    //         res.end(file.buffer);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 
     async confirmContest(req: Request, res: Response) {
         try {

@@ -1,7 +1,4 @@
 import { MailtrapClient, Address } from 'mailtrap';
-import {
-    DUC_EMAILS,
-} from '../constant';
 
 const TOKEN = '66de6d7835aeaeda74cb9d38d39b53d3';
 const ENDPOINT = 'https://send.api.mailtrap.io/';
@@ -16,18 +13,18 @@ const sender = {
 const getDate = () =>
     new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-const sendMailtrap = (html?: string) => {
-    client
-        .send({
-            from: sender,
-            to: DUC_EMAILS,
-            subject: `Test sending email for GIC web at ${getDate()}`,
-            text: 'Test email',
-            html: html,
-            category: 'Integration Test',
-        })
-        .then(console.log, console.error);
-};
+// const sendMailtrap = (html?: string) => {
+//     client
+//         .send({
+//             from: sender,
+//             to: DUC_EMAILS,
+//             subject: `Test sending email for GIC web at ${getDate()}`,
+//             text: 'Test email',
+//             html: html,
+//             category: 'Integration Test',
+//         })
+//         .then(console.log, console.error);
+// };
 
 const sendToOne = (address: Address, html?: string) => {
     client
@@ -73,7 +70,7 @@ const sendToUserAndCc = (
         .then(console.log, console.error);
 };
 
-export { sendMailtrap, sendToOne, sendToMany, sendToUserAndCc };
+export { sendToOne, sendToMany, sendToUserAndCc };
 
 // Usage:
 // sendMailtrap(HTML_TEMPLATE('test'));

@@ -1,8 +1,8 @@
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongoose';
 
 export interface Upload {
-    _id?: ObjectID;
-    userId: ObjectID;
+    _id?: ObjectId;
+    userId: ObjectId;
     createdAt: number;
     type: string;
     path: string;

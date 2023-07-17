@@ -1,18 +1,18 @@
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongoose';
 import _ from 'lodash';
 
 export class Device {
-    readonly _id?: ObjectID;
+    readonly _id?: ObjectId;
     id: number;
     name: string;
     unit: string;
     createdAt: number;
-    createdBy: ObjectID;
+    createdBy: ObjectId;
     isDeleted: boolean;
     isWorking: boolean;
     isLocked: boolean; // Lock from changing
     dienNang: number;
-    room?: ObjectID;
+    room?: ObjectId;
     isLoopEvent: boolean;
     data: string;
 }

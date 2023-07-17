@@ -16,13 +16,13 @@ export const COOKIE_KEY = process.env.COOKIE_KEY as string;
 
 export const IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
-export const SERVICE_PORT = +process.env.PORT || 5050;
-export const SERVICE_NAME = 'BUGS';
+export const SERVICE_PORT = +process.env.PORT || 1201;
+export const SERVICE_NAME = 'GAME-BE';
 
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
 
-export const ROOT_DOMAIN = 'bugs.vn';
+export const ROOT_DOMAIN = 'fessior.com';
 
 export const FE_ADDRESS = IS_PRODUCTION
     ? 'https://bugs.vn/'

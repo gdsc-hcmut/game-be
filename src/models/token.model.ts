@@ -1,4 +1,3 @@
-import { ObjectID } from 'mongodb';
 import _ from 'lodash';
 import mongoose, { Document, ObjectId, Types } from 'mongoose';
 import { USER_ROLES } from './user.model';
