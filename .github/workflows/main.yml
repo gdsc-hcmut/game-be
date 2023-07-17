@@ -51,8 +51,8 @@ on:
         branches: ['main']
 
 env:
-    PROJECT_ID: 'sonorous-crane-387313' # TODO: update Google Cloud project id
-    SERVICE: 'gdsc-game-be' # TODO: update Cloud Run service name
+    PROJECT_ID: 'fessior' # TODO: update Google Cloud project id
+    SERVICE: 'game-be' # TODO: update Cloud Run service name
     REGION: 'asia-southeast1' # TODO: update Cloud Run service region
 
 jobs:
