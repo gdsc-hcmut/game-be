@@ -34,17 +34,17 @@ export abstract class Cell {
         this.isHidden = isHidden;
         this.isValid = true;
     }
-    abstract handler(character: Character): boolean; // Check whether the move step can be done.
+    // abstract handler(character: Character): boolean; // Check whether the move step can be done.
 }
 
-export type MazeMap = {
-    [key: number]: Cell;
-};
+// export type MazeMap = {
+//     [key: number]: cellProperties;
+// };
 
 export type RoundState = 'inProgress' | 'Win' | 'Lose';
 
 export type roundMazeGame = Document & {
-    map: MazeMap;
+    map: cellProperties[];
     character: Character;
     userId: Types.ObjectId;
     order: number;
@@ -52,14 +52,7 @@ export type roundMazeGame = Document & {
 };
 
 const roundMazeGameSchema = new Schema<roundMazeGame>({
-    map: {
-        type: Map,
-        of: {
-            property: String,
-            isHidden: Boolean,
-            handler: Function,
-        },
-    },
+    map: [String],
     character: {
         hp: Number,
         stamina: Number,

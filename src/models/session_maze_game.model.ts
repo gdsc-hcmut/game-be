@@ -15,7 +15,7 @@ const sessionMazeGameSchema = new Schema<sessionMazeGame>({
 });
 
 const sessionMazeGameModel = mongoose.model<sessionMazeGame>(
-    'Round',
+    'MazeSession',
     sessionMazeGameSchema,
 );
 export default sessionMazeGameModel;

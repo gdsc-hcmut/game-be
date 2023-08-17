@@ -1,6 +1,6 @@
 import { Character } from '../../../models/round_maze_game.model';
 
-export const Characters: Character[] = [
+export const characters: Character[] = [
     {
         hp: 2,
         armor: 0,
