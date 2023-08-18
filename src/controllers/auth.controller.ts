@@ -65,8 +65,8 @@ export class AuthController extends Controller {
                         );
                     let redirectDomain: WhitelistDomain =
                         WhitelistDomain[
-                        (req?.session?.lastQuery?.domain as Domain) ??
-                        'game'
+                            (req?.session?.lastQuery?.domain as Domain) ??
+                                'game'
                         ];
                     let redirectLink = '';
                     if (req?.session?.lastQuery?.redirect) {
