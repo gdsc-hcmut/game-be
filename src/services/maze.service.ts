@@ -1,18 +1,16 @@
 import { injectable } from 'inversify';
 import { Types } from 'mongoose';
 import Session, { sessionMazeGame } from '../models/session_maze_game.model';
-import Round, { roundMazeGame } from '../models/round_maze_game.model';
-import initMapLevel1 from '../constant/maze/map';
-import { Character, cellProperties } from '../models/round_maze_game.model';
-import { characters } from '../constant/maze/character';
-// import { Session } from 'inspector';
-
-// export interface Resp {
-//     payload: any;
-//     code: number;
-//     message: string;
-//     success: boolean;
-// }
+import MazeGame, {
+    CellObject,
+    Character,
+    MazeGameDocument,
+} from '../models/maze_game.model';
+import { initMapLevel1, initMapLevel2 } from '../constant/maze/map';
+import { initCharacter1 } from '../constant/maze/character';
+import MazeGameSession, {
+    MazeGameSessionDocument,
+} from '../models/maze_game_session.model';
 
 @injectable()
 export class MazeService {
@@ -28,28 +26,56 @@ export class MazeService {
         return newSession;
     }
 
-    async startRound(round: string, userId: Types.ObjectId) {
-        console.log(round);
+    async createMap(id: string): Promise<MazeGameDocument> {
+        var newMap: CellObject[];
+        if (id === '1') {
+            newMap = initMapLevel1;
+        } else newMap = initMapLevel2;
 
-        const userInfo = await Session.findOne({ userId: userId });
+        const newCharacter: Character = initCharacter1;
 
-        if (!userInfo) throw Error('User has not been start game');
-
-        const newMap: cellProperties[] = initMapLevel1;
-        const newCharacter: Character = characters[0];
-
-        const newRoundGame = new Round({
+        const newMazeGame = new MazeGame({
             map: newMap,
             character: newCharacter,
-            userId: userId,
-            order: 1,
-            roundState: 'inProgress',
+            size: {
+                width: 2,
+                height: 1,
+            },
         });
 
-        await newRoundGame.save();
+        await newMazeGame.save();
 
-        return newRoundGame;
+        return newMazeGame;
+    }
 
-        // if (round > userInfo.currentRound)
+    async createOrFindSession(
+        userId: Types.ObjectId,
+    ): Promise<MazeGameSessionDocument> {
+        const prevSession = await MazeGameSession.findOne({
+            userId: userId,
+            status: 'InProgress',
+        });
+
+        if (prevSession) {
+            return prevSession;
+        }
+
+        const newMap: CellObject[] =
+            Math.floor(Math.random() * 2) == 1 ? initMapLevel1 : initMapLevel2;
+
+        const newCharacter: Character = initCharacter1;
+
+        const newSession = new MazeGameSession({
+            map: newMap,
+            character: newCharacter,
+            size: {
+                width: 2,
+                height: 1,
+            },
+            userId: userId,
+            status: 'InProgress',
+        });
+
+        return newSession;
     }
 }

@@ -20,7 +20,7 @@ export class MazeController extends Controller {
         this.router.all('*', this.authService.authenticate());
         // this.router.get('/maze/start', this.mazeService.startGame());
         this.router.get('/maze/start', this.createNewSession.bind(this));
-        this.router.get('/maze/round/:id', this.createNewSession.bind(this));
+        this.router.get('/maze/round/:id', this.createNewMap.bind(this));
     }
 
     async createNewSession(req: Request, res: Response) {
@@ -35,15 +35,24 @@ export class MazeController extends Controller {
         }
     }
 
-    async createNewRound(req: Request, res: Response) {
+    async createNewMap(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            const newMap = await this.mazeService.createMap(id);
+            res.composer.success(newMap);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async startSession(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const round = req.params.id;
-            const newRoundGame = await this.mazeService.startRound(
-                round,
-                userId,
-            );
-            res.composer.success(newRoundGame);
+
+            const session = await this.mazeService.createOrFindSession(userId);
+            res.composer.success(session);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

@@ -1,18 +1,9 @@
-import { Character } from '../../../models/round_maze_game.model';
+import { Character } from '../../../models/maze_game.model';
 
-export const characters: Character[] = [
-    {
-        hp: 2,
-        armor: 0,
-        stamina: 1,
-        position: [1, 1],
-        hasKey: false,
-    },
-    {
-        hp: 1,
-        armor: 0,
-        stamina: 1,
-        position: [1, 1],
-        hasKey: false,
-    },
-];
+export const initCharacter1: Character = {
+    hp: 1211,
+    stamina: 50,
+    armor: 0,
+    position: 0,
+    key: 0,
+};

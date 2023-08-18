@@ -1,47 +1,33 @@
 // import { MazeMap } from '../../../models/round_maze_game.model';
-import { cellProperties } from '../../../models/round_maze_game.model';
-import { Path, Wall } from './cell';
+// import mongoose from 'mongoose';
+import { CellObject } from '../../../models/maze_game.model';
 
-// const initMapLevel1: MazeMap = {};
+// export const ID_OF_RECORDS: String[] = [
+//     '64df0a9997bd7120fb5c968f',
+//     '64df0b1397bd7120fb5c9695',
+// ];
 
-// initMapLevel1[0] = new Wall(false);
-// initMapLevel1[1] = new Wall(false);
-// initMapLevel1[2] = new Wall(false);
-// initMapLevel1[3] = new Wall(false);
+export const NUMBER_OF_MAPS: number = 2;
 
-// initMapLevel1[100] = new Wall(false);
-// initMapLevel1[101] = new Path(false);
-// initMapLevel1[102] = new Path(false);
-// initMapLevel1[103] = new Wall(false);
-
-// initMapLevel1[200] = new Wall(false);
-// initMapLevel1[201] = new Path(false);
-// initMapLevel1[202] = new Path(false);
-// initMapLevel1[203] = new Wall(false);
-
-// initMapLevel1[300] = new Wall(false);
-// initMapLevel1[301] = new Wall(false);
-// initMapLevel1[302] = new Wall(false);
-// initMapLevel1[303] = new Wall(false);
-
-const initMapLevel1: cellProperties[] = [
+export const initMapLevel1: CellObject[] = [
     // Map 4x4
-    'wall',
-    'wall',
-    'wall',
-    'wall',
-    'wall',
-    'path',
-    'path',
-    'wall',
-    'wall',
-    'path',
-    'path',
-    'wall',
-    'wall',
-    'wall',
-    'wall',
-    'wall',
+    {
+        property: 'path',
+        isHidden: false,
+    },
+    {
+        property: 'wall',
+        isHidden: false,
+    },
 ];
 
-export default initMapLevel1;
+export const initMapLevel2: CellObject[] = [
+    {
+        property: 'dragon',
+        isHidden: false,
+    },
+    {
+        property: 'baron',
+        isHidden: false,
+    },
+];
