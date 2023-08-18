@@ -4,7 +4,7 @@ import { CellObject, Character } from './maze_game.model';
 export type Status = 'InProgress' | 'Win' | 'Lose';
 
 export type MazeGameSessionDocument = Document & {
-    map: CellObject;
+    map: CellObject[];
     character: Character;
     size: {
         width: number;

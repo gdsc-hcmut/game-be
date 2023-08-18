@@ -4,7 +4,7 @@ import { Controller } from './controller';
 
 import { Request, Response, ServiceType } from '../types';
 import { AuthService, MazeService } from '../services';
-import { Types } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 
 @injectable()
 export class MazeController extends Controller {
@@ -20,6 +20,7 @@ export class MazeController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.get('/maze/round/:id', this.createNewMap.bind(this));
         this.router.get('/maze/start', this.startSession.bind(this));
+        this.router.post('/maze/singlemove/:id', this.singleMove.bind(this));
     }
 
     async createNewMap(req: Request, res: Response) {
@@ -40,6 +41,33 @@ export class MazeController extends Controller {
 
             const session = await this.mazeService.startSession(userId);
             res.composer.success(session);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async singleMove(req: Request, res: Response) {
+        try {
+            const sessionId = new mongoose.Types.ObjectId(req.params.id);
+            var result: any;
+            switch (req.query.move) {
+                case 'w':
+                    result = await this.mazeService.moveUp(sessionId);
+                    break;
+                case 'd':
+                    result = await this.mazeService.moveRight(sessionId);
+                    break;
+                case 's':
+                    result = await this.mazeService.moveDown(sessionId);
+                    break;
+                case 'a':
+                    result = await this.mazeService.moveLeft(sessionId);
+                    break;
+                default:
+                    throw Error('wrong keys submission');
+            }
+            res.composer.success(result);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

@@ -29,6 +29,9 @@ export abstract class Cell {
             case 'stamina_portion':
                 cell = new StaminaPortion(cellInfo);
                 break;
+            case 'end':
+                cell = new End(cellInfo);
+                break;
             case 'armor':
                 cell = new Armor(cellInfo);
                 break;
@@ -104,7 +107,11 @@ export class HpPortion extends Cell {
 
     constructor(cellInfo: CellObject) {
         super(cellInfo.isHidden);
-        cellInfo.property = 'path';
+        const newCell: CellObject = {
+            property: 'path',
+            isHidden: cellInfo.isHidden,
+        };
+        cellInfo = newCell;
         this.hp = cellInfo.hp;
     }
 
@@ -141,7 +148,7 @@ export class Armor extends Cell {
     }
 
     handler(character: Character): boolean {
-        character.stamina += this.armor;
+        character.armor += this.armor;
         this.isValid = false;
         return true;
     }
@@ -162,7 +169,7 @@ export class Baron extends Cell {
     handler(character: Character): boolean {
         character.hp -= this.hpConsuming;
         if (character.hp > 0) {
-            this.stamina += this.stamina;
+            character.stamina += this.stamina;
             this.isValid = false;
         }
 
@@ -191,8 +198,7 @@ export class Dragon extends Cell {
         }
 
         if (character.hp > 0) {
-            this.stamina += this.stamina;
-            this.isValid = false;
+            character.stamina += this.stamina;
         }
 
         return true;
