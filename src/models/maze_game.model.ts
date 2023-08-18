@@ -55,6 +55,7 @@ export type MazeGameDocument = Document & {
         width: number;
         height: number;
     };
+    index: number;
 };
 
 const mazeGameSchema = new Schema<MazeGameDocument>({
@@ -95,6 +96,7 @@ const mazeGameSchema = new Schema<MazeGameDocument>({
         width: { type: Number },
         height: { type: Number },
     },
+    index: { type: Number, index: true },
 });
 
 const mazeGameModel = mongoose.model<MazeGameDocument>(
