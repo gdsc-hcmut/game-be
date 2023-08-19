@@ -110,13 +110,13 @@ export class MazeService {
     async startSession(
         userId: Types.ObjectId,
     ): Promise<MazeGameSessionDocument> {
-        const prevSession = await MazeGameSession.findOne({
+        const currentSession = await MazeGameSession.findOne({
             userId: userId,
             status: Status.InProgress,
         });
 
-        if (prevSession) {
-            return prevSession;
+        if (currentSession) {
+            throw Error('Find another in Progress session');
         }
 
         const [newMazeGame] = await MazeGame.aggregate([
@@ -134,6 +134,21 @@ export class MazeService {
 
         await newSession.save();
         return newSession;
+    }
+
+    async getCurrentSession(
+        userId: Types.ObjectId,
+    ): Promise<MazeGameSessionDocument> {
+        const currentSession = await MazeGameSession.findOne({
+            userId: userId,
+            status: Status.InProgress,
+        });
+
+        if (!currentSession) {
+            throw Error('Session not found');
+        }
+
+        return currentSession;
     }
 
     async submitSingleMove(

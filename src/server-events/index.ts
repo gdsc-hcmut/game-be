@@ -22,6 +22,7 @@ import {
     TransactionService,
     UserService,
     ItemService,
+    MazeService,
     // MQTTService,
 } from '../services';
 import { JWT_SECRET } from '../config';
@@ -55,7 +56,7 @@ export class SocketService {
     private trackingDevice: TrackingDevice;
     @lazyInject(ServiceType.GICAchievement)
     private gicAchievementService: GICAchievementService;
-    @lazyInject(ServiceType.GIC) private gicService: GICService
+    @lazyInject(ServiceType.GIC) private gicService: GICService;
     constructor(
         // @inject(ServiceType.MQTT) private mqttService: MQTTService,
         // @inject(ServiceType.Device) private deviceService: DeviceService,
@@ -69,6 +70,7 @@ export class SocketService {
         private transactionService: TransactionService,
         @inject(ServiceType.Item)
         private itemService: ItemService,
+        @inject(ServiceType.Maze) private mazeService: MazeService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -104,7 +106,8 @@ export class SocketService {
                 this.transactionService,
                 this.itemService,
                 this.gicAchievementService,
-                this.gicService
+                this.gicService,
+                this.mazeService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
@@ -145,6 +148,13 @@ export class SocketService {
             ),
         );
 
+        socket.on(EventTypes.START_MAZE_SESSION, () =>
+            this.connectedUser[socket.userId].startSession(
+                socket.id,
+                this.connectedUser,
+            ),
+        );
+
         socket.on(EventTypes.DISCONNECT, () => {
             this.tracking.removeUserConnecting(socket.id);
         });
@@ -165,7 +175,7 @@ export class SocketService {
             if (userId == key) this.connectedUser[key].notifyEvent(message);
         });
     };
-    
+
     notifyVoted(userId: string) {
         Object.keys(this.connectedUser).map((key: any, index: any) => {
             console.log(userId, key, 'keyy');
