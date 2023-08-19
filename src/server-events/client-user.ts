@@ -496,7 +496,7 @@ class ClientUser {
         } catch (err) {
             console.log('ERRRR', err);
             this.sockets[socketId].socket.emit(
-                EventTypes.START_MAZE_SESSION_FAILED,
+                EventTypes.START_MAZE_SESSION_FAIL,
             );
         }
     }
@@ -513,14 +513,11 @@ class ClientUser {
             );
 
             Object.keys(this.sockets).map((key: any, index: any) => {
-                this.sockets[key].socket.emit(
-                    EventTypes.MOVE_SUCCESSFULLY,
-                    result,
-                );
+                this.sockets[key].socket.emit(EventTypes.MOVE_SUCCESS, result);
             });
         } catch (error) {
             console.log(error.message);
-            this.sockets[socketId].socket.emit(EventTypes.MOVE_FAILED);
+            this.sockets[socketId].socket.emit(EventTypes.MOVE_FAIL);
         }
     }
 
