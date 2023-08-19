@@ -6,9 +6,9 @@ import MazeGame, {
     MazeGameDocument,
 } from '../models/maze_game.model';
 import {
-    initMapLevel1,
-    initMapLevel2,
-    initMapLevel3,
+    // initMapLevel1,
+    // initMapLevel2,
+    // initMapLevel3,
     initMapLevel4,
 } from '../constant/maze/map';
 import { initCharacter1 } from '../constant/maze/character';
@@ -17,6 +17,7 @@ import MazeGameSession, {
     Status,
 } from '../models/maze_game_session.model';
 import { Cell } from '../constant/maze/map/cellClass';
+import { Direction } from '../models/maze_game_session.model';
 
 interface MoveEffected {
     status: Status;
@@ -29,8 +30,6 @@ interface MoveEffected {
     character: Character;
 }
 
-type Direction = 'up' | 'down' | 'left' | 'right';
-
 function handleMove(
     session: MazeGameSessionDocument,
     moveDirection: Direction,
@@ -41,40 +40,37 @@ function handleMove(
     var nextPosition: number;
 
     character.stamina--;
-    // character.armor++;
 
     switch (moveDirection) {
         case 'up':
-            nextPosition = character.position + session.size.width;
+            nextPosition = character.position + width;
             if (nextPosition > width * height - 1)
                 throw Error('Move out of the map');
             break;
         case 'down':
-            nextPosition = character.position - session.size.width;
+            nextPosition = character.position - width;
             if (nextPosition < 0) throw Error('Move out of the map');
             break;
         case 'right':
             nextPosition = character.position + 1;
-            if (nextPosition % session.size.width === 0)
-                throw Error('Move out of the map');
+            if (nextPosition % width === 0) throw Error('Move out of the map');
             break;
         case 'left':
             nextPosition = character.position - 1;
-            if (character.position % session.size.width === 0)
+            if (character.position % width === 0)
                 throw Error('Move out of the map');
             break;
         default:
             break;
     }
 
-    const newCell: Cell = Cell.createCell(map[nextPosition]);
-
-    if (newCell.handler(character)) {
+    if (Cell.handle(character, map[nextPosition])) {
         character.position = nextPosition;
     }
 
-    if (character.hp <= 0 || character.stamina <= 0) session.status = 'Lose';
-    else if (map[nextPosition].property === 'end') session.status = 'Win';
+    if (character.hp <= 0 || character.stamina <= 0)
+        session.status = Status.Lose;
+    else if (map[nextPosition].property === 'end') session.status = Status.Win;
 
     const result: MoveEffected = {
         status: session.status,
@@ -92,11 +88,8 @@ function handleMove(
 
 @injectable()
 export class MazeService {
-    async createMap(id: string): Promise<MazeGameDocument> {
+    async createMap(): Promise<MazeGameDocument> {
         var newMap: CellObject[] = initMapLevel4;
-        // if (id === 3) {
-        //     newMap = initMapLevel1;
-        // } else newMap = initMapLevel2;
 
         const newCharacter: Character = initCharacter1;
 
@@ -107,7 +100,6 @@ export class MazeService {
                 width: 3,
                 height: 6,
             },
-            index: Number(id),
         });
 
         await newMazeGame.save();
@@ -120,44 +112,73 @@ export class MazeService {
     ): Promise<MazeGameSessionDocument> {
         const prevSession = await MazeGameSession.findOne({
             userId: userId,
-            status: 'InProgress',
+            status: Status.InProgress,
         });
 
         if (prevSession) {
             return prevSession;
         }
 
-        // const randomNumber: number = Math.floor(Math.random() * 2) + 1;
-
-        const newMazeGame: MazeGameDocument = await MazeGame.findOne({
-            // index: randomNumber,
-            index: 4,
-        });
+        const [newMazeGame] = await MazeGame.aggregate([
+            { $sample: { size: 1 } },
+        ]);
 
         const newSession = new MazeGameSession({
             map: newMazeGame.map,
             character: newMazeGame.character,
             size: newMazeGame.size,
             userId: userId,
-            status: 'InProgress',
+            status: Status.InProgress,
+            mapId: newMazeGame._id,
         });
 
         await newSession.save();
         return newSession;
     }
 
-    async moveUp(sessionId: mongoose.Types.ObjectId): Promise<MoveEffected> {
+    async submitSingleMove(
+        sessionId: mongoose.Types.ObjectId,
+        userId: Types.ObjectId,
+        move: string,
+    ): Promise<MoveEffected> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
         if (!currentSession) {
             throw Error('Could not find session');
         }
 
-        if (currentSession.status !== 'InProgress') {
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
+
+        if (currentSession.status !== Status.InProgress) {
             throw Error('Session has been done');
         }
 
-        const result = handleMove(currentSession, 'up');
+        var moveDirection: Direction;
+        switch (move) {
+            case 'w':
+                moveDirection = Direction.Up;
+                break;
+
+            case 's':
+                moveDirection = Direction.Down;
+                break;
+
+            case 'd':
+                moveDirection = Direction.Right;
+                break;
+
+            case 'a':
+                moveDirection = Direction.Left;
+                break;
+
+            default:
+                throw Error('wrong key submission');
+        }
+
+        const result = handleMove(currentSession, moveDirection);
+
+        const newMoves: Direction[] = [...currentSession.moves, moveDirection];
 
         await MazeGameSession.updateOne(
             { _id: sessionId },
@@ -166,6 +187,7 @@ export class MazeService {
                     map: currentSession.map,
                     character: currentSession.character,
                     status: currentSession.status,
+                    moves: newMoves,
                 },
             },
         );
@@ -173,90 +195,51 @@ export class MazeService {
         return result;
     }
 
-    async moveRight(sessionId: mongoose.Types.ObjectId): Promise<MoveEffected> {
+    async getCharacterInfo(
+        sessionId: mongoose.Types.ObjectId,
+        userId: Types.ObjectId,
+    ): Promise<Character> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
         if (!currentSession) {
             throw Error('Could not find session');
         }
 
-        console.log(currentSession);
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
 
-        if (currentSession.status !== 'InProgress') {
-            throw Error('Session has been done');
-        }
-
-        const result = handleMove(currentSession, 'right');
-
-        await MazeGameSession.updateOne(
-            { _id: sessionId },
-            {
-                $set: {
-                    map: currentSession.map,
-                    character: currentSession.character,
-                    status: currentSession.status,
-                },
-            },
-        );
-
-        return result;
+        return currentSession.character;
     }
 
-    async moveLeft(sessionId: mongoose.Types.ObjectId): Promise<MoveEffected> {
+    async getMapInfo(
+        sessionId: mongoose.Types.ObjectId,
+        userId: Types.ObjectId,
+    ): Promise<CellObject[]> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
         if (!currentSession) {
             throw Error('Could not find session');
         }
 
-        console.log(currentSession);
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
 
-        if (currentSession.status !== 'InProgress') {
-            throw Error('Session has been done');
-        }
-
-        const result = handleMove(currentSession, 'left');
-
-        await MazeGameSession.updateOne(
-            { _id: sessionId },
-            {
-                $set: {
-                    map: currentSession.map,
-                    character: currentSession.character,
-                    status: currentSession.status,
-                },
-            },
-        );
-
-        return result;
+        return currentSession.map;
     }
 
-    async moveDown(sessionId: mongoose.Types.ObjectId): Promise<MoveEffected> {
+    async getMovesHistory(
+        sessionId: mongoose.Types.ObjectId,
+        userId: Types.ObjectId,
+    ): Promise<Direction[]> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
         if (!currentSession) {
             throw Error('Could not find session');
         }
 
-        console.log(currentSession);
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
 
-        if (currentSession.status !== 'InProgress') {
-            throw Error('Session has been done');
-        }
-
-        const result = handleMove(currentSession, 'down');
-
-        await MazeGameSession.updateOne(
-            { _id: sessionId },
-            {
-                $set: {
-                    map: currentSession.map,
-                    character: currentSession.character,
-                    status: currentSession.status,
-                },
-            },
-        );
-
-        return result;
+        return currentSession.moves;
     }
 }

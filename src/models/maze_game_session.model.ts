@@ -1,7 +1,18 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import { CellObject, Character } from './maze_game.model';
 
-export type Status = 'InProgress' | 'Win' | 'Lose';
+export enum Status {
+    InProgress = 'in_progress',
+    Win = 'win',
+    Lose = 'lose',
+}
+
+export enum Direction {
+    Up = 'up',
+    Down = 'down',
+    Right = 'right',
+    Left = 'left',
+}
 
 export type MazeGameSessionDocument = Document & {
     map: CellObject[];
@@ -12,6 +23,8 @@ export type MazeGameSessionDocument = Document & {
     };
     userId: Types.ObjectId;
     status: Status;
+    mapId: Types.ObjectId;
+    moves: Direction[];
 };
 
 const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
@@ -54,10 +67,12 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
     },
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
     status: String,
+    mapId: { type: Schema.Types.ObjectId, ref: 'maze_game' },
+    moves: [{ type: String, default: [] }],
 });
 
 const mazeGameSchemaModel = mongoose.model<MazeGameSessionDocument>(
-    'MazeGameSession',
+    'maze_game_session',
     mazeGameSessionSchema,
 );
 

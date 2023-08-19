@@ -8,35 +8,21 @@ export type Character = {
     key: number;
 };
 
-// export enum CellType {
-//     path,
-//     wall,
-//     lava,
-//     end,
-//     hp_portion,
-//     stamina_portion,
-//     armor,
-//     baron,
-//     dragon,
-//     trap,
-//     key,
-//     lock_gate,
-// }
-
-export type CellType =
-    | 'path'
-    | 'wall'
-    | 'lava'
-    | 'end'
-    | 'hp_portion'
-    | 'stamina_portion'
-    | 'armor'
-    | 'baron'
-    | 'dragon'
-    | 'trap'
-    | 'key'
-    | 'lock_gate'
-    | 'portal';
+export enum CellType {
+    Path = 'path',
+    Wall = 'wall',
+    Lava = 'lava',
+    End = 'end',
+    HpPortion = 'hp_portion',
+    StaminaPortion = 'stamina_portion',
+    Armor = 'armor',
+    Baron = 'baron',
+    Dragon = 'dragon',
+    Trap = 'trap',
+    Key = 'key',
+    LockGate = 'lock_gate',
+    Portal = 'portal',
+}
 
 export interface CellObject {
     property: CellType;
@@ -96,11 +82,10 @@ const mazeGameSchema = new Schema<MazeGameDocument>({
         width: { type: Number },
         height: { type: Number },
     },
-    index: { type: Number, index: true },
 });
 
 const mazeGameModel = mongoose.model<MazeGameDocument>(
-    'MazeGame',
+    'maze_game',
     mazeGameSchema,
 );
 export default mazeGameModel;
