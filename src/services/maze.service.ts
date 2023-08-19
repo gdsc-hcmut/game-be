@@ -257,4 +257,31 @@ export class MazeService {
 
         return currentSession.moves;
     }
+
+    async endMazeSession(
+        sessionId: mongoose.Types.ObjectId,
+        userId: Types.ObjectId,
+    ): Promise<MazeGameSessionDocument> {
+        const currentSession = await MazeGameSession.findById(sessionId);
+
+        if (!currentSession) {
+            throw Error('Could not find session');
+        }
+
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
+
+        currentSession.status = Status.Lose;
+
+        await MazeGameSession.updateOne(
+            { _id: sessionId },
+            {
+                $set: {
+                    status: Status.Lose,
+                },
+            },
+        );
+
+        return currentSession;
+    }
 }

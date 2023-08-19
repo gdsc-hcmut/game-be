@@ -7,7 +7,7 @@ import { AuthService, MazeService } from '../services';
 import mongoose, { Types } from 'mongoose';
 
 @injectable()
-export class MazeController extends Controller {
+export class MazeSessionController extends Controller {
     public readonly router = Router();
     public readonly path = '/maze-session';
 
@@ -24,6 +24,7 @@ export class MazeController extends Controller {
         this.router.get('/:id/character', this.getCharacterInfo.bind(this));
         this.router.get('/:id/map', this.getMapInfo.bind(this));
         this.router.get('/:id/move', this.getMovesHistory.bind(this));
+        this.router.post('/:id/end', this.endSession.bind(this));
     }
 
     async createSession(req: Request, res: Response) {
@@ -114,6 +115,23 @@ export class MazeController extends Controller {
             );
 
             res.composer.success(movesHistory);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async endSession(req: Request, res: Response) {
+        try {
+            const sessionId = new mongoose.Types.ObjectId(req.params.id);
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+
+            const session = await this.mazeService.endMazeSession(
+                sessionId,
+                userId,
+            );
+
+            res.composer.success(session);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

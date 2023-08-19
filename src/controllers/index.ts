@@ -9,6 +9,7 @@ import { Controller } from './controller';
 import { DiscordController } from './discord.controller';
 import { GICController } from './gic.controller';
 import { MazeController } from './maze.controller';
+import { MazeSessionController } from './maze_session.controller';
 export {
     Controller,
     AuthController,
@@ -20,4 +21,5 @@ export {
     DiscordController,
     GICController,
     MazeController,
+    MazeSessionController,
 };

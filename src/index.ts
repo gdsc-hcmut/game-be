@@ -27,6 +27,7 @@ import {
     DiscordController,
     GICController,
     MazeController,
+    MazeSessionController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -115,6 +116,7 @@ Promise.all([
             container.resolve<ClubDayController>(ClubDayController),
             container.resolve<DiscordController>(DiscordController),
             container.resolve<MazeController>(MazeController),
+            container.resolve<MazeSessionController>(MazeSessionController),
         ],
         SERVICE_PORT,
         [
