@@ -1,4 +1,4 @@
-import _, { isMatchCustomizer } from 'lodash';
+import _ from 'lodash';
 import { EventTypes } from './event-types';
 import {
     GameService,
@@ -481,16 +481,21 @@ class ClientUser {
     }
 
     async startSession(socketId: any, connectedUser: ConnectedUser) {
-        const userIdCast = new mongoose.Types.ObjectId(this.userId);
+        try {
+            console.log('Start Maze Session');
+            const userIdCast = new mongoose.Types.ObjectId(this.userId);
 
-        const session = await this.mazeService.startSession(userIdCast);
+            const session = await this.mazeService.startSession(userIdCast);
 
-        Object.keys(this.sockets).map((key: any, index: any) => {
-            this.sockets[key].socket.emit(
-                EventTypes.START_MAZE_SESSION_SUCCESS,
-                session,
-            );
-        });
+            Object.keys(this.sockets).map((key: any, index: any) => {
+                this.sockets[key].socket.emit(
+                    EventTypes.START_MAZE_SESSION_SUCCESS,
+                    session,
+                );
+            });
+        } catch (err) {
+            console.log('ERRRR', err);
+        }
     }
 
     async onDisconnect(socket: any, reason: any) {

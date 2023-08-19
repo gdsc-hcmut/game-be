@@ -8,7 +8,7 @@ import {
     VerifiedCallback,
 } from 'passport-jwt';
 import jwt from 'jwt-simple';
-import { NextFunction } from 'express';
+import { Express, NextFunction } from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
@@ -44,6 +44,7 @@ import { lazyInject } from '../container';
 import { hashingPassword } from '../lib/helper';
 import PingHistoryModel from '../models/user-ping.model';
 import { OAuth2Client } from 'google-auth-library';
+import { UserAuth } from '../typings/express';
 
 @injectable()
 export class AuthService {
@@ -115,14 +116,18 @@ export class AuthService {
     }
 
     async verifyAccountCode(payload: any, done: VerifiedCallback) {
-        const tokenMeta = parseTokenMeta(payload);
-
         try {
             const token = await Token.findOne({
-                _id: tokenMeta._id,
+                _id: payload._id,
             });
+            const user: Express.User = {
+                userId: token.userId,
+                createdAt: token.createdAt,
+                expiredAt: token.expiredAt,
+                roles: token.roles,
+            };
             if (token) {
-                return done(null, tokenMeta);
+                return done(null, user);
             }
 
             return done(null, false, 'Invalid token');
@@ -134,27 +139,34 @@ export class AuthService {
     authenticate(block = true, isLogPing = false) {
         return (req: Request, res: Response, next: NextFunction) => {
             try {
-                passport.authenticate('jwt', async (err, tokenMeta, info) => {
-                    req.tokenMeta = tokenMeta;
+                passport.authenticate(
+                    'jwt',
+                    async (
+                        _err: unknown,
+                        tokenMeta: UserAuth,
+                        _info: unknown,
+                    ) => {
+                        req.tokenMeta = tokenMeta;
 
-                    if (block && _.isEmpty(tokenMeta)) {
+                        if (block && _.isEmpty(tokenMeta)) {
+                            if (isLogPing)
+                                PingHistoryModel.create({
+                                    pingAt: Date.now(),
+                                    domain: WhitelistDomain.gic,
+                                });
+                            res.composer.unauthorized();
+                            return;
+                        }
                         if (isLogPing)
                             PingHistoryModel.create({
+                                userId: new Types.ObjectId(tokenMeta.userId),
                                 pingAt: Date.now(),
                                 domain: WhitelistDomain.gic,
                             });
-                        res.composer.unauthorized();
-                        return;
-                    }
-                    if (isLogPing)
-                        PingHistoryModel.create({
-                            userId: new Types.ObjectId(tokenMeta?.userId),
-                            pingAt: Date.now(),
-                            domain: WhitelistDomain.gic,
-                        });
 
-                    next();
-                })(req, res, next);
+                        next();
+                    },
+                )(req, res, next);
             } catch (err: any) {
                 console.log(err);
             }

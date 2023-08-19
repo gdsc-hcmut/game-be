@@ -119,9 +119,9 @@ export class MazeService {
             throw Error('Find another in Progress session');
         }
 
-        const [newMazeGame] = await MazeGame.aggregate([
-            { $sample: { size: 1 } },
-        ]);
+        const [newMazeGame] = await MazeGame.aggregate<MazeGameSessionDocument>(
+            [{ $sample: { size: 1 } }],
+        );
 
         const newSession = new MazeGameSession({
             map: newMazeGame.map,

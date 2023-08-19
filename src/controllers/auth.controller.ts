@@ -21,6 +21,7 @@ import DiscordActivity from '../models/discord_activity';
 import LoginHistoryModel from '../models/login-history.model';
 import { Types } from 'mongoose';
 import PingHistoryModel from '../models/user-ping.model';
+import { UserAuth } from '../typings/express';
 
 @injectable()
 export class AuthController extends Controller {
@@ -180,7 +181,7 @@ export class AuthController extends Controller {
 
     async discordConnect(req: Request, res: Response) {
         const { discordId, email } = req.body;
-        let { roles } = req.tokenMeta as TokenDocument;
+        let { roles } = req.tokenMeta as UserAuth;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
@@ -226,7 +227,7 @@ export class AuthController extends Controller {
 
     async unConnectDiscord(req: Request, res: Response) {
         const { discordId, code } = req.body;
-        let { roles } = req.tokenMeta as TokenDocument;
+        let { roles } = req.tokenMeta as UserAuth;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
@@ -246,7 +247,7 @@ export class AuthController extends Controller {
 
     async syncNewModal(req: Request, res: Response) {
         const { discordId, code } = req.body;
-        let { roles } = req.tokenMeta as TokenDocument;
+        let { roles } = req.tokenMeta as UserAuth;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
@@ -277,7 +278,7 @@ export class AuthController extends Controller {
             point: number;
         };
         const data: DiscordReceive[] = req.body.data;
-        let { roles } = req.tokenMeta as TokenDocument;
+        let { roles } = req.tokenMeta as UserAuth;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
@@ -299,7 +300,7 @@ export class AuthController extends Controller {
 
     async verify(req: Request, res: Response) {
         const { discordId, code } = req.body;
-        let { roles } = req.tokenMeta as TokenDocument;
+        let { roles } = req.tokenMeta as UserAuth;
 
         try {
             if (!_.includes(roles, USER_ROLES.SYSTEM)) {
@@ -344,7 +345,7 @@ export class AuthController extends Controller {
 
     async code(req: Request, res: Response) {
         const { discordId } = req.body;
-        let { roles, userId } = req.tokenMeta as TokenDocument;
+        let { roles, userId } = req.tokenMeta as UserAuth;
 
         try {
             const user = await User.findById(userId);
