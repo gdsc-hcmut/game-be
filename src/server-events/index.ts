@@ -32,6 +32,7 @@ import { TokenDocument } from '../models/token.model';
 import { GICAchievementService } from '../services/gic/gic_achievement.service';
 import { lazyInject } from '../container';
 import { GICService } from '../services/gic/gic.service';
+import mongoose from 'mongoose';
 
 // let socketIOServer = null;
 // let connectedUser = [] as any;
@@ -149,9 +150,14 @@ export class SocketService {
         );
 
         socket.on(EventTypes.START_MAZE_SESSION, () =>
-            this.connectedUser[socket.userId].startSession(
+            this.connectedUser[socket.userId].startSession(socket.id),
+        );
+
+        socket.on(EventTypes.MOVE, (sessionId: string, move: string) =>
+            this.connectedUser[socket.userId].submitSingleMove(
+                sessionId,
+                move,
                 socket.id,
-                this.connectedUser,
             ),
         );
 
