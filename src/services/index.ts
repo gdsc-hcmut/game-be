@@ -7,6 +7,7 @@ import { MarketplaceItemService } from './marketplace_item.service';
 import { TransactionService } from './transaction.service';
 import { ClubDayService } from './clubday.service';
 import { DiscordService } from './discord.service';
+import { MazeService } from './maze.service';
 
 export {
     AuthService,
@@ -18,4 +19,5 @@ export {
     TransactionService,
     ClubDayService,
     DiscordService,
+    MazeService,
 };

@@ -1,6 +1,11 @@
 import _ from 'lodash';
 import { EventTypes } from './event-types';
-import { GameService, ItemService, TransactionService } from '../services';
+import {
+    GameService,
+    ItemService,
+    MazeService,
+    TransactionService,
+} from '../services';
 import { ClubDayService, UserService } from '../services';
 
 import levels from '../game/levels.json';
@@ -45,7 +50,8 @@ class ClientUser {
     private transactionService: TransactionService;
     private itemService: ItemService;
     private gicAchievementService: GICAchievementService;
-    private gicService: GICService
+    private gicService: GICService;
+    private mazeService: MazeService;
 
     constructor(
         userId: string,
@@ -55,7 +61,8 @@ class ClientUser {
         transactionService: TransactionService,
         itemService: ItemService,
         gicAchievementService: GICAchievementService,
-        gicService: GICService
+        gicService: GICService,
+        mazeService: MazeService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -67,7 +74,8 @@ class ClientUser {
         this.transactionService = transactionService;
         this.itemService = itemService;
         this.gicAchievementService = gicAchievementService;
-        this.gicService = gicService
+        this.gicService = gicService;
+        this.mazeService = mazeService;
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -406,17 +414,19 @@ class ClientUser {
         // trigger
         this.sockets[socketId].scoreQuiz = 0;
     }
-    
+
     async notifyVoted(connectedUser: ConnectedUser) {
-        const data = await this.gicService.getTopVotedTeams()
-        console.debug(`data: `, data)
-        Object.keys(connectedUser).forEach(userKey => {
-            Object.keys(connectedUser[userKey].sockets).forEach(socketKey => {
-                console.debug(`emitting event to user ${userKey} - socket ${socketKey}`)
-                const socket = connectedUser[userKey].sockets[socketKey].socket
-                socket.emit(EventTypes.GIC_VOTE, data)
-            })
-        })
+        const data = await this.gicService.getTopVotedTeams();
+        console.debug(`data: `, data);
+        Object.keys(connectedUser).forEach((userKey) => {
+            Object.keys(connectedUser[userKey].sockets).forEach((socketKey) => {
+                console.debug(
+                    `emitting event to user ${userKey} - socket ${socketKey}`,
+                );
+                const socket = connectedUser[userKey].sockets[socketKey].socket;
+                socket.emit(EventTypes.GIC_VOTE, data);
+            });
+        });
     }
 
     //#endregion
@@ -468,6 +478,24 @@ class ClientUser {
             console.log('here');
             this.sockets[key].socket.emit(EventTypes.NOTIFY_GIC, message);
         });
+    }
+
+    async startSession(socketId: any, connectedUser: ConnectedUser) {
+        try {
+            console.log('Start Maze Session');
+            const userIdCast = new mongoose.Types.ObjectId(this.userId);
+
+            const session = await this.mazeService.startSession(userIdCast);
+
+            Object.keys(this.sockets).map((key: any, index: any) => {
+                this.sockets[key].socket.emit(
+                    EventTypes.START_MAZE_SESSION_SUCCESS,
+                    session,
+                );
+            });
+        } catch (err) {
+            console.log('ERRRR', err);
+        }
     }
 
     async onDisconnect(socket: any, reason: any) {

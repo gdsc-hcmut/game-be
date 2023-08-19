@@ -1,9 +1,10 @@
 import { Request as ERequest, Response as EResponse } from 'express';
 import { HttpResponseComposer } from './lib/response-composer';
-import { TokenDocument } from './models/token.model';
+import { Token, TokenDocument } from './models/token.model';
+import { UserAuth } from './typings/express';
 
 export interface Request extends ERequest {
-    tokenMeta?: TokenDocument;
+    tokenMeta: UserAuth;
 }
 
 export interface Response extends EResponse {
@@ -27,6 +28,7 @@ export const ServiceType = {
     GIC: Symbol.for('GICService'),
     GICAchievement: Symbol.for('GICAchievement'),
     Mail: Symbol.for('Mail'),
+    Maze: Symbol.for('MazeService'),
 };
 
 export enum PrivacyType {

@@ -33,6 +33,7 @@ import { IS_PRODUCTION } from '../config';
 import { TokenDocument } from '../models/token.model';
 import _ from 'lodash';
 import { scheduleJob } from 'node-schedule';
+import { UserAuth } from '../typings/express';
 
 const ENCRYPTION_KEY = 'abqheuqo$5llamcb13%p78p#l4Bn561#';
 const ENCRYPTION_IV = '5183666c72eec9e4';
@@ -684,7 +685,7 @@ export class GICController extends Controller {
 
     async checkin(req: Request, res: Response) {
         try {
-            let { roles } = req.tokenMeta as TokenDocument;
+            let { roles } = req.tokenMeta as UserAuth;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
@@ -719,7 +720,7 @@ export class GICController extends Controller {
 
     async getUserGicGift(req: Request, res: Response) {
         try {
-            let { roles } = req.tokenMeta as TokenDocument;
+            let { roles } = req.tokenMeta as UserAuth;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
@@ -746,7 +747,7 @@ export class GICController extends Controller {
 
     async getAllUserGicGift(req: Request, res: Response) {
         try {
-            let { roles } = req.tokenMeta as TokenDocument;
+            let { roles } = req.tokenMeta as UserAuth;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
@@ -781,7 +782,7 @@ export class GICController extends Controller {
 
     async getAllCheckin(req: Request, res: Response) {
         try {
-            let { roles } = req.tokenMeta as TokenDocument;
+            let { roles } = req.tokenMeta as UserAuth;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {
                 throw Error('Permission Error');
@@ -1366,7 +1367,7 @@ export class GICController extends Controller {
 
     async acquireAchievement(req: Request, res: Response) {
         try {
-            const { roles } = req.tokenMeta as TokenDocument;
+            const { roles } = req.tokenMeta as UserAuth;
             const { achievementId, email, ...body } = req.body;
 
             if (!_.includes(roles, USER_ROLES.GIC_ADMIN)) {

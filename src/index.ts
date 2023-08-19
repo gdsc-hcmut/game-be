@@ -15,6 +15,7 @@ import {
     TransactionService,
     ClubDayService,
     DiscordService,
+    MazeService,
 } from './services';
 import {
     AuthController,
@@ -25,6 +26,7 @@ import {
     ClubDayController,
     DiscordController,
     GICController,
+    MazeController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -93,6 +95,10 @@ container
     .bind<GICAchievementService>(ServiceType.GICAchievement)
     .to(GICAchievementService)
     .inSingletonScope();
+container
+    .bind<MazeService>(ServiceType.Maze)
+    .to(MazeService)
+    .inSingletonScope();
 
 // Initialize service first
 Promise.all([
@@ -108,6 +114,7 @@ Promise.all([
             container.resolve<MarketplaceController>(MarketplaceController),
             container.resolve<ClubDayController>(ClubDayController),
             container.resolve<DiscordController>(DiscordController),
+            container.resolve<MazeController>(MazeController),
         ],
         SERVICE_PORT,
         [

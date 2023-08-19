@@ -8,6 +8,7 @@ import { ClubDayController } from './clubday.controller';
 import { Controller } from './controller';
 import { DiscordController } from './discord.controller';
 import { GICController } from './gic.controller';
+import { MazeController } from './maze.controller';
 export {
     Controller,
     AuthController,
@@ -18,4 +19,5 @@ export {
     ClubDayController,
     DiscordController,
     GICController,
+    MazeController,
 };
