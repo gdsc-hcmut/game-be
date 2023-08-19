@@ -480,7 +480,7 @@ class ClientUser {
         });
     }
 
-    async startSession(socketId: any, connectedUser: ConnectedUser) {
+    async startSession(socketId: any) {
         try {
             console.log('Start Maze Session');
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
@@ -495,6 +495,32 @@ class ClientUser {
             });
         } catch (err) {
             console.log('ERRRR', err);
+            this.sockets[socketId].socket.emit(
+                EventTypes.START_MAZE_SESSION_FAILED,
+            );
+        }
+    }
+
+    async submitSingleMove(sessionId: string, move: string, socketId: any) {
+        try {
+            const userIdCast = new mongoose.Types.ObjectId(this.userId);
+            const sessionIdCast = new mongoose.Types.ObjectId(sessionId);
+
+            const result = await this.mazeService.submitSingleMove(
+                sessionIdCast,
+                userIdCast,
+                move,
+            );
+
+            Object.keys(this.sockets).map((key: any, index: any) => {
+                this.sockets[key].socket.emit(
+                    EventTypes.MOVE_SUCCESSFULLY,
+                    result,
+                );
+            });
+        } catch (error) {
+            console.log(error.message);
+            this.sockets[socketId].socket.emit(EventTypes.MOVE_FAILED);
         }
     }
 
