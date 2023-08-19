@@ -153,12 +153,14 @@ export class SocketService {
             this.connectedUser[socket.userId].startSession(socket.id),
         );
 
-        socket.on(EventTypes.MOVE, (sessionId: string, move: string) =>
-            this.connectedUser[socket.userId].submitSingleMove(
-                sessionId,
-                move,
-                socket.id,
-            ),
+        socket.on(
+            EventTypes.MOVE,
+            ({ sessionId, move }: { sessionId: string; move: string }) =>
+                this.connectedUser[socket.userId].submitSingleMove(
+                    sessionId,
+                    move,
+                    socket.id,
+                ),
         );
 
         socket.on(EventTypes.DISCONNECT, () => {
