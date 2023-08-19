@@ -29,11 +29,7 @@ export class FileUploadService {
     async setUpFileUpload() {
         try {
             let mountPath = '';
-            if (process.env.ENV === 'dev' || process.env.ENV === 'prod') {
-                mountPath = '/secrets/googleServiceAccountKey.json';
-            } else {
-                mountPath = '../../googleServiceAccountKey.json';
-            }
+            mountPath = '../../googleServiceAccountKey.json';
             const serviceAccount = await import(mountPath);
             admin.initializeApp({
                 credential: admin.credential.cert(
