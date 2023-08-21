@@ -21,6 +21,7 @@ export class MazeSessionController extends Controller {
         this.router.post('/', this.createSession.bind(this));
         this.router.get('/current', this.getCurrentSession.bind(this));
         this.router.post('/:id/move', this.submitSingleMove.bind(this));
+        this.router.post('/:id/moves', this.submitMultipleMove.bind(this));
         this.router.get('/:id/character', this.getCharacterInfo.bind(this));
         this.router.get('/:id/map', this.getMapInfo.bind(this));
         this.router.get('/:id/move', this.getMovesHistory.bind(this));
@@ -132,6 +133,25 @@ export class MazeSessionController extends Controller {
             );
 
             res.composer.success(session);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async submitMultipleMove(req: Request, res: Response) {
+        try {
+            const sessionId = new mongoose.Types.ObjectId(req.params.id);
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const moves: string[] = req.body.moves;
+
+            const result = await this.mazeService.submitMultipleMove(
+                sessionId,
+                userId,
+                moves,
+            );
+
+            res.composer.success(result);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

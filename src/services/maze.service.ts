@@ -18,7 +18,6 @@ import MazeGameSession, {
 } from '../models/maze_game_session.model';
 import { Cell } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
-
 interface MoveEffected {
     status: Status;
     cells_affected: [
@@ -32,7 +31,7 @@ interface MoveEffected {
 
 function handleMove(
     session: MazeGameSessionDocument,
-    moveDirection: Direction,
+    move: string,
 ): MoveEffected {
     const character: Character = session.character;
     const map: CellObject[] = session.map;
@@ -41,24 +40,28 @@ function handleMove(
 
     character.stamina--;
 
-    switch (moveDirection) {
-        case 'up':
+    switch (move) {
+        case Direction.Up:
             nextPosition = character.position + width;
             if (nextPosition > width * height - 1)
                 throw Error('Move out of the map');
+            session.moves = [...session.moves, move];
             break;
-        case 'down':
+        case Direction.Down:
             nextPosition = character.position - width;
             if (nextPosition < 0) throw Error('Move out of the map');
+            session.moves = [...session.moves, move];
             break;
-        case 'right':
+        case Direction.Right:
             nextPosition = character.position + 1;
             if (nextPosition % width === 0) throw Error('Move out of the map');
+            session.moves = [...session.moves, move];
             break;
-        case 'left':
+        case Direction.Left:
             nextPosition = character.position - 1;
             if (character.position % width === 0)
                 throw Error('Move out of the map');
+            session.moves = [...session.moves, move];
             break;
         default:
             break;
@@ -85,6 +88,65 @@ function handleMove(
 
     return result;
 }
+
+interface MultipleMoveResult {
+    status: Status;
+    map: CellObject[];
+    character: Character;
+}
+
+function handleMultipleMove(
+    session: MazeGameSessionDocument,
+    moves: string[],
+): void {
+    const character: Character = session.character;
+    const map: CellObject[] = session.map;
+    const { width, height } = session.size;
+    var nextPosition: number;
+
+    for (var i = 0; i < moves.length; i++) {
+        character.stamina--;
+        switch (moves[i]) {
+            case Direction.Up:
+                nextPosition = character.position + width;
+                if (nextPosition > width * height - 1) continue;
+                session.moves = [...session.moves, Direction.Up];
+                break;
+            case Direction.Down:
+                nextPosition = character.position - width;
+                if (nextPosition < 0) continue;
+                session.moves = [...session.moves, Direction.Down];
+                break;
+            case Direction.Right:
+                nextPosition = character.position + 1;
+                if (nextPosition % width === 0) continue;
+                session.moves = [...session.moves, Direction.Right];
+                break;
+            case Direction.Left:
+                nextPosition = character.position - 1;
+                if ((nextPosition - 1) % width === 0) continue;
+                session.moves = [...session.moves, Direction.Left];
+                break;
+            default:
+                continue;
+        }
+
+        if (Cell.handle(character, map[nextPosition])) {
+            character.position = nextPosition;
+        }
+
+        if (character.hp <= 0 || character.stamina <= 0)
+            session.status = Status.Lose;
+        else if (map[nextPosition].property === 'end')
+            session.status = Status.Win;
+
+        if (session.status !== Status.InProgress) return;
+    }
+
+    if (session.status === Status.InProgress) session.status = Status.Lose;
+}
+
+// function handleMultipleMove()
 
 @injectable()
 export class MazeService {
@@ -169,31 +231,29 @@ export class MazeService {
             throw Error('Session has been done');
         }
 
-        var moveDirection: Direction;
-        switch (move) {
-            case 'w':
-                moveDirection = Direction.Up;
-                break;
+        // var moveDirection: Direction;
+        // switch (move) {
+        //     case 'w':
+        //         moveDirection = Direction.Up;
+        //         break;
 
-            case 's':
-                moveDirection = Direction.Down;
-                break;
+        //     case 's':
+        //         moveDirection = Direction.Down;
+        //         break;
 
-            case 'd':
-                moveDirection = Direction.Right;
-                break;
+        //     case 'd':
+        //         moveDirection = Direction.Right;
+        //         break;
 
-            case 'a':
-                moveDirection = Direction.Left;
-                break;
+        //     case 'a':
+        //         moveDirection = Direction.Left;
+        //         break;
 
-            default:
-                throw Error('wrong key submission');
-        }
+        //     default:
+        //         throw Error('wrong key submission');
+        // }
 
-        const result = handleMove(currentSession, moveDirection);
-
-        const newMoves: Direction[] = [...currentSession.moves, moveDirection];
+        const result = handleMove(currentSession, move);
 
         await MazeGameSession.updateOne(
             { _id: sessionId },
@@ -202,7 +262,7 @@ export class MazeService {
                     map: currentSession.map,
                     character: currentSession.character,
                     status: currentSession.status,
-                    moves: newMoves,
+                    moves: currentSession.moves,
                 },
             },
         );
@@ -283,5 +343,42 @@ export class MazeService {
         );
 
         return currentSession;
+    }
+
+    async submitMultipleMove(
+        sessionId: Types.ObjectId,
+        userId: Types.ObjectId,
+        moves: string[],
+    ): Promise<MultipleMoveResult> {
+        const currentSession = await MazeGameSession.findById(sessionId);
+
+        if (!currentSession) {
+            throw Error('Could not find session');
+        }
+
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
+
+        if (currentSession.status !== Status.InProgress) {
+            throw Error('Session has been done');
+        }
+        handleMultipleMove(currentSession, moves);
+
+        await MazeGameSession.updateOne(
+            { _id: sessionId },
+            {
+                $set: {
+                    status: currentSession.status,
+                    map: currentSession.map,
+                    character: currentSession.character,
+                },
+            },
+        );
+
+        return {
+            status: currentSession.status,
+            map: currentSession.map,
+            character: currentSession.character,
+        };
     }
 }
