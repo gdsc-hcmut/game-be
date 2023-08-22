@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
 import _ from 'lodash';
 import ClubDay, { ClubDayDocument } from '../models/club_day';
+import User, { UserDocument, USER_ROLES } from '../models/user.model';
 
 @injectable()
 export class ClubDayService {

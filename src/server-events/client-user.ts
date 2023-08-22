@@ -354,6 +354,19 @@ class ClientUser {
         if (!this.sockets[socketId].isQuizStart) return;
 
         this.sockets[socketId].levelQuiz = this.sockets[socketId].levelQuiz + 1;
+        if (this.sockets[socketId].levelQuiz === 10)
+            try {
+                console.log('Level Quiz', this.sockets[socketId].levelQuiz);
+
+                await this.clubDayService.verifyMathQuiz(this.userId);
+                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+                    type: 'success',
+                    message:
+                        'You have pass first 30 level and claim reward from Club Day ',
+                });
+            } catch (err) {
+                console.log('MathQuizERRRR', err);
+            }
         this.sockets[socketId].scoreQuiz =
             this.sockets[socketId].scoreQuiz + 10;
         let fake = _.sample([true, false]);

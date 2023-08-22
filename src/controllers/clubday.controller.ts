@@ -129,7 +129,8 @@ export class ClubDayController extends Controller {
                 !_.includes(
                     req.tokenMeta.roles,
                     USER_ROLES.STAFF_CLUBDAY_VERIFY,
-                )
+                ) &&
+                !_.includes(req.tokenMeta.roles, USER_ROLES.SUPER_ADMIN)
             ) {
                 throw Error('You are not Staff of Club Day');
             }
@@ -153,7 +154,11 @@ export class ClubDayController extends Controller {
     async getAllReceivedClubDay(req: Request, res: Response) {
         try {
             if (
-                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_GIFT,
+                ) &&
+                !_.includes(req.tokenMeta.roles, USER_ROLES.SUPER_ADMIN)
             ) {
                 throw Error('You are not Staff of Club Day');
             }
@@ -169,7 +174,11 @@ export class ClubDayController extends Controller {
     async getAvailableReward(req: Request, res: Response) {
         try {
             if (
-                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_GIFT,
+                ) &&
+                !_.includes(req.tokenMeta.roles, USER_ROLES.SUPER_ADMIN)
             ) {
                 throw Error('You are not Staff of Club Day');
             }
@@ -212,7 +221,11 @@ export class ClubDayController extends Controller {
     async receivedReward(req: Request, res: Response) {
         try {
             if (
-                !_.includes(req.tokenMeta.roles, USER_ROLES.STAFF_CLUBDAY_GIFT)
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_GIFT,
+                ) &&
+                !_.includes(req.tokenMeta.roles, USER_ROLES.SUPER_ADMIN)
             ) {
                 throw Error('You are not Staff of Club Day');
             }
