@@ -30,6 +30,7 @@ export type UserDocument = Document & {
     studentId: string;
     dob: number;
     googleId: string;
+    appleId?: string;
     balance: number;
     highestScoreMathQuiz: number;
     picture: string;
@@ -49,6 +50,7 @@ const userSchema = new Schema<UserDocument>({
     university: String,
     dob: Number,
     googleId: String,
+    appleId: String,
     balance: { type: Number, default: 0 },
     highestScoreMathQuiz: { type: Number, default: 0 },
     picture: String,

@@ -26,6 +26,7 @@
         "@google-cloud/local-auth": "^2.1.0",
         "@types/cookie-session": "^2.0.44",
         "adm-zip": "^0.4.13",
+        "apple-signin-auth": "^1.7.5",
         "async-lock": "^1.4.0",
         "axios": "^0.19.2",
         "bcryptjs": "^2.4.3",

@@ -44,11 +44,13 @@ import { lazyInject } from '../container';
 import { hashingPassword } from '../lib/helper';
 import PingHistoryModel from '../models/user-ping.model';
 import { OAuth2Client } from 'google-auth-library';
+import appleSigninAuth from 'apple-signin-auth';
 import { UserAuth } from '../typings/express';
 
 @injectable()
 export class AuthService {
-    public client = new OAuth2Client(GOOGLE_CLIENT_ID);
+    private googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+    private appleClient = appleSigninAuth;
 
     @lazyInject(ServiceType.User) private userService: UserService;
     constructor(
@@ -175,12 +177,14 @@ export class AuthService {
 
     private async createToken(
         userId: string,
-        googleId: string,
+        googleId: string = '',
         userAgent: string,
         roles: Array<USER_ROLES>,
+        appleId: string = '',
     ) {
         const result = await Token.create({
             googleId,
+            appleId,
             userAgent,
             userId,
             createdAt: moment().unix(),
@@ -191,6 +195,7 @@ export class AuthService {
             {
                 _id: result._id,
                 googleId,
+                appleId,
                 userAgent,
                 userId,
                 createdAt: moment().unix(),
@@ -218,11 +223,12 @@ export class AuthService {
             throw new ErrorUserInvalid('Missing IdToken');
         }
 
-        const ticket = await this.client.verifyIdToken({
+        const ticket = await this.googleClient.verifyIdToken({
             idToken,
             audience: GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
+        console.log(payload);
 
         //check valid payload .... TODO
         if (!payload.email) {
@@ -240,7 +246,6 @@ export class AuthService {
                 roles: USER_ROLES.USER,
             });
             user = newUser;
-            console.log('New User');
         } else {
             if (user.picture !== payload.picture) {
                 user.picture = payload.picture;
@@ -253,6 +258,54 @@ export class AuthService {
             user.googleId,
             user.email,
             user.roles,
+        );
+    }
+
+    async generateTokenAppleSignin(
+        idToken: string,
+        nonce: string,
+        givenName: string | null,
+        familyName: string | null,
+    ) {
+        if (_.isEmpty(idToken)) {
+            throw new ErrorUserInvalid('Missing IdToken');
+        }
+        if (_.isEmpty(nonce)) {
+            throw new ErrorUserInvalid('Missing nonce');
+        }
+
+        const appleToken = await this.appleClient.verifyIdToken(idToken, {
+            nonce: nonce
+                ? crypto.createHash('sha256').update(nonce).digest('hex')
+                : undefined,
+        });
+
+        //check valid payload .... TODO
+        if (!appleToken.email) {
+            throw Error('Invalid email');
+        }
+        // Check env dev = whitelist, production
+        let user = await User.findOne({ appleId: appleToken.sub });
+        // If user doesn't exist creates a new user. (similar to sign up)
+        if (!user) {
+            const newUser = await User.create({
+                appleId: appleToken.sub,
+                name:
+                    givenName && familyName
+                        ? givenName + ' ' + familyName
+                        : undefined,
+                email: appleToken.email,
+                roles: USER_ROLES.USER,
+            });
+            user = newUser;
+        }
+
+        return await this.createToken(
+            user._id,
+            '',
+            user.email,
+            user.roles,
+            user.appleId,
         );
     }
 

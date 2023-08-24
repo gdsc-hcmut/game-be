@@ -38,7 +38,14 @@ export class AuthController extends Controller {
 
         // Confing child routes
         this.router.post('/login', this.login.bind(this));
-        this.router.post('/mobile/login', this.mobileLogin.bind(this));
+        this.router.post(
+            '/mobile/google/login',
+            this.mobileGoogleLogin.bind(this),
+        );
+        this.router.post(
+            '/mobile/apple/login',
+            this.mobileAppleLogin.bind(this),
+        );
         this.router.get(
             '/google',
             (req, res, next) => {
@@ -154,14 +161,30 @@ export class AuthController extends Controller {
         }
     }
 
-    async mobileLogin(req: Request, res: Response) {
+    async mobileGoogleLogin(req: Request, res: Response) {
         try {
-            console.log('req', req);
             const { idToken } = req.body;
 
-            //Check valid payload, exp,... Xem nhugn thong so khac payload
             const token = await this.authService.generateTokenGoogleSignin(
                 idToken,
+            );
+            res.composer.success({ token });
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async mobileAppleLogin(req: Request, res: Response) {
+        try {
+            const { idToken, nonce, givenName, familyName } = req.body;
+
+            console.log(givenName, familyName);
+
+            const token = await this.authService.generateTokenAppleSignin(
+                idToken,
+                nonce,
+                givenName,
+                familyName,
             );
             res.composer.success({ token });
         } catch (error) {
