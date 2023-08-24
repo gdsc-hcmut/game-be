@@ -485,7 +485,7 @@ class ClientUser {
             console.log('Start Maze Session');
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
 
-            const session = await this.mazeService.startSession(userIdCast);
+            const session = await this.mazeService.startSession(userIdCast, 1);
 
             Object.keys(this.sockets).map((key: any, index: any) => {
                 this.sockets[key].socket.emit(

@@ -8,6 +8,8 @@ import { TransactionService } from './transaction.service';
 import { ClubDayService } from './clubday.service';
 import { DiscordService } from './discord.service';
 import { MazeService } from './maze.service';
+import { MazeChapterService } from './maze_chapter.service';
+import { MazeChapterSessionService } from './maze_chapter_session.service';
 
 export {
     AuthService,
@@ -20,4 +22,6 @@ export {
     ClubDayService,
     DiscordService,
     MazeService,
+    MazeChapterService,
+    MazeChapterSessionService,
 };

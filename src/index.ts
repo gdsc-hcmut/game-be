@@ -16,6 +16,8 @@ import {
     ClubDayService,
     DiscordService,
     MazeService,
+    MazeChapterService,
+    MazeChapterSessionService,
 } from './services';
 import {
     AuthController,
@@ -28,6 +30,8 @@ import {
     GICController,
     MazeController,
     MazeSessionController,
+    MazeChapterController,
+    MazeChapterSessionController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -100,6 +104,14 @@ container
     .bind<MazeService>(ServiceType.Maze)
     .to(MazeService)
     .inSingletonScope();
+container
+    .bind<MazeChapterService>(ServiceType.MazeChapter)
+    .to(MazeChapterService)
+    .inSingletonScope();
+container
+    .bind<MazeChapterSessionService>(ServiceType.MazeChapterSession)
+    .to(MazeChapterSessionService)
+    .inSingletonScope();
 
 // Initialize service first
 Promise.all([
@@ -117,6 +129,10 @@ Promise.all([
             container.resolve<DiscordController>(DiscordController),
             container.resolve<MazeController>(MazeController),
             container.resolve<MazeSessionController>(MazeSessionController),
+            container.resolve<MazeChapterController>(MazeChapterController),
+            container.resolve<MazeChapterSessionController>(
+                MazeChapterSessionController,
+            ),
         ],
         SERVICE_PORT,
         [
