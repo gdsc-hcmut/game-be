@@ -16,8 +16,17 @@ import MazeGameSession, {
     MazeGameSessionDocument,
     Status,
 } from '../models/maze_game_session.model';
+import mazeChapterSession, {
+    ChapterStatus,
+} from '../models/maze_game_chapter_session.model';
+
 import { Cell } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
+
+interface Score {
+    score: number;
+}
+
 interface MoveEffected {
     status: Status;
     cells_affected: [
@@ -27,6 +36,13 @@ interface MoveEffected {
         },
     ];
     character: Character;
+}
+
+interface MultipleMoveResult {
+    status: Status;
+    map: CellObject[];
+    character: Character;
+    isHelp: boolean;
 }
 
 function handleMove(
@@ -89,12 +105,6 @@ function handleMove(
     return result;
 }
 
-interface MultipleMoveResult {
-    status: Status;
-    map: CellObject[];
-    character: Character;
-}
-
 function handleMultipleMove(
     session: MazeGameSessionDocument,
     moves: string[],
@@ -150,7 +160,7 @@ function handleMultipleMove(
 
 @injectable()
 export class MazeService {
-    async createMap(): Promise<MazeGameDocument> {
+    async createMap(level: number): Promise<MazeGameDocument> {
         var newMap: CellObject[] = initMapLevel4;
 
         const newCharacter: Character = initCharacter1;
@@ -162,6 +172,7 @@ export class MazeService {
                 width: 3,
                 height: 6,
             },
+            level: level,
         });
 
         await newMazeGame.save();
@@ -171,6 +182,8 @@ export class MazeService {
 
     async startSession(
         userId: Types.ObjectId,
+        level: number,
+        chapterSessionId: Types.ObjectId = null,
     ): Promise<MazeGameSessionDocument> {
         const currentSession = await MazeGameSession.findOne({
             userId: userId,
@@ -182,7 +195,7 @@ export class MazeService {
         }
 
         const [newMazeGame] = await MazeGame.aggregate<MazeGameSessionDocument>(
-            [{ $sample: { size: 1 } }],
+            [{ $match: { level: level } }, { $sample: { size: 1 } }],
         );
 
         const newSession = new MazeGameSession({
@@ -190,8 +203,10 @@ export class MazeService {
             character: newMazeGame.character,
             size: newMazeGame.size,
             userId: userId,
+            chapterSessionId: chapterSessionId,
             status: Status.InProgress,
             mapId: newMazeGame._id,
+            level: level,
         });
 
         await newSession.save();
@@ -349,6 +364,7 @@ export class MazeService {
         sessionId: Types.ObjectId,
         userId: Types.ObjectId,
         moves: string[],
+        useHelp: boolean,
     ): Promise<MultipleMoveResult> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
@@ -363,6 +379,37 @@ export class MazeService {
             throw Error('Session has been done');
         }
         handleMultipleMove(currentSession, moves);
+
+        const currentChapterSession = await mazeChapterSession
+            .findById(currentSession.chapterSessionId)
+            .populate('chapterId');
+        if (currentChapterSession) {
+            const newRound = currentChapterSession.currentRound + 1;
+            const maxRound = currentChapterSession.chapterId.roundLevels.length;
+            var helpCount = currentChapterSession.helpCount;
+            console.log(maxRound);
+
+            var newStatus: ChapterStatus = ChapterStatus.InProgress;
+
+            if (newRound > maxRound) newStatus = ChapterStatus.Done;
+
+            var isHelp: boolean = false;
+            if (useHelp && helpCount > 0) {
+                helpCount--;
+                isHelp = true;
+            }
+
+            await mazeChapterSession.updateOne(
+                { _id: currentSession.chapterSessionId },
+                {
+                    $set: {
+                        currentRound: newRound,
+                        status: newStatus,
+                        helpCount: helpCount,
+                    },
+                },
+            );
+        }
 
         await MazeGameSession.updateOne(
             { _id: sessionId },
@@ -379,6 +426,22 @@ export class MazeService {
             status: currentSession.status,
             map: currentSession.map,
             character: currentSession.character,
+            isHelp: isHelp,
         };
+    }
+
+    async getScore(sessionId: Types.ObjectId): Promise<Score> {
+        const session = await MazeGameSession.findById(sessionId);
+
+        if (!session) return { score: 0 };
+
+        if (session.status !== Status.Win) return { score: 0 };
+
+        const score =
+            session.character.hp +
+            session.character.stamina * 10 +
+            session.level * 100;
+
+        return { score: score };
     }
 }

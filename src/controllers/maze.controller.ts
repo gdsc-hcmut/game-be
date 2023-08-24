@@ -23,7 +23,8 @@ export class MazeController extends Controller {
 
     async createNewMap(req: Request, res: Response) {
         try {
-            const newMap = await this.mazeService.createMap();
+            const { level } = req.body;
+            const newMap = await this.mazeService.createMap(level);
             res.composer.success(newMap);
         } catch (error) {
             console.log(error);

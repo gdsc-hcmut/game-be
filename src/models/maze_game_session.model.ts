@@ -21,7 +21,9 @@ export type MazeGameSessionDocument = Document & {
         width: number;
         height: number;
     };
+    level: number;
     userId: Types.ObjectId;
+    chapterSessionId: Types.ObjectId;
     status: Status;
     mapId: Types.ObjectId;
     moves: Direction[];
@@ -65,7 +67,12 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
         width: { type: Number },
         height: { type: Number },
     },
+    level: { type: Number, default: 1 },
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    chapterSessionId: {
+        type: Schema.Types.ObjectId,
+        ref: 'maze_game_chapter_session',
+    },
     status: String,
     mapId: { type: Schema.Types.ObjectId, ref: 'maze_game' },
     moves: [{ type: String, default: [] }],
