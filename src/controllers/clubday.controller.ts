@@ -132,7 +132,7 @@ export class ClubDayController extends Controller {
                 throw Error('You are not Staff of Club Day');
             }
 
-            const userId = req.body.userId;
+            const userId = req.query.userId.toString();
 
             const canPlay = await this.clubdayService.verifyMazeGame(userId);
 
