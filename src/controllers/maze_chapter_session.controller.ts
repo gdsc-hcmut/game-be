@@ -20,9 +20,12 @@ export class MazeChapterSessionController extends Controller {
 
         this.router.all('*', this.authService.authenticate());
         this.router.post('/', this.createNewChapterSession.bind(this));
-        this.router.post('/:id/start', this.startSession.bind(this));
-        this.router.get('/:id', this.getSession.bind(this));
-        this.router.get('/score/total', this.getScore.bind(this));
+        this.router.post(
+            '/:id/maze-session',
+            this.createNewMazeSession.bind(this),
+        );
+        this.router.get('/:id', this.getChapterSession.bind(this));
+        this.router.get('/score/total', this.getTotalScore.bind(this));
         this.router.get('/:id/score', this.getChapterScore.bind(this));
     }
 
@@ -44,18 +47,19 @@ export class MazeChapterSessionController extends Controller {
         }
     }
 
-    async startSession(req: Request, res: Response) {
+    async createNewMazeSession(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const chapterId = new Types.ObjectId(req.params.id);
 
             const { round } = req.body;
 
-            const result = await this.mazeChapterSessionService.startSession(
-                userId,
-                chapterId,
-                round,
-            );
+            const result =
+                await this.mazeChapterSessionService.createNewMazeSession(
+                    userId,
+                    chapterId,
+                    round,
+                );
 
             res.composer.success(result);
         } catch (error) {
@@ -64,7 +68,7 @@ export class MazeChapterSessionController extends Controller {
         }
     }
 
-    async getSession(req: Request, res: Response) {
+    async getChapterSession(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const chapterSessionId = new Types.ObjectId(req.params.id);
@@ -97,7 +101,7 @@ export class MazeChapterSessionController extends Controller {
         }
     }
 
-    async getScore(req: Request, res: Response) {
+    async getTotalScore(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
 

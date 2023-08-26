@@ -28,36 +28,41 @@ export class MazeChapterSessionService {
         userId: Types.ObjectId,
         chapterLevel: number,
     ): Promise<MazeGameChapterSessionDocument> {
-        var isNewChapter = false;
+        let isNewChapter = false;
 
         const user = await User.findById(userId)
             .populate('currentMazeChapter')
             .exec();
         const { currentMazeChapter } = user;
 
-        if (!currentMazeChapter) {
-            if (chapterLevel > 1)
+        if (chapterLevel <= 0) {
+            throw Error('This chapter is not available!');
+        }
+
+        if (!currentMazeChapter && chapterLevel > 1) {
+            throw Error(
+                'This chapter will be unlocked when you finish all the previous chapter!',
+            );
+        } else if (!currentMazeChapter && chapterLevel === 1) {
+            isNewChapter = true;
+        } else if (
+            currentMazeChapter &&
+            chapterLevel > currentMazeChapter.chapterLevel + 1
+        ) {
+            throw Error(
+                'This chapter will be unlocked when you finish all the previous chapter!',
+            );
+        } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
+            const currentChapter = await MazeGameChapterSession.findOne({
+                userId: userId,
+                status: ChapterStatus.Done,
+            });
+
+            if (!currentChapter)
                 throw Error(
                     'This chapter will be unlocked when you finish all the previous chapter!',
                 );
             else isNewChapter = true;
-        } else {
-            if (chapterLevel > currentMazeChapter.chapterLevel + 1) {
-                throw Error(
-                    'This chapter will be unlocked when you finish all the previous chapter!',
-                );
-            } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
-                const currentChapter = await MazeGameChapterSession.findOne({
-                    userId: userId,
-                    status: ChapterStatus.Done,
-                });
-
-                if (!currentChapter)
-                    throw Error(
-                        'This chapter will be unlocked when you finish all the previous chapter!',
-                    );
-                else isNewChapter = true;
-            }
         }
 
         const chapter = await MazeGameChapter.findOne({
@@ -105,7 +110,7 @@ export class MazeChapterSessionService {
         return newChapterSession;
     }
 
-    async startSession(
+    async createNewMazeSession(
         userId: Types.ObjectId,
         chapterSessionId: Types.ObjectId,
         round: number,
@@ -122,7 +127,7 @@ export class MazeChapterSessionService {
             throw Error('Could not access to these chapter');
         }
 
-        var { currentRound } = chapterSession;
+        let { currentRound } = chapterSession;
 
         if (round !== currentRound)
             throw Error(
@@ -146,7 +151,7 @@ export class MazeChapterSessionService {
             }
         }
 
-        const newSession = await this.mazeService.startSession(
+        const newSession = await this.mazeService.createSession(
             userId,
             roundLevels[round - 1], // level of session
             chapterSessionId,
@@ -197,7 +202,7 @@ export class MazeChapterSessionService {
             throw Error('Could not find chapter session!');
         }
 
-        var chapterScore = 0;
+        let chapterScore = 0;
 
         for (const sessionId of chapterSession.rounds) {
             const roundScore = await this.mazeService.getScore(sessionId);
@@ -220,13 +225,13 @@ export class MazeChapterSessionService {
         }
 
         const { chapterLevel } = user.currentMazeChapter;
-        var totalScore = 0;
-        var chapterScore: number;
-        var roundScore: { score: number };
-        var chapterSession: MazeGameChapterSessionDocument;
-        var chapter: MazeGameChapterDocument;
+        let totalScore = 0;
+        let chapterScore: number;
+        let roundScore: { score: number };
+        let chapterSession: MazeGameChapterSessionDocument;
+        let chapter: MazeGameChapterDocument;
 
-        for (var i = 1; i <= chapterLevel; i++) {
+        for (let i = 1; i <= chapterLevel; i++) {
             chapter = await MazeGameChapter.findOne({
                 chapterLevel: i,
             });
