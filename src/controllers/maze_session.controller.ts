@@ -5,6 +5,8 @@ import { Controller } from './controller';
 import { Request, Response, ServiceType } from '../types';
 import { AuthService, MazeService } from '../services';
 import mongoose, { Types } from 'mongoose';
+import _ from 'lodash';
+import { USER_ROLES } from '../models/user.model';
 
 @injectable()
 export class MazeSessionController extends Controller {
@@ -29,7 +31,17 @@ export class MazeSessionController extends Controller {
 
     async createSession(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            console.log(req.tokenMeta);
+            if (
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
+                )
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
+
+            const userId = new Types.ObjectId(req.body.userId);
 
             const session = await this.mazeService.startSession(userId);
             res.composer.success(session);
