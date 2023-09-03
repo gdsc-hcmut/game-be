@@ -20,7 +20,7 @@ import mazeChapterSession, {
     ChapterStatus,
 } from '../models/maze_game_chapter_session.model';
 
-import { CellClass } from '../constant/maze/map/cellClass';
+import { MapCell } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
 
 interface Score {
@@ -81,7 +81,7 @@ function handleMove(
 
     session.moves = [...session.moves, move as Direction];
 
-    if (CellClass.handle(character, map[nextPosition])) {
+    if (MapCell.handle(character, map[nextPosition])) {
         character.position = nextPosition;
     }
 
@@ -136,7 +136,7 @@ function handleMultipleMoves(
         }
         session.moves = [...session.moves, moves[i] as Direction];
 
-        if (CellClass.handle(character, map[nextPosition])) {
+        if (MapCell.handle(character, map[nextPosition])) {
             character.position = nextPosition;
         }
 

@@ -1,6 +1,6 @@
 import { Cell, CellType, Character } from '../../../models/maze_game.model';
 
-export abstract class CellClass {
+export abstract class MapCell {
     static handle(character: Character, cellInfo: Cell): boolean {
         switch (cellInfo.property) {
             case CellType.Path:
