@@ -374,6 +374,16 @@ class ClientUser {
                 this.sockets[socketId].levelQuiz,
             ),
         });
+
+        if (this.sockets[socketId].levelQuiz === 5)
+            try {
+                await this.clubDayService.verifyMathQuiz(this.userId);
+                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
+                    type: 'success',
+                    message:
+                        'You have pass first 30 level and claim reward from Club Day ',
+                });
+            } catch (err) {}
     }
 
     async endQuizTimeout(socketId: any, connectedUser: ConnectedUser) {
@@ -413,16 +423,6 @@ class ClientUser {
             });
         // trigger
         this.sockets[socketId].scoreQuiz = 0;
-
-        if (this.sockets[socketId].levelQuiz === 31)
-            try {
-                await this.clubDayService.verifyMathQuiz(this.userId);
-                this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
-                    type: 'success',
-                    message:
-                        'You have pass first 30 level and claim reward from Club Day ',
-                });
-            } catch (err) {}
     }
 
     async notifyVoted(connectedUser: ConnectedUser) {
