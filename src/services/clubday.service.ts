@@ -81,9 +81,11 @@ export class ClubDayService {
             throw Error('Not existed');
         }
 
+        // console.log(clubDay);
+
         // clubDay.isFinishMaze = true;
         await ClubDay.updateOne(
-            { id: clubDay._id },
+            { _id: clubDay._id },
             { $set: { isFinishMaze: true } },
         );
     }
