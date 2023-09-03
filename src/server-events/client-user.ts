@@ -375,7 +375,7 @@ class ClientUser {
             ),
         });
 
-        if (this.sockets[socketId].levelQuiz === 5)
+        if (this.sockets[socketId].levelQuiz === 31)
             try {
                 await this.clubDayService.verifyMathQuiz(this.userId);
                 this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
