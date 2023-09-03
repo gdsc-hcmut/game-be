@@ -23,10 +23,12 @@ export class MazeSessionController extends Controller {
         this.router.post('/', this.createSession.bind(this));
         this.router.get('/current', this.getCurrentSession.bind(this));
         this.router.post('/:id/move', this.submitSingleMove.bind(this));
+        this.router.post('/:id/moves', this.submitMultipleMoves.bind(this));
         this.router.get('/:id/character', this.getCharacterInfo.bind(this));
         this.router.get('/:id/map', this.getMapInfo.bind(this));
         this.router.get('/:id/move', this.getMovesHistory.bind(this));
         this.router.post('/:id/end', this.endSession.bind(this));
+        this.router.get('/:id/score', this.getRoundScore.bind(this));
     }
 
     async createSession(req: Request, res: Response) {
@@ -43,7 +45,7 @@ export class MazeSessionController extends Controller {
 
             const userId = new Types.ObjectId(req.body.userId);
 
-            const session = await this.mazeService.startSession(userId);
+            const session = await this.mazeService.createSession(userId, 1);
             res.composer.success(session);
         } catch (error) {
             console.log(error);
@@ -144,6 +146,40 @@ export class MazeSessionController extends Controller {
             );
 
             res.composer.success(session);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async submitMultipleMoves(req: Request, res: Response) {
+        try {
+            const sessionId = new mongoose.Types.ObjectId(req.params.id);
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const moves: string[] = req.body.moves;
+            const canUseHelp: boolean = req.body.is_enable_animation;
+
+            const result = await this.mazeService.submitMultipleMove(
+                sessionId,
+                userId,
+                moves,
+                canUseHelp,
+            );
+
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async getRoundScore(req: Request, res: Response) {
+        try {
+            const roundId = new Types.ObjectId(req.params.id);
+
+            const result = await this.mazeService.getScore(roundId);
+
+            res.composer.success(result);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

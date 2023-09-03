@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import { CellObject, Character } from './maze_game.model';
+import { Cell, Character } from './maze_game.model';
 
 export enum Status {
     InProgress = 'in_progress',
@@ -15,13 +15,15 @@ export enum Direction {
 }
 
 export type MazeGameSessionDocument = Document & {
-    map: CellObject[];
+    map: Cell[];
     character: Character;
     size: {
         width: number;
         height: number;
     };
+    level: number;
     userId: Types.ObjectId;
+    chapterSessionId: Types.ObjectId;
     status: Status;
     mapId: Types.ObjectId;
     moves: Direction[];
@@ -65,7 +67,12 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
         width: { type: Number },
         height: { type: Number },
     },
+    level: { type: Number, default: 1 },
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    chapterSessionId: {
+        type: Schema.Types.ObjectId,
+        ref: 'maze_game_chapter_session',
+    },
     status: String,
     mapId: { type: Schema.Types.ObjectId, ref: 'maze_game' },
     moves: [{ type: String, default: [] }],

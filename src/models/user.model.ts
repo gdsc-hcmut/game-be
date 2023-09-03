@@ -1,4 +1,5 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
+import { MazeGameChapterDocument } from './maze_game_chapter.model';
 
 export const USER_FORBIDDEN_FIELDS = [
     'password',
@@ -40,6 +41,7 @@ export type UserDocument = Document & {
     verifyDiscordCodeAt: number;
     availableReceiving: number;
     roles: USER_ROLES[];
+    currentMazeChapter: Types.ObjectId & MazeGameChapterDocument;
 };
 
 const userSchema = new Schema<UserDocument>({
@@ -60,6 +62,11 @@ const userSchema = new Schema<UserDocument>({
     verifyDiscordCodeAt: Number,
     availableReceiving: { type: Number, default: 1000 },
     roles: Array<USER_ROLES>,
+    currentMazeChapter: {
+        type: Schema.Types.ObjectId,
+        ref: 'maze_game_chapter',
+        default: null,
+    },
 });
 
 const User = mongoose.model<UserDocument>('User', userSchema);

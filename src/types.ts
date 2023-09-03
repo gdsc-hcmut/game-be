@@ -29,6 +29,8 @@ export const ServiceType = {
     GICAchievement: Symbol.for('GICAchievement'),
     Mail: Symbol.for('Mail'),
     Maze: Symbol.for('MazeService'),
+    MazeChapter: Symbol.for('MazeChapterService'),
+    MazeChapterSession: Symbol.for('MazeChaperSessionService'),
 };
 
 export enum PrivacyType {
