@@ -237,19 +237,39 @@ export class ClubDayController extends Controller {
             if (clubDay.isFinishCheckIn) count++;
 
             if (count == 0) reward = [];
-            else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
-            else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
+            else if (count == 1)
+                reward = [
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                    ],
+                ];
+            else if (count == 2)
+                reward = [
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                    ],
+                ];
             else if (count == 3)
                 reward = [
-                    [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'notebook', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 5 }],
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                        { type: 'tote bag', quantity: 1 },
+                    ],
                 ];
             else if (count == 4)
                 reward = [
-                    [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'notebook', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 5 }],
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                        { type: 'tote bag', quantity: 1 },
+                        { type: 'bottle/lanyard', quantity: 1 },
+                    ],
                 ];
 
             res.composer.success(reward);
@@ -282,19 +302,39 @@ export class ClubDayController extends Controller {
             if (clubDay.isFinishCheckIn) count++;
 
             if (count == 0) reward = [];
-            else if (count == 1) reward = [[{ type: 'sticker', quantity: 1 }]];
-            else if (count == 2) reward = [[{ type: 'sticker', quantity: 2 }]];
+            else if (count == 1)
+                reward = [
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                    ],
+                ];
+            else if (count == 2)
+                reward = [
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                    ],
+                ];
             else if (count == 3)
                 reward = [
-                    [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'notebook', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 5 }],
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                        { type: 'tote bag', quantity: 1 },
+                    ],
                 ];
             else if (count == 4)
                 reward = [
-                    [{ type: 'keychain', quantity: 1 }],
-                    [{ type: 'notebook', quantity: 1 }],
-                    [{ type: 'sticker', quantity: 5 }],
+                    [
+                        { type: 'sticker', quantity: 2 },
+                        { type: 'bracelet', quantity: 1 },
+                        { type: 'keychain', quantity: 1 },
+                        { type: 'tote bag', quantity: 1 },
+                        { type: 'bottle/lanyard', quantity: 1 },
+                    ],
                 ];
 
             if (req.body.option > reward.length) throw Error('Error received');
