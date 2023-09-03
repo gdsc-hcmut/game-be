@@ -25,6 +25,7 @@ import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
 import bodyParser from 'body-parser';
 import { Reward } from '../models/club_day';
+import { Types } from 'mongoose';
 @injectable()
 export class ClubDayController extends Controller {
     public readonly router = Router();
@@ -51,6 +52,11 @@ export class ClubDayController extends Controller {
         );
         this.router.get('/private/reward', this.getAvailableReward.bind(this));
         this.router.post('/private/reward', this.receivedReward.bind(this));
+        this.router.get('/private/maze/verify', this.canPlayMaze.bind(this));
+        this.router.post(
+            '/private/maze/finish',
+            this.updateMazeResult.bind(this),
+        );
     }
 
     async getClubDay(req: Request, res: Response) {
@@ -109,6 +115,50 @@ export class ClubDayController extends Controller {
             );
 
             res.composer.success(clubDay);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async canPlayMaze(req: Request, res: Response) {
+        try {
+            if (
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
+                )
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
+
+            const userId = req.query.userId.toString();
+
+            const canPlay = await this.clubdayService.verifyMazeGame(userId);
+
+            res.composer.success(canPlay);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async updateMazeResult(req: Request, res: Response) {
+        try {
+            if (
+                !_.includes(
+                    req.tokenMeta.roles,
+                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
+                )
+            ) {
+                throw Error('You are not Staff of Club Day');
+            }
+
+            const userId = req.body.userId;
+
+            await this.clubdayService.updateFinishMaze(userId);
+
+            res.composer.success({ isFinishMaze: true });
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

@@ -2,6 +2,10 @@ import { injectable } from 'inversify';
 import _ from 'lodash';
 import ClubDay, { ClubDayDocument } from '../models/club_day';
 
+interface CheckMaze {
+    canPlay: boolean;
+}
+
 @injectable()
 export class ClubDayService {
     constructor() {}
@@ -56,6 +60,32 @@ export class ClubDayService {
         clubDay.isFinishCheckIn = true;
         clubDay.save();
         return clubDay;
+    }
+
+    async verifyMazeGame(userId: string): Promise<CheckMaze> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not existed');
+        }
+
+        if (!clubDay.isFinishMaze) return { canPlay: true };
+
+        return { canPlay: false };
+    }
+
+    async updateFinishMaze(userId: string): Promise<void> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not existed');
+        }
+
+        // clubDay.isFinishMaze = true;
+        await ClubDay.updateOne(
+            { id: clubDay._id },
+            { $set: { isFinishMaze: true } },
+        );
     }
 
     async verifyKeyMatching(userId: string): Promise<ClubDayDocument> {
