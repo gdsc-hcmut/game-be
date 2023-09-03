@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import { CellObject, Character } from './maze_game.model';
+import { Cell, Character } from './maze_game.model';
 
 export enum Status {
     InProgress = 'in_progress',
@@ -15,7 +15,7 @@ export enum Direction {
 }
 
 export type MazeGameSessionDocument = Document & {
-    map: CellObject[];
+    map: Cell[];
     character: Character;
     size: {
         width: number;

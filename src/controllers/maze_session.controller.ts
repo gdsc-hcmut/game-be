@@ -145,13 +145,13 @@ export class MazeSessionController extends Controller {
             const sessionId = new mongoose.Types.ObjectId(req.params.id);
             const userId = new Types.ObjectId(req.tokenMeta.userId);
             const moves: string[] = req.body.moves;
-            const useHelp: boolean = req.body.is_enable_animation;
+            const canUseHelp: boolean = req.body.is_enable_animation;
 
             const result = await this.mazeService.submitMultipleMove(
                 sessionId,
                 userId,
                 moves,
-                useHelp,
+                canUseHelp,
             );
 
             res.composer.success(result);

@@ -24,7 +24,7 @@ export enum CellType {
     Portal = 'portal',
 }
 
-export interface CellObject {
+export interface Cell {
     property: CellType;
     isHidden: boolean;
     hp?: number;
@@ -35,7 +35,7 @@ export interface CellObject {
 }
 
 export type MazeGameDocument = Document & {
-    map: CellObject[];
+    map: Cell[];
     character: Character;
     size: {
         width: number;

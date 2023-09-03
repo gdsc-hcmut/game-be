@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import mongoose, { Types } from 'mongoose';
 import MazeGame, {
-    CellObject,
+    Cell,
     Character,
     MazeGameDocument,
 } from '../models/maze_game.model';
@@ -20,7 +20,7 @@ import mazeChapterSession, {
     ChapterStatus,
 } from '../models/maze_game_chapter_session.model';
 
-import { Cell } from '../constant/maze/map/cellClass';
+import { CellClass } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
 
 interface Score {
@@ -32,7 +32,7 @@ interface MoveEffected {
     cells_affected: [
         {
             position: number;
-            object: CellObject;
+            object: Cell;
         },
     ];
     character: Character;
@@ -40,7 +40,7 @@ interface MoveEffected {
 
 interface MultipleMoveResult {
     status: Status;
-    map: CellObject[];
+    map: Cell[];
     character: Character;
     isHelp: boolean;
 }
@@ -50,7 +50,7 @@ function handleMove(
     move: string,
 ): MoveEffected {
     const character: Character = session.character;
-    const map: CellObject[] = session.map;
+    const map: Cell[] = session.map;
     const { width, height } = session.size;
     let nextPosition: number;
 
@@ -81,7 +81,7 @@ function handleMove(
 
     session.moves = [...session.moves, move as Direction];
 
-    if (Cell.handle(character, map[nextPosition])) {
+    if (CellClass.handle(character, map[nextPosition])) {
         character.position = nextPosition;
     }
 
@@ -108,7 +108,7 @@ function handleMultipleMoves(
     moves: string[],
 ): void {
     const character: Character = session.character;
-    const map: CellObject[] = session.map;
+    const map: Cell[] = session.map;
     const { width, height } = session.size;
     let nextPosition: number;
 
@@ -136,7 +136,7 @@ function handleMultipleMoves(
         }
         session.moves = [...session.moves, moves[i] as Direction];
 
-        if (Cell.handle(character, map[nextPosition])) {
+        if (CellClass.handle(character, map[nextPosition])) {
             character.position = nextPosition;
         }
 
@@ -154,7 +154,7 @@ function handleMultipleMoves(
 @injectable()
 export class MazeService {
     async createMap(level: number): Promise<MazeGameDocument> {
-        let newMap: CellObject[] = initMapLevel4;
+        let newMap: Cell[] = initMapLevel4;
 
         const newCharacter: Character = initCharacter1;
 
@@ -275,7 +275,7 @@ export class MazeService {
     async getMapInfo(
         sessionId: mongoose.Types.ObjectId,
         userId: Types.ObjectId,
-    ): Promise<CellObject[]> {
+    ): Promise<Cell[]> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
         if (!currentSession) {

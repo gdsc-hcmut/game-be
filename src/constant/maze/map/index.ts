@@ -1,6 +1,6 @@
-import { CellObject, CellType } from '../../../models/maze_game.model';
+import { Cell, CellType } from '../../../models/maze_game.model';
 
-export const initMapLevel4: CellObject[] = [
+export const initMapLevel4: Cell[] = [
     {
         property: CellType.Path,
         isHidden: false,
@@ -82,7 +82,7 @@ export const initMapLevel4: CellObject[] = [
     },
 ];
 
-export const initMapLevel5: CellObject[] = [
+export const initMapLevel5: Cell[] = [
     {
         property: CellType.Path,
         isHidden: false,
@@ -165,7 +165,7 @@ export const initMapLevel5: CellObject[] = [
     },
 ];
 
-export const initMapClubDay: CellObject[] = [
+export const initMapClubDay: Cell[] = [
     {
         property: CellType.Wall, // (0,0)
         isHidden: false,
