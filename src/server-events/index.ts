@@ -149,16 +149,35 @@ export class SocketService {
             ),
         );
 
-        socket.on(EventTypes.START_MAZE_SESSION, () =>
-            this.connectedUser[socket.userId].startSession(socket.id),
-        );
+        socket.on(EventTypes.START_MAZE_SESSION, () => {
+            this.connectedUser[socket.userId].startSession(socket.id);
+        });
+
+        // socket.on(
+        //     EventTypes.MOVE,
+        //     ({ sessionId, move }: { sessionId: string; move: string }) =>
+        //         this.connectedUser[socket.userId].submitSingleMove(
+        //             sessionId,
+        //             move,
+        //             socket.id,
+        //         ),
+        // );
 
         socket.on(
-            EventTypes.MOVE,
-            ({ sessionId, move }: { sessionId: string; move: string }) =>
-                this.connectedUser[socket.userId].submitSingleMove(
+            EventTypes.MULTIPLE_MOVE,
+            ({
+                sessionId,
+                moves,
+                useHelp,
+            }: {
+                sessionId: string;
+                moves: string[];
+                useHelp: boolean;
+            }) =>
+                this.connectedUser[socket.userId].submitMultipleMoves(
                     sessionId,
-                    move,
+                    moves,
+                    useHelp,
                     socket.id,
                 ),
         );
