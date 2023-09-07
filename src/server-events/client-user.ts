@@ -531,17 +531,23 @@ class ClientUser {
     //     }
     // }
 
-    async startSession(socketId: any) {
+    async startSession(socketId: any, sessionId: string = null) {
         try {
             clearTimeout(this.sockets[socketId].mazeTimeout);
             // console.log('Start Maze Session');
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
 
-            const session = await this.mazeService.createSession(userIdCast, 1);
+            const sessionIdCast = new mongoose.Types.ObjectId(sessionId);
+
+            const session = await this.mazeService.createSession(
+                userIdCast,
+                1,
+                sessionIdCast,
+            );
 
             this.sockets[socketId].mazeTimeout = setTimeout(() => {
                 this.sockets[socketId].socket.emit(EventTypes.MAZE_TIMEOUT);
-            }, max_time);
+            }, 30 * 1000);
 
             this.sockets[socketId].socket.emit(
                 EventTypes.START_MAZE_SESSION_SUCCESS,

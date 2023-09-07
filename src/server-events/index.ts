@@ -149,8 +149,11 @@ export class SocketService {
             ),
         );
 
-        socket.on(EventTypes.START_MAZE_SESSION, () => {
-            this.connectedUser[socket.userId].startSession(socket.id);
+        socket.on(EventTypes.START_MAZE_SESSION, (sessionId: string = null) => {
+            this.connectedUser[socket.userId].startSession(
+                socket.id,
+                sessionId,
+            );
         });
 
         // socket.on(
