@@ -42,7 +42,8 @@ interface MultipleMoveResult {
     status: Status;
     map: Cell[];
     character: Character;
-    isHelp: boolean;
+    can_show_animation: boolean;
+    score: number;
 }
 
 function handleMove(
@@ -148,7 +149,13 @@ function handleMultipleMoves(
         if (session.status !== Status.InProgress) return;
     }
 
-    if (session.status === Status.InProgress) session.status = Status.Lose;
+    // if (session.status === Status.InProgress) session.status = Status.Lose;
+}
+
+function getScore(session: MazeGameSessionDocument): number {
+    if (session.status !== Status.Win) return 0;
+    const { character } = session;
+    return character.hp + character.stamina * 50 + session.level * 100;
 }
 
 @injectable()
@@ -339,6 +346,8 @@ export class MazeService {
     ): Promise<MultipleMoveResult> {
         const currentSession = await MazeGameSession.findById(sessionId);
 
+        // if (currentSession.status === Status.InProgress)
+
         if (!currentSession) {
             throw Error('Could not find session');
         }
@@ -350,6 +359,10 @@ export class MazeService {
             throw Error('Session has been done');
         }
         handleMultipleMoves(currentSession, moves);
+
+        if (currentSession.status === Status.InProgress) {
+            currentSession.status = Status.Lose;
+        }
 
         const currentChapterSession = await mazeChapterSession
             .findById(currentSession.chapterSessionId)
@@ -391,15 +404,19 @@ export class MazeService {
                     status: currentSession.status,
                     map: currentSession.map,
                     character: currentSession.character,
+                    moves: currentSession.moves,
                 },
             },
         );
+
+        const score = getScore(currentSession);
 
         return {
             status: currentSession.status,
             map: currentSession.map,
             character: currentSession.character,
-            isHelp: isHelp,
+            can_show_animation: isHelp,
+            score: score,
         };
     }
 
@@ -410,10 +427,7 @@ export class MazeService {
 
         if (session.status !== Status.Win) return { score: 0 };
 
-        const score =
-            session.character.hp +
-            session.character.stamina * 10 +
-            session.level * 100;
+        const score = getScore(session);
 
         return { score: score };
     }

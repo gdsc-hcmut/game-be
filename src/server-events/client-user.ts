@@ -571,11 +571,6 @@ class ClientUser {
                 moves,
                 useHelp,
             );
-
-            // if (typeof timers[socketId] !== 'undefined') {
-            //     clearTimeout(timers[socketId]);
-            //     delete timers[socketId];
-            // }
             clearTimeout(this.sockets[socketId].mazeTimeout);
 
             // Object.keys(this.sockets).map((key: any, index: any) => {

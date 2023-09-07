@@ -33,17 +33,17 @@ export class MazeSessionController extends Controller {
 
     async createSession(req: Request, res: Response) {
         try {
-            console.log(req.tokenMeta);
-            if (
-                !_.includes(
-                    req.tokenMeta.roles,
-                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
-                )
-            ) {
-                throw Error('You are not Staff of Club Day');
-            }
+            // console.log(req.tokenMeta);
+            // if (
+            //     !_.includes(
+            //         req.tokenMeta.roles,
+            //         USER_ROLES.STAFF_CLUBDAY_VERIFY,
+            //     )
+            // ) {
+            //     throw Error('You are not Staff of Club Day');
+            // }
 
-            const userId = new Types.ObjectId(req.body.userId);
+            const userId = new Types.ObjectId(req.tokenMeta.userId);
 
             const session = await this.mazeService.createSession(userId, 1);
             res.composer.success(session);

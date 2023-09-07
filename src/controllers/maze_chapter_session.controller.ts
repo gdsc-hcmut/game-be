@@ -25,7 +25,7 @@ export class MazeChapterSessionController extends Controller {
             this.createNewMazeSession.bind(this),
         );
         this.router.get('/:id', this.getChapterSession.bind(this));
-        this.router.get('/score/total', this.getTotalScore.bind(this));
+        // this.router.get('/score/total', this.getTotalScore.bind(this));
         this.router.get('/:id/score', this.getChapterScore.bind(this));
     }
 
@@ -101,20 +101,20 @@ export class MazeChapterSessionController extends Controller {
         }
     }
 
-    async getTotalScore(req: Request, res: Response) {
-        try {
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
+    // async getTotalScore(req: Request, res: Response) {
+    //     try {
+    //         const userId = new Types.ObjectId(req.tokenMeta.userId);
 
-            console.log(userId);
-            const result = await this.mazeChapterSessionService.getTotalScore(
-                userId,
-            );
-            console.log(result);
+    //         console.log(userId);
+    //         const result = await this.mazeChapterSessionService.getTotalScore(
+    //             userId,
+    //         );
+    //         console.log(result);
 
-            res.composer.success(result);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
-    }
+    //         res.composer.success(result);
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.composer.badRequest(error.message);
+    //     }
+    // }
 }

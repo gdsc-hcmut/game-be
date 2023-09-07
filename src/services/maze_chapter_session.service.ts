@@ -208,51 +208,54 @@ export class MazeChapterSessionService {
             const roundScore = await this.mazeService.getScore(sessionId);
             chapterScore += roundScore.score;
         }
+        if (chapterSession.status === ChapterStatus.Done) {
+            chapterScore += 100 * chapterSession.helpCount;
+        }
         return { score: chapterScore };
     }
 
-    async getTotalScore(userId: Types.ObjectId): Promise<Score> {
-        const user = await User.findById(userId)
-            .populate('currentMazeChapter')
-            .exec();
+    // async getTotalScore(userId: Types.ObjectId): Promise<Score> {
+    //     const user = await User.findById(userId)
+    //         .populate('currentMazeChapter')
+    //         .exec();
 
-        if (!user) {
-            throw Error('User does not exist!');
-        }
+    //     if (!user) {
+    //         throw Error('User does not exist!');
+    //     }
 
-        if (!user.currentMazeChapter) {
-            throw Error('User has not been started maze game!');
-        }
+    //     if (!user.currentMazeChapter) {
+    //         throw Error('User has not been started maze game!');
+    //     }
 
-        const { chapterLevel } = user.currentMazeChapter;
-        let totalScore = 0;
-        let chapterScore: number;
-        let roundScore: { score: number };
-        let chapterSession: MazeGameChapterSessionDocument;
-        let chapter: MazeGameChapterDocument;
+    //     const { chapterLevel } = user.currentMazeChapter;
+    //     let totalScore = 0;
+    //     let chapterScore: number;
+    //     let roundScore: { score: number };
+    //     let chapterSession: MazeGameChapterSessionDocument;
+    //     let chapter: MazeGameChapterDocument;
 
-        for (let i = 1; i <= chapterLevel; i++) {
-            chapter = await MazeGameChapter.findOne({
-                chapterLevel: i,
-            });
+    //     for (let i = 1; i <= chapterLevel; i++) {
+    //         chapter = await MazeGameChapter.findOne({
+    //             chapterLevel: i,
+    //         });
 
-            if (!chapter) continue;
+    //         if (!chapter) continue;
 
-            chapterSession = await MazeGameChapterSession.findOne({
-                userId: userId,
-                chapterId: chapter._id,
-            });
-            if (!chapterSession) continue;
+    //         chapterSession = await MazeGameChapterSession.findOne({
+    //             userId: userId,
+    //             chapterId: chapter._id,
+    //         });
+    //         if (!chapterSession) continue;
 
-            chapterScore = 0;
-            for (const sessionId of chapterSession.rounds) {
-                const roundScore = await this.mazeService.getScore(sessionId);
-                // console.log('>>>', sessionId);
-                chapterScore += roundScore.score;
-            }
-            totalScore += chapterScore;
-        }
+    //         chapterScore = 0;
+    //         for (const sessionId of chapterSession.rounds) {
+    //             const roundScore = await this.mazeService.getScore(sessionId);
+    //             // console.log('>>>', sessionId);
+    //             chapterScore += roundScore.score;
+    //         }
+    //         totalScore += chapterScore;
+    //     }
 
-        return { score: totalScore };
-    }
+    //     return { score: totalScore };
+    // }
 }
