@@ -268,7 +268,7 @@ export class ClubDayController extends Controller {
                         { type: 'bracelet', quantity: 1 },
                         { type: 'keychain', quantity: 1 },
                         { type: 'tote bag', quantity: 1 },
-                        { type: 'bottle/lanyard', quantity: 1 },
+                        { type: 'lanyard', quantity: 1 },
                     ],
                 ];
 
@@ -333,7 +333,7 @@ export class ClubDayController extends Controller {
                         { type: 'bracelet', quantity: 1 },
                         { type: 'keychain', quantity: 1 },
                         { type: 'tote bag', quantity: 1 },
-                        { type: 'bottle/lanyard', quantity: 1 },
+                        { type: 'lanyard', quantity: 1 },
                     ],
                 ];
 
