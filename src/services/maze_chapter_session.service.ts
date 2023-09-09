@@ -14,6 +14,7 @@ import MazeGameSession, {
 import { Types } from 'mongoose';
 import { MazeService } from './maze.service';
 import { ServiceType } from '../types';
+import teamSchemaModel from '../models/recruitment_team.model';
 // import { ServiceType } from '../types';
 
 interface Score {
@@ -26,8 +27,19 @@ export class MazeChapterSessionService {
 
     async startChapterSession(
         userId: Types.ObjectId,
-        chapterLevel: number,
+        teamName: string,
+        chapterLevel: number = 1,
     ): Promise<MazeGameChapterSessionDocument> {
+        const team = await teamSchemaModel.findOne({ name: teamName });
+
+        if (!team) {
+            throw Error('Team name is not valid');
+        }
+
+        if (!team.leadId.equals(userId)) {
+            throw Error('Only leader has permission to start chapter session!');
+        }
+
         let isNewChapter = false;
 
         const user = await User.findById(userId)
@@ -104,6 +116,7 @@ export class MazeChapterSessionService {
             userId: userId,
             rounds: [],
             status: ChapterStatus.InProgress,
+            team: team._id,
         });
 
         await newChapterSession.save();

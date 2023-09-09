@@ -13,6 +13,7 @@ export type MazeGameChapterSessionDocument = Document & {
     userId: Types.ObjectId;
     rounds: [Types.ObjectId];
     status: ChapterStatus;
+    team: Types.ObjectId;
 };
 
 const mazeGameChapterSessionSchema = new Schema<MazeGameChapterSessionDocument>(
@@ -21,6 +22,7 @@ const mazeGameChapterSessionSchema = new Schema<MazeGameChapterSessionDocument>(
         helpCount: Number,
         currentRound: Number,
         userId: { type: Schema.Types.ObjectId, ref: 'Users' },
+        team: { type: Schema.Types.ObjectId, ref: 'recruitment_team' },
         rounds: [{ type: Schema.Types.ObjectId, ref: 'maze_game_session' }],
         status: String,
     },

@@ -32,11 +32,12 @@ export class MazeChapterSessionController extends Controller {
     async createNewChapterSession(req: Request, res: Response) {
         try {
             const userId = new Types.ObjectId(req.tokenMeta.userId);
-            const chapterLevel = req.body.level;
+            const { chapterLevel, team } = req.body;
 
             const result =
                 await this.mazeChapterSessionService.startChapterSession(
                     userId,
+                    team,
                     chapterLevel,
                 );
 

@@ -23,6 +23,7 @@ import {
     UserService,
     ItemService,
     MazeService,
+    MazeChapterSessionService,
     // MQTTService,
 } from '../services';
 import { JWT_SECRET } from '../config';
@@ -72,6 +73,8 @@ export class SocketService {
         @inject(ServiceType.Item)
         private itemService: ItemService,
         @inject(ServiceType.Maze) private mazeService: MazeService,
+        @inject(ServiceType.MazeChapterSession)
+        private mazeChapterSessionService: MazeChapterSessionService,
     ) {
         console.log('[SOCKET IO Service] Construct');
 
@@ -109,6 +112,7 @@ export class SocketService {
                 this.gicAchievementService,
                 this.gicService,
                 this.mazeService,
+                this.mazeChapterSessionService,
             );
         }
         this.connectedUser[socket.userId].registerSocket(socket);
@@ -149,12 +153,22 @@ export class SocketService {
             ),
         );
 
-        socket.on(EventTypes.START_MAZE_SESSION, (sessionId: string = null) => {
-            this.connectedUser[socket.userId].startSession(
-                socket.id,
-                sessionId,
-            );
-        });
+        socket.on(
+            EventTypes.START_MAZE_SESSION,
+            ({
+                chapterSessionId = null,
+                round,
+            }: {
+                chapterSessionId: string;
+                round: number;
+            }) => {
+                this.connectedUser[socket.userId].startSession(
+                    socket.id,
+                    chapterSessionId,
+                    round,
+                );
+            },
+        );
 
         // socket.on(
         //     EventTypes.MOVE,

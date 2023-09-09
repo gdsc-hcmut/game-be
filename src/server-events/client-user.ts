@@ -3,6 +3,7 @@ import { EventTypes } from './event-types';
 import {
     GameService,
     ItemService,
+    MazeChapterSessionService,
     MazeService,
     TransactionService,
 } from '../services';
@@ -55,6 +56,7 @@ class ClientUser {
     private gicAchievementService: GICAchievementService;
     private gicService: GICService;
     private mazeService: MazeService;
+    private mazeChapterSessionService: MazeChapterSessionService;
 
     constructor(
         userId: string,
@@ -66,6 +68,7 @@ class ClientUser {
         gicAchievementService: GICAchievementService,
         gicService: GICService,
         mazeService: MazeService,
+        mazeChapterSessionService: MazeChapterSessionService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -79,6 +82,8 @@ class ClientUser {
         this.gicAchievementService = gicAchievementService;
         this.gicService = gicService;
         this.mazeService = mazeService;
+        this.mazeChapterSessionService = mazeChapterSessionService;
+
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -531,19 +536,26 @@ class ClientUser {
     //     }
     // }
 
-    async startSession(socketId: any, sessionId: string = null) {
+    async startSession(
+        socketId: any,
+        chapterSessionId: string = null,
+        round: number,
+    ) {
         try {
             clearTimeout(this.sockets[socketId].mazeTimeout);
             // console.log('Start Maze Session');
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
 
-            const sessionIdCast = new mongoose.Types.ObjectId(sessionId);
-
-            const session = await this.mazeService.createSession(
-                userIdCast,
-                1,
-                sessionIdCast,
+            const chapterSessionIdCast = new mongoose.Types.ObjectId(
+                chapterSessionId,
             );
+
+            const session =
+                await this.mazeChapterSessionService.createNewMazeSession(
+                    userIdCast,
+                    chapterSessionIdCast,
+                    round,
+                );
 
             this.sockets[socketId].mazeTimeout = setTimeout(() => {
                 this.sockets[socketId].socket.emit(EventTypes.MAZE_TIMEOUT);
