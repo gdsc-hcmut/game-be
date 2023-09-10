@@ -35,7 +35,7 @@ export class MazeChapterSessionController extends Controller {
             const { chapterLevel, team } = req.body;
 
             const result =
-                await this.mazeChapterSessionService.startChapterSession(
+                await this.mazeChapterSessionService.startOrCreateChapterSession(
                     userId,
                     team,
                     chapterLevel,

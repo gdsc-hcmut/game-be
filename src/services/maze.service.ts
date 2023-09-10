@@ -10,6 +10,7 @@ import {
     // initMapLevel2,
     // initMapLevel3,
     initMapLevel4,
+    max_time,
 } from '../constant/maze/map';
 import { initCharacter1 } from '../constant/maze/character';
 import MazeGameSession, {
@@ -20,143 +21,17 @@ import mazeChapterSession, {
     ChapterStatus,
 } from '../models/maze_game_chapter_session.model';
 
-import { MapCell } from '../constant/maze/map/cellClass';
+// import { MapCell } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
-
-interface Score {
-    score: number;
-}
-
-interface MoveEffected {
-    status: Status;
-    cells_affected: [
-        {
-            position: number;
-            object: Cell;
-        },
-    ];
-    character: Character;
-}
-
-interface MultipleMoveResult {
-    status: Status;
-    map: Cell[];
-    character: Character;
-    can_show_animation: boolean;
-    score: number;
-}
-
-function handleMove(
-    session: MazeGameSessionDocument,
-    move: string,
-): MoveEffected {
-    const character: Character = session.character;
-    const map: Cell[] = session.map;
-    const { width, height } = session.size;
-    let nextPosition: number;
-
-    character.stamina--;
-
-    switch (move) {
-        case Direction.Up:
-            nextPosition = character.position + width;
-            if (nextPosition > width * height - 1)
-                throw Error('Move out of the map');
-            break;
-        case Direction.Down:
-            nextPosition = character.position - width;
-            if (nextPosition < 0) throw Error('Move out of the map');
-            break;
-        case Direction.Right:
-            nextPosition = character.position + 1;
-            if (nextPosition % width === 0) throw Error('Move out of the map');
-            break;
-        case Direction.Left:
-            nextPosition = character.position - 1;
-            if (character.position % width === 0)
-                throw Error('Move out of the map');
-            break;
-        default:
-            throw Error('Wrong key submission');
-    }
-
-    session.moves = [...session.moves, move as Direction];
-
-    if (MapCell.handle(character, map[nextPosition])) {
-        character.position = nextPosition;
-    }
-
-    if (character.hp <= 0 || character.stamina <= 0)
-        session.status = Status.Lose;
-    else if (map[nextPosition].property === 'end') session.status = Status.Win;
-
-    const result: MoveEffected = {
-        status: session.status,
-        cells_affected: [
-            {
-                position: nextPosition,
-                object: map[nextPosition],
-            },
-        ],
-        character: character,
-    };
-
-    return result;
-}
-
-function handleMultipleMoves(
-    session: MazeGameSessionDocument,
-    moves: string[],
-): void {
-    const character: Character = session.character;
-    const map: Cell[] = session.map;
-    const { width, height } = session.size;
-    let nextPosition: number;
-
-    for (let i = 0; i < moves.length; i++) {
-        character.stamina--;
-        switch (moves[i]) {
-            case Direction.Up:
-                nextPosition = character.position + width;
-                if (nextPosition > width * height - 1) continue;
-                break;
-            case Direction.Down:
-                nextPosition = character.position - width;
-                if (nextPosition < 0) continue;
-                break;
-            case Direction.Right:
-                nextPosition = character.position + 1;
-                if (nextPosition % width === 0) continue;
-                break;
-            case Direction.Left:
-                nextPosition = character.position - 1;
-                if ((nextPosition - 1) % width === 0) continue;
-                break;
-            default:
-                continue;
-        }
-        session.moves = [...session.moves, moves[i] as Direction];
-
-        if (MapCell.handle(character, map[nextPosition])) {
-            character.position = nextPosition;
-        }
-
-        if (character.hp <= 0 || character.stamina <= 0)
-            session.status = Status.Lose;
-        else if (map[nextPosition].property === 'end')
-            session.status = Status.Win;
-
-        if (session.status !== Status.InProgress) return;
-    }
-
-    // if (session.status === Status.InProgress) session.status = Status.Lose;
-}
-
-function getScore(session: MazeGameSessionDocument): number {
-    if (session.status !== Status.Win) return 0;
-    const { character } = session;
-    return character.hp + character.stamina * 50 + session.level * 100;
-}
+import {
+    MoveEffected,
+    MultipleMoveResult,
+    Score,
+    getScore,
+    handleMove,
+    handleMultipleMoves,
+    sessionInfo,
+} from '../maze_game';
 
 @injectable()
 export class MazeService {
@@ -180,18 +55,22 @@ export class MazeService {
         return newMazeGame;
     }
 
-    async createSession(
+    async startOrCreateSession(
         userId: Types.ObjectId,
         level: number,
         chapterSessionId: Types.ObjectId = null,
-    ): Promise<MazeGameSessionDocument> {
+    ): Promise<sessionInfo> {
         const currentSession = await MazeGameSession.findOne({
             userId: userId,
             status: Status.InProgress,
         });
 
         if (currentSession) {
-            throw Error('Find another in Progress session');
+            console.log('Find another in Progress session');
+            return {
+                session: currentSession,
+                time_left: max_time - Date.now() + currentSession.startTime,
+            };
         }
 
         const [newMazeGame] = await MazeGame.aggregate<MazeGameSessionDocument>(
@@ -210,7 +89,10 @@ export class MazeService {
         });
 
         await newSession.save();
-        return newSession;
+        return {
+            session: newSession,
+            time_left: max_time,
+        };
     }
 
     async getCurrentSession(

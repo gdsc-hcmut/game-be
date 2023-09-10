@@ -45,7 +45,10 @@ export class MazeSessionController extends Controller {
 
             const userId = new Types.ObjectId(req.tokenMeta.userId);
 
-            const session = await this.mazeService.createSession(userId, 1);
+            const session = await this.mazeService.startOrCreateSession(
+                userId,
+                1,
+            );
             res.composer.success(session);
         } catch (error) {
             console.log(error);

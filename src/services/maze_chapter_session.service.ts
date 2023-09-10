@@ -15,6 +15,8 @@ import { Types } from 'mongoose';
 import { MazeService } from './maze.service';
 import { ServiceType } from '../types';
 import teamSchemaModel from '../models/recruitment_team.model';
+import { sessionInfo } from '../maze_game';
+import { max_time } from '../constant/maze/map';
 // import { ServiceType } from '../types';
 
 interface Score {
@@ -25,7 +27,7 @@ interface Score {
 export class MazeChapterSessionService {
     constructor(@inject(ServiceType.Maze) private mazeService: MazeService) {}
 
-    async startChapterSession(
+    async startOrCreateChapterSession(
         userId: Types.ObjectId,
         teamName: string,
         chapterLevel: number = 1,
@@ -86,16 +88,17 @@ export class MazeChapterSessionService {
         }
 
         // Check whether any InProgress session with that chapter, if yes, throw false.
-        const chapterSession = await MazeGameChapterSession.findOne({
+        const currentChapterSession = await MazeGameChapterSession.findOne({
             userId: userId,
             status: ChapterStatus.InProgress,
             chapterId: chapter._id,
         });
 
-        if (chapterSession) {
-            throw Error(
-                'Find another in-progress chapter, please finish it first',
-            );
+        if (currentChapterSession) {
+            // throw Error(
+            console.log('Find another in-progress chapter');
+            // );
+            return currentChapterSession;
         }
 
         if (isNewChapter) {
@@ -127,7 +130,7 @@ export class MazeChapterSessionService {
         userId: Types.ObjectId,
         chapterSessionId: Types.ObjectId,
         round: number,
-    ): Promise<MazeGameSessionDocument> {
+    ): Promise<sessionInfo> {
         const chapterSession = await MazeGameChapterSession.findById(
             chapterSessionId,
         );
@@ -160,18 +163,22 @@ export class MazeChapterSessionService {
 
             if (currentSession) {
                 if (currentSession.status === Status.InProgress)
-                    return currentSession;
+                    return {
+                        session: currentSession,
+                        time_left:
+                            max_time + Date.now() - currentSession.startTime,
+                    };
             }
         }
 
-        const newSession = await this.mazeService.createSession(
+        const newSession = await this.mazeService.startOrCreateSession(
             userId,
             roundLevels[round - 1], // level of session
             chapterSessionId,
         );
 
         // const sessionId = new Types.ObjectId(newSession._id);
-        chapterSession.rounds[round - 1] = newSession._id;
+        chapterSession.rounds[round - 1] = newSession.session._id;
 
         await MazeGameChapterSession.updateOne(
             { _id: chapterSessionId },
