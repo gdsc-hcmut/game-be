@@ -75,6 +75,7 @@ export class UserController extends Controller {
         this.router.get('/:userid/bundles', this.getBundles.bind(this));
         this.router.get('/:userid/following', this.getFollowing.bind(this));
         this.router.get('/:userid/followers', this.getFollower.bind(this));
+        this.router.delete('/mobile/:userid', this.deleteUser.bind(this));
 
         // START JOB
         scheduleJob('0 0 0 * * *', async () => {
@@ -214,6 +215,26 @@ export class UserController extends Controller {
             });
             // await this.userService.verifyAccountRequest(createdUser.email);
             res.composer.success(createdUser._id);
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async deleteUser(req: Request, res: Response) {
+        try {
+            const { userid } = req.params;
+
+            const user = await this.userService.findById(
+                new Types.ObjectId(userid),
+            );
+
+            res.composer.success({});
+
+            if (user) {
+                user.isDeleted = true;
+                user.save();
+                res.composer.success({});
+            }
         } catch (error) {
             res.composer.badRequest(error.message);
         }

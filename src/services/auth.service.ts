@@ -251,6 +251,10 @@ export class AuthService {
                 user.picture = payload.picture;
                 await user.save();
             }
+
+            if (user.isDeleted) {
+                user.isDeleted = false;
+            }
         }
 
         return await this.createToken(
@@ -298,6 +302,10 @@ export class AuthService {
                 roles: USER_ROLES.USER,
             });
             user = newUser;
+        } else {
+            if (user.isDeleted) {
+                user.isDeleted = false;
+            }
         }
 
         return await this.createToken(
