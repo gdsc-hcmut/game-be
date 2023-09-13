@@ -158,7 +158,7 @@ export class MazeSessionController extends Controller {
     async submitMultipleMoves(req: Request, res: Response) {
         try {
             const sessionId = new mongoose.Types.ObjectId(req.params.id);
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
+            const userId = new Types.ObjectId(req.body.userId);
             const moves: string[] = req.body.moves;
             const canUseHelp: boolean = req.body.is_enable_animation;
 

@@ -551,7 +551,7 @@ class ClientUser {
             );
 
             const session =
-                await this.mazeChapterSessionService.createNewMazeSession(
+                await this.mazeChapterSessionService.startMazeSession(
                     userIdCast,
                     chapterSessionIdCast,
                     round,

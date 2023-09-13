@@ -27,7 +27,7 @@ interface Score {
 export class MazeChapterSessionService {
     constructor(@inject(ServiceType.Maze) private mazeService: MazeService) {}
 
-    async startOrCreateChapterSession(
+    async startChapterSession(
         userId: Types.ObjectId,
         teamName: string,
         chapterLevel: number = 1,
@@ -126,7 +126,7 @@ export class MazeChapterSessionService {
         return newChapterSession;
     }
 
-    async createNewMazeSession(
+    async startMazeSession(
         userId: Types.ObjectId,
         chapterSessionId: Types.ObjectId,
         round: number,

@@ -298,6 +298,7 @@ export class MazeService {
             map: currentSession.map,
             character: currentSession.character,
             can_show_animation: isHelp,
+            moves: currentSession.moves,
             score: score,
         };
     }

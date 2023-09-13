@@ -32,6 +32,7 @@ export interface MultipleMoveResult {
     character: Character;
     can_show_animation: boolean;
     score: number;
+    moves: Direction[];
 }
 
 export function handleMove(
