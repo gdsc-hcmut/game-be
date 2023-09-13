@@ -23,7 +23,7 @@ export class RecruitmentTeamController extends Controller {
         this.router.all('*', this.authService.authenticate());
         this.router.post('/', this.createNewTeam.bind(this));
         this.router.post('/delete', this.deleteTeam.bind(this));
-        this.router.get('/', this.getTeamInfo.bind(this));
+        this.router.get('/:id', this.getTeamInfo.bind(this));
     }
 
     async createNewTeam(req: Request, res: Response) {
@@ -84,18 +84,18 @@ export class RecruitmentTeamController extends Controller {
 
     async getTeamInfo(req: Request, res: Response) {
         try {
-            if (
-                !_.includes(
-                    req.tokenMeta.roles,
-                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
-                )
-            ) {
-                throw Error('You are not Staff of Club Day');
-            }
+            // if (
+            //     !_.includes(
+            //         req.tokenMeta.roles,
+            //         USER_ROLES.STAFF_CLUBDAY_VERIFY,
+            //     )
+            // ) {
+            //     throw Error('You are not Staff of Club Day');
+            // }
 
-            const { name } = req.body;
+            const teamId = new Types.ObjectId(req.params.id);
 
-            const team = await this.recruitmentService.getTeam(name);
+            const team = await this.recruitmentService.getTeam(teamId);
 
             res.composer.success(team);
         } catch (error) {

@@ -4,9 +4,19 @@ import { Types } from 'mongoose';
 import RecruitmentTeam, {
     TeamDocument,
 } from '../models/recruitment_team.model';
+import UserSchema from '../models/user.model';
+// import { ServiceType } from '../types';
+
+interface TeamResult {
+    leadId: Types.ObjectId;
+    name: string;
+    members: string[];
+}
 
 @injectable()
 export class RecruitmentTeamService {
+    // constructor(@inject(ServiceType.User) private const [state, dispatch] = useReducer(first, second, third))
+
     async createNewTeam(
         name: string,
         memberIds: Types.ObjectId[],
@@ -41,13 +51,25 @@ export class RecruitmentTeamService {
         return removedTeam;
     }
 
-    async getTeam(name: string): Promise<TeamDocument> {
-        const team = await RecruitmentTeam.findOne({ name: name });
+    async getTeam(teamId: Types.ObjectId): Promise<TeamResult> {
+        const team = await RecruitmentTeam.findById(teamId);
+
+        var members: string[] = [];
+
+        for (var memberId of team.memberIds) {
+            const member = await UserSchema.findById(memberId);
+            // console.log(user.name);
+            members = [...members, member?.name];
+        }
 
         if (!team) {
             throw Error('Team does not exist');
         }
 
-        return team;
+        return {
+            leadId: team.leadId,
+            name: team.name,
+            members: members,
+        };
     }
 }
