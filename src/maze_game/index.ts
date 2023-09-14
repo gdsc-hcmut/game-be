@@ -119,7 +119,7 @@ export function handleMultipleMoves(
                 break;
             case Direction.Left:
                 nextPosition = character.position - 1;
-                if ((nextPosition - 1) % width === 0) continue;
+                if ((nextPosition + 1) % width === 0) continue;
                 break;
             default:
                 continue;

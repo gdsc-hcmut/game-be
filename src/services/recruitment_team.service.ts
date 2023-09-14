@@ -54,16 +54,16 @@ export class RecruitmentTeamService {
     async getTeam(teamId: Types.ObjectId): Promise<TeamResult> {
         const team = await RecruitmentTeam.findById(teamId);
 
+        if (!team) {
+            throw Error('Team does not exist');
+        }
+
         var members: string[] = [];
 
         for (var memberId of team.memberIds) {
             const member = await UserSchema.findById(memberId);
             // console.log(user.name);
             members = [...members, member?.name];
-        }
-
-        if (!team) {
-            throw Error('Team does not exist');
         }
 
         return {

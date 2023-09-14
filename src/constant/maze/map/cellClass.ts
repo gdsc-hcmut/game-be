@@ -78,6 +78,14 @@ export abstract class MapCell {
                 character.position = cellInfo.to;
                 return false;
 
+            case CellType.Portal_1:
+                character.position = cellInfo.to;
+                return false;
+
+            case CellType.Portal_2:
+                character.position = cellInfo.to;
+                return false;
+
             default:
                 return false;
         }
