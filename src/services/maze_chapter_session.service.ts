@@ -90,12 +90,14 @@ export class MazeChapterSessionService {
         // Check whether any InProgress session with that chapter, if yes, throw false.
         const currentChapterSession = await MazeGameChapterSession.findOne({
             userId: userId,
-            status: ChapterStatus.InProgress,
+            // status: ChapterStatus.InProgress,
             chapterId: chapter._id,
         });
 
         if (currentChapterSession) {
-            // throw Error(
+            if (currentChapterSession.status === ChapterStatus.Done) {
+                throw Error('Team has finished chapter!');
+            }
             console.log('Find another in-progress chapter');
             // );
             return currentChapterSession;
