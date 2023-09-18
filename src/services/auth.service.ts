@@ -257,6 +257,7 @@ export class AuthService {
             }
             if (user.isDeleted) {
                 user.isDeleted = false;
+                await user.save();
             }
         }
 
@@ -311,6 +312,7 @@ export class AuthService {
             }
             if (user.isDeleted) {
                 user.isDeleted = false;
+                await user.save();
             }
         }
 

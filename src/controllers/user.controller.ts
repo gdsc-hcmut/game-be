@@ -232,7 +232,7 @@ export class UserController extends Controller {
 
             if (user) {
                 user.isDeleted = true;
-                user.save();
+                await user.save();
                 res.composer.success({});
             }
         } catch (error) {
