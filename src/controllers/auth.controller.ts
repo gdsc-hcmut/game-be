@@ -178,8 +178,6 @@ export class AuthController extends Controller {
         try {
             const { idToken, nonce, givenName, familyName } = req.body;
 
-            console.log(givenName, familyName);
-
             const token = await this.authService.generateTokenAppleSignin(
                 idToken,
                 nonce,
