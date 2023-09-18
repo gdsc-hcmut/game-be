@@ -22,6 +22,8 @@ export enum CellType {
     Key = 'key',
     LockGate = 'lock_gate',
     Portal = 'portal',
+    Portal_1 = 'portal_1',
+    Portal_2 = 'portal_2',
 }
 
 export interface Cell {

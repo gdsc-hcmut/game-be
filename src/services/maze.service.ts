@@ -240,6 +240,7 @@ export class MazeService {
         if (currentSession.status !== Status.InProgress) {
             throw Error('Session has been done');
         }
+        console.log(moves);
         handleMultipleMoves(currentSession, moves);
 
         if (currentSession.status === Status.InProgress) {
