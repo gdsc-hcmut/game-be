@@ -35,7 +35,6 @@ import { Request, Response, ServiceType } from '../types';
 import { ErrorUserInvalid } from '../lib/errors';
 
 import { DatabaseService } from './database.service';
-import { UserService } from './user.service';
 import Token, { TokenDocument } from '../models/token.model';
 import { FacebookAPI } from '../apis/facebook';
 import { ZaloZPI } from '../apis/zalo';
@@ -46,6 +45,7 @@ import PingHistoryModel from '../models/user-ping.model';
 import { OAuth2Client } from 'google-auth-library';
 import appleSigninAuth from 'apple-signin-auth';
 import { UserAuth } from '../typings/express';
+import { MobileDeviceService, UserService } from '.';
 
 @injectable()
 export class AuthService {
@@ -53,6 +53,8 @@ export class AuthService {
     private appleClient = appleSigninAuth;
 
     @lazyInject(ServiceType.User) private userService: UserService;
+    @lazyInject(ServiceType.MobileDevice)
+    private mobileDeviceService: MobileDeviceService;
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Mail) private mailService: MailService,
     ) {
@@ -411,6 +413,13 @@ Thanks!
         });
 
         // await this.tokenCollection.remove({ userId: user._id });
+    }
+
+    async mobileLogout(userId: string, deviceToken: string) {
+        await this.mobileDeviceService.deactivateDeviceToken(
+            userId,
+            deviceToken,
+        );
     }
 
     // async generateTokenForZalo(accessToken: string, userAgent: string) {
