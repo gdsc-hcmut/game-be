@@ -253,6 +253,14 @@ export class AuthService {
                 user.picture = payload.picture;
                 await user.save();
             }
+            if (user.name !== payload.name) {
+                user.name = payload.name;
+                await user.save();
+            }
+            if (user.isDeleted) {
+                user.isDeleted = false;
+                await user.save();
+            }
         }
 
         return await this.createToken(
@@ -286,20 +294,28 @@ export class AuthService {
         if (!appleToken.email) {
             throw Error('Invalid email');
         }
+        const name =
+            givenName && familyName ? givenName + ' ' + familyName : '';
         // Check env dev = whitelist, production
         let user = await User.findOne({ appleId: appleToken.sub });
         // If user doesn't exist creates a new user. (similar to sign up)
         if (!user) {
             const newUser = await User.create({
                 appleId: appleToken.sub,
-                name:
-                    givenName && familyName
-                        ? givenName + ' ' + familyName
-                        : undefined,
+                name: name,
                 email: appleToken.email,
                 roles: USER_ROLES.USER,
             });
             user = newUser;
+        } else {
+            if (!_.isEmpty(name) && user.name !== name) {
+                user.name = name;
+                await user.save();
+            }
+            if (user.isDeleted) {
+                user.isDeleted = false;
+                await user.save();
+            }
         }
 
         return await this.createToken(
