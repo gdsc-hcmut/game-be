@@ -69,7 +69,7 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
         height: { type: Number },
     },
     level: { type: Number, default: 1 },
-    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    userId: { type: Schema.Types.ObjectId, ref: 'recruitment_team' },
     chapterSessionId: {
         type: Schema.Types.ObjectId,
         ref: 'maze_game_chapter_session',

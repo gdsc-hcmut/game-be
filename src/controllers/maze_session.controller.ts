@@ -20,7 +20,6 @@ export class MazeSessionController extends Controller {
         super();
 
         this.router.all('*', this.authService.authenticate());
-        this.router.post('/', this.createSession.bind(this));
         this.router.get('/current', this.getCurrentSession.bind(this));
         this.router.post('/:id/move', this.submitSingleMove.bind(this));
         this.router.post('/:id/moves', this.submitMultipleMoves.bind(this));
@@ -29,31 +28,6 @@ export class MazeSessionController extends Controller {
         this.router.get('/:id/move', this.getMovesHistory.bind(this));
         this.router.post('/:id/end', this.endSession.bind(this));
         this.router.get('/:id/score', this.getRoundScore.bind(this));
-    }
-
-    async createSession(req: Request, res: Response) {
-        try {
-            // console.log(req.tokenMeta);
-            // if (
-            //     !_.includes(
-            //         req.tokenMeta.roles,
-            //         USER_ROLES.STAFF_CLUBDAY_VERIFY,
-            //     )
-            // ) {
-            //     throw Error('You are not Staff of Club Day');
-            // }
-
-            const userId = new Types.ObjectId(req.tokenMeta.userId);
-
-            const session = await this.mazeService.startOrCreateSession(
-                userId,
-                1,
-            );
-            res.composer.success(session);
-        } catch (error) {
-            console.log(error);
-            res.composer.badRequest(error.message);
-        }
     }
 
     async getCurrentSession(req: Request, res: Response) {

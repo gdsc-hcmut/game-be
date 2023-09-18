@@ -21,7 +21,7 @@ const mazeGameChapterSessionSchema = new Schema<MazeGameChapterSessionDocument>(
         chapterId: { type: Schema.Types.ObjectId, ref: 'maze_game_chapter' },
         helpCount: Number,
         currentRound: Number,
-        userId: { type: Schema.Types.ObjectId, ref: 'Users' },
+        userId: { type: Schema.Types.ObjectId, ref: 'recruitment_team' },
         team: { type: Schema.Types.ObjectId, ref: 'recruitment_team' },
         rounds: [{ type: Schema.Types.ObjectId, ref: 'maze_game_session' }],
         status: String,

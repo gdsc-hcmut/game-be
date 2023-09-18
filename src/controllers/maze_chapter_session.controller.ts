@@ -29,13 +29,14 @@ export class MazeChapterSessionController extends Controller {
     async startChapterSession(req: Request, res: Response) {
         try {
             // console.log(req.tokenMeta.userId);
-            const userId = new Types.ObjectId(req.body.userId);
+            // const userId = new Types.ObjectId(req.body.userId);
             const { chapterLevel, team } = req.body;
+            const teamId = new Types.ObjectId(team);
 
             const result =
                 await this.mazeChapterSessionService.startChapterSession(
-                    userId,
-                    team,
+                    // userId,
+                    teamId,
                     chapterLevel,
                 );
 
@@ -48,14 +49,14 @@ export class MazeChapterSessionController extends Controller {
 
     async startMazeSession(req: Request, res: Response) {
         try {
-            const userId = new Types.ObjectId(req.body.userId);
+            const teamId = new Types.ObjectId(req.body.teamId);
             const chapterId = new Types.ObjectId(req.params.id);
 
             const { round } = req.body;
 
             const result =
                 await this.mazeChapterSessionService.startMazeSession(
-                    userId,
+                    teamId,
                     chapterId,
                     round,
                 );

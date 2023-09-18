@@ -28,56 +28,55 @@ export class MazeChapterSessionService {
     constructor(@inject(ServiceType.Maze) private mazeService: MazeService) {}
 
     async startChapterSession(
-        userId: Types.ObjectId,
-        teamName: string,
+        teamId: Types.ObjectId,
         chapterLevel: number = 1,
     ): Promise<MazeGameChapterSessionDocument> {
-        const team = await teamSchemaModel.findOne({ name: teamName });
+        const team = await teamSchemaModel.findById(teamId);
 
         if (!team) {
             throw Error('Team name is not valid');
         }
 
-        if (!team.leadId.equals(userId)) {
-            throw Error('Only leader has permission to start chapter session!');
-        }
+        // if (!team.leadId.equals(userId)) {
+        //     throw Error('Only leader has permission to start chapter session!');
+        // }
 
-        let isNewChapter = false;
+        // let isNewChapter = false;
 
-        const user = await User.findById(userId)
-            .populate('currentMazeChapter')
-            .exec();
-        const { currentMazeChapter } = user;
+        // const user = await User.findById(team._id)
+        //     .populate('currentMazeChapter')
+        //     .exec();
+        // const { currentMazeChapter } = user;
 
         if (chapterLevel <= 0) {
             throw Error('This chapter is not available!');
         }
 
-        if (!currentMazeChapter && chapterLevel > 1) {
-            throw Error(
-                'This chapter will be unlocked when you finish all the previous chapter!',
-            );
-        } else if (!currentMazeChapter && chapterLevel === 1) {
-            isNewChapter = true;
-        } else if (
-            currentMazeChapter &&
-            chapterLevel > currentMazeChapter.chapterLevel + 1
-        ) {
-            throw Error(
-                'This chapter will be unlocked when you finish all the previous chapter!',
-            );
-        } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
-            const currentChapter = await MazeGameChapterSession.findOne({
-                userId: userId,
-                status: ChapterStatus.Done,
-            });
+        // if (!currentMazeChapter && chapterLevel > 1) {
+        //     throw Error(
+        //         'This chapter will be unlocked when you finish all the previous chapter!',
+        //     );
+        // } else if (!currentMazeChapter && chapterLevel === 1) {
+        //     isNewChapter = true;
+        // } else if (
+        //     currentMazeChapter &&
+        //     chapterLevel > currentMazeChapter.chapterLevel + 1
+        // ) {
+        //     throw Error(
+        //         'This chapter will be unlocked when you finish all the previous chapter!',
+        //     );
+        // } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
+        //     const currentChapter = await MazeGameChapterSession.findOne({
+        //         userId: team._id,
+        //         status: ChapterStatus.Done,
+        //     });
 
-            if (!currentChapter)
-                throw Error(
-                    'This chapter will be unlocked when you finish all the previous chapter!',
-                );
-            else isNewChapter = true;
-        }
+        //     if (!currentChapter)
+        //         throw Error(
+        //             'This chapter will be unlocked when you finish all the previous chapter!',
+        //         );
+        //     else isNewChapter = true;
+        // }
 
         const chapter = await MazeGameChapter.findOne({
             chapterLevel: chapterLevel,
@@ -89,7 +88,7 @@ export class MazeChapterSessionService {
 
         // Check whether any InProgress session with that chapter, if yes, throw false.
         const currentChapterSession = await MazeGameChapterSession.findOne({
-            userId: userId,
+            userId: team._id,
             status: ChapterStatus.InProgress,
             chapterId: chapter._id,
         });
@@ -101,22 +100,22 @@ export class MazeChapterSessionService {
             return currentChapterSession;
         }
 
-        if (isNewChapter) {
-            await User.updateOne(
-                { _id: userId },
-                {
-                    $set: {
-                        currentMazeChapter: chapter._id,
-                    },
-                },
-            );
-        }
+        // if (isNewChapter) {
+        //     await User.updateOne(
+        //         { _id: userId },
+        //         {
+        //             $set: {
+        //                 currentMazeChapter: chapter._id,
+        //             },
+        //         },
+        //     );
+        // }
 
         const newChapterSession = new MazeGameChapterSession({
             chapterId: chapter._id,
             helpCount: chapter.helpCount,
             currentRound: 1,
-            userId: userId,
+            userId: team._id,
             rounds: [],
             status: ChapterStatus.InProgress,
             team: team._id,
@@ -171,7 +170,7 @@ export class MazeChapterSessionService {
             }
         }
 
-        const newSession = await this.mazeService.startOrCreateSession(
+        const newSession = await this.mazeService.startSession(
             userId,
             roundLevels[round - 1], // level of session
             chapterSessionId,

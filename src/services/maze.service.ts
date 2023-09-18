@@ -55,7 +55,7 @@ export class MazeService {
         return newMazeGame;
     }
 
-    async startOrCreateSession(
+    async startSession(
         userId: Types.ObjectId,
         level: number,
         chapterSessionId: Types.ObjectId = null,

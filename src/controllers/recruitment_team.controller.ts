@@ -28,30 +28,12 @@ export class RecruitmentTeamController extends Controller {
 
     async createNewTeam(req: Request, res: Response) {
         try {
-            if (
-                !_.includes(
-                    req.tokenMeta.roles,
-                    USER_ROLES.STAFF_CLUBDAY_VERIFY,
-                )
-            ) {
-                throw Error('You are not Staff of Club Day');
-            }
-
-            const leadId = new Types.ObjectId(req.body.leadId);
-            var memberIds: Types.ObjectId[] = [];
-            var newId: Types.ObjectId;
-            for (const memberId of req.body.memberIds) {
-                newId = new Types.ObjectId(memberId);
-                memberIds = [...memberIds, newId];
-                console.log(newId);
-            }
-
-            const name = req.body.name;
+            const { name } = req.body;
+            const members: string[] = req.body.members;
 
             const newTeam = await this.recruitmentService.createNewTeam(
                 name,
-                memberIds,
-                leadId,
+                members,
             );
 
             res.composer.success(newTeam);
@@ -84,15 +66,6 @@ export class RecruitmentTeamController extends Controller {
 
     async getTeamInfo(req: Request, res: Response) {
         try {
-            // if (
-            //     !_.includes(
-            //         req.tokenMeta.roles,
-            //         USER_ROLES.STAFF_CLUBDAY_VERIFY,
-            //     )
-            // ) {
-            //     throw Error('You are not Staff of Club Day');
-            // }
-
             const teamId = new Types.ObjectId(req.params.id);
 
             const team = await this.recruitmentService.getTeam(teamId);

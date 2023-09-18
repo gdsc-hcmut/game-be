@@ -4,11 +4,9 @@ import { Types } from 'mongoose';
 import RecruitmentTeam, {
     TeamDocument,
 } from '../models/recruitment_team.model';
-import UserSchema from '../models/user.model';
 // import { ServiceType } from '../types';
 
-interface TeamResult {
-    leadId: Types.ObjectId;
+interface Team {
     name: string;
     members: string[];
 }
@@ -19,8 +17,7 @@ export class RecruitmentTeamService {
 
     async createNewTeam(
         name: string,
-        memberIds: Types.ObjectId[],
-        leadId: Types.ObjectId,
+        members: string[],
     ): Promise<TeamDocument> {
         const checkExistTeam = await RecruitmentTeam.findOne({ name: name });
 
@@ -30,8 +27,7 @@ export class RecruitmentTeamService {
 
         const newTeam = new RecruitmentTeam({
             name: name,
-            memberIds: memberIds,
-            leadId: leadId,
+            members: members,
         });
 
         await newTeam.save();
@@ -51,25 +47,16 @@ export class RecruitmentTeamService {
         return removedTeam;
     }
 
-    async getTeam(teamId: Types.ObjectId): Promise<TeamResult> {
+    async getTeam(teamId: Types.ObjectId): Promise<Team> {
         const team = await RecruitmentTeam.findById(teamId);
 
         if (!team) {
             throw Error('Team does not exist');
         }
 
-        var members: string[] = [];
-
-        for (var memberId of team.memberIds) {
-            const member = await UserSchema.findById(memberId);
-            // console.log(user.name);
-            members = [...members, member?.name];
-        }
-
         return {
-            leadId: team.leadId,
             name: team.name,
-            members: members,
+            members: team.members,
         };
     }
 }
