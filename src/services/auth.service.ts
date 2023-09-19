@@ -1,14 +1,15 @@
 import { injectable, inject } from 'inversify';
 import crypto from 'crypto';
 import passport from 'passport';
+import jwt from 'jwt-simple';
+import { sign } from 'jsonwebtoken';
 import {
     Strategy,
     ExtractJwt,
     StrategyOptions,
     VerifiedCallback,
 } from 'passport-jwt';
-import jwt from 'jwt-simple';
-import { Express, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
@@ -20,7 +21,7 @@ import {
     WhitelistDomain,
 } from '../config';
 import User, { UserDocument, USER_ROLES } from '../models/user.model';
-import { parseTokenMeta } from '../models/token.model';
+
 const GoogleStrategy = passportGoogle.Strategy;
 
 import {
@@ -51,6 +52,7 @@ import { MobileDeviceService, UserService } from '.';
 export class AuthService {
     private googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
     private appleClient = appleSigninAuth;
+    private appleService: any;
 
     @lazyInject(ServiceType.User) private userService: UserService;
     @lazyInject(ServiceType.MobileDevice)
@@ -58,6 +60,18 @@ export class AuthService {
     constructor(
         @inject(ServiceType.Database) private dbService: DatabaseService, // @inject(ServiceType.Mail) private mailService: MailService,
     ) {
+        this.init();
+    }
+
+    async init() {
+        let mountPath = '';
+        if (process.env.ENV === 'dev' || process.env.ENV === 'prod') {
+            mountPath = '/secrets/appleServiceAccountKey.json';
+        } else {
+            mountPath = '../../appleServiceAccountKey.json';
+        }
+        this.appleService = (await import(mountPath)).default;
+
         console.log('[Auth Service] Construct');
     }
 
@@ -290,10 +304,6 @@ export class AuthService {
                 : undefined,
         });
 
-        //check valid payload .... TODO
-        if (!appleToken.email) {
-            throw Error('Invalid email');
-        }
         const name =
             givenName && familyName ? givenName + ' ' + familyName : '';
         // Check env dev = whitelist, production
@@ -303,7 +313,7 @@ export class AuthService {
             const newUser = await User.create({
                 appleId: appleToken.sub,
                 name: name,
-                email: appleToken.email,
+                email: appleToken.email || '',
                 roles: USER_ROLES.USER,
             });
             user = newUser;
@@ -312,19 +322,46 @@ export class AuthService {
                 user.name = name;
                 await user.save();
             }
+            if (
+                !_.isEmpty(appleToken.email) &&
+                user.email !== appleToken.email
+            ) {
+                user.email = appleToken.email;
+                await user.save();
+            }
             if (user.isDeleted) {
                 user.isDeleted = false;
                 await user.save();
             }
         }
 
-        return await this.createToken(
-            user._id,
-            '',
-            user.email,
-            user.roles,
-            user.appleId,
-        );
+        return {
+            token: await this.createToken(
+                user._id,
+                '',
+                user.email,
+                user.roles,
+                user.appleId,
+            ),
+            clientSecret: sign(
+                {
+                    iss: this.appleService.team_id,
+                    iat: Math.floor(Date.now() / 1000),
+                    exp: Math.floor(Date.now() / 1000) + 300,
+                    aud: 'https://appleid.apple.com',
+                    sub: this.appleService.client_id,
+                },
+                this.appleService.key,
+                {
+                    algorithm: 'ES256',
+                    header: {
+                        alg: 'ES256',
+                        kid: this.appleService.key_id,
+                        typ: 'JWT',
+                    },
+                },
+            ),
+        };
     }
 
     async generateTokenUsingSocialAccount(

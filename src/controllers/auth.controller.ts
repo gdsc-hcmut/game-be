@@ -180,13 +180,14 @@ export class AuthController extends Controller {
         try {
             const { idToken, nonce, givenName, familyName } = req.body;
 
-            const token = await this.authService.generateTokenAppleSignin(
-                idToken,
-                nonce,
-                givenName,
-                familyName,
-            );
-            res.composer.success({ token });
+            const { token, clientSecret } =
+                await this.authService.generateTokenAppleSignin(
+                    idToken,
+                    nonce,
+                    givenName,
+                    familyName,
+                );
+            res.composer.success({ token, clientSecret });
         } catch (error) {
             res.composer.badRequest(error.message);
         }
