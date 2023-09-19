@@ -23,6 +23,7 @@ export class MazeSessionController extends Controller {
         this.router.get('/current', this.getCurrentSession.bind(this));
         this.router.post('/:id/move', this.submitSingleMove.bind(this));
         this.router.post('/:id/moves', this.submitMultipleMoves.bind(this));
+        this.router.post('/:id/test-moves', this.testMoves.bind(this));
         this.router.get('/:id/character', this.getCharacterInfo.bind(this));
         this.router.get('/:id/map', this.getMapInfo.bind(this));
         this.router.get('/:id/move', this.getMovesHistory.bind(this));
@@ -132,15 +133,34 @@ export class MazeSessionController extends Controller {
     async submitMultipleMoves(req: Request, res: Response) {
         try {
             const sessionId = new mongoose.Types.ObjectId(req.params.id);
-            const userId = new Types.ObjectId(req.body.userId);
+            const teamId = new Types.ObjectId(req.body.teamId);
             const moves: string[] = req.body.moves;
             const canUseHelp: boolean = req.body.is_enable_animation;
 
             const result = await this.mazeService.submitMultipleMove(
                 sessionId,
-                userId,
+                teamId,
                 moves,
                 canUseHelp,
+            );
+
+            res.composer.success(result);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async testMoves(req: Request, res: Response) {
+        try {
+            const sessionId = new mongoose.Types.ObjectId(req.params.id);
+            const teamId = new Types.ObjectId(req.body.teamId);
+            const moves: string[] = req.body.moves;
+
+            const result = await this.mazeService.testSubmitMoves(
+                sessionId,
+                teamId,
+                moves,
             );
 
             res.composer.success(result);

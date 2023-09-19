@@ -144,5 +144,14 @@ export function handleMultipleMoves(
 export function getScore(session: MazeGameSessionDocument): number {
     if (session.status !== Status.Win) return 0;
     const { character } = session;
-    return character.hp + character.stamina * 50 + session.level * 100;
+    return (
+        character.hp +
+        character.stamina * 50 +
+        session.level * 100 +
+        session.helpCount * 100
+    );
 }
+
+export type testMoveResult = {
+    moves: Direction[];
+};

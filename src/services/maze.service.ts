@@ -31,6 +31,7 @@ import {
     handleMove,
     handleMultipleMoves,
     sessionInfo,
+    testMoveResult,
 } from '../maze_game';
 
 @injectable()
@@ -301,6 +302,43 @@ export class MazeService {
             can_show_animation: isHelp,
             moves: currentSession.moves,
             score: score,
+        };
+    }
+
+    async testSubmitMoves(
+        sessionId: Types.ObjectId,
+        userId: Types.ObjectId,
+        moves: string[],
+    ): Promise<testMoveResult> {
+        const currentSession = await MazeGameSession.findById(sessionId);
+
+        if (!currentSession) {
+            throw Error('Could not find session');
+        }
+
+        if (!currentSession.userId.equals(userId))
+            throw Error('Could not access to session');
+
+        if (currentSession.status !== Status.InProgress) {
+            throw Error('Session has been done');
+        }
+        handleMultipleMoves(currentSession, moves);
+
+        if (currentSession.helpCount < 0) {
+            throw Error('Can not use Help');
+        }
+
+        await MazeGameSession.updateOne(
+            { _id: sessionId },
+            {
+                $set: {
+                    helpCount: currentSession.helpCount - 1,
+                },
+            },
+        );
+
+        return {
+            moves: currentSession.moves,
         };
     }
 

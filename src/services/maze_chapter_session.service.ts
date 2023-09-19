@@ -228,9 +228,6 @@ export class MazeChapterSessionService {
             const roundScore = await this.mazeService.getScore(sessionId);
             chapterScore += roundScore.score;
         }
-        if (chapterSession.status === ChapterStatus.Done) {
-            chapterScore += 100 * chapterSession.helpCount;
-        }
         return { score: chapterScore };
     }
 

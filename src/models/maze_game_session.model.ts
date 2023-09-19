@@ -28,6 +28,7 @@ export type MazeGameSessionDocument = Document & {
     mapId: Types.ObjectId;
     moves: Direction[];
     startTime: number;
+    helpCount: number;
 };
 
 const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
@@ -78,6 +79,7 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
     mapId: { type: Schema.Types.ObjectId, ref: 'maze_game' },
     moves: [{ type: String, default: [] }],
     startTime: { type: Number, default: Date.now() },
+    helpCount: { type: Number, default: 3 },
 });
 
 const mazeGameSchemaModel = mongoose.model<MazeGameSessionDocument>(
