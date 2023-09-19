@@ -89,7 +89,6 @@ export class MazeChapterSessionService {
         // Check whether any InProgress session with that chapter, if yes, throw false.
         const currentChapterSession = await MazeGameChapterSession.findOne({
             userId: team._id,
-            status: ChapterStatus.InProgress,
             chapterId: chapter._id,
         });
 
