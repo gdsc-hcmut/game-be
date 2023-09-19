@@ -13,6 +13,7 @@ export interface Response extends EResponse {
 
 export const ServiceType = {
     Auth: Symbol.for('AuthService'),
+    MobileDevice: Symbol.for('MobileDeviceService'),
     Database: Symbol.for('DatabaseService'),
     User: Symbol.for('UserService'),
     Game: Symbol.for('GameService'),

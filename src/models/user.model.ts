@@ -42,6 +42,7 @@ export type UserDocument = Document & {
     availableReceiving: number;
     roles: USER_ROLES[];
     currentMazeChapter: Types.ObjectId & MazeGameChapterDocument;
+    isDeleted: boolean;
 };
 
 const userSchema = new Schema<UserDocument>({
@@ -67,6 +68,7 @@ const userSchema = new Schema<UserDocument>({
         ref: 'maze_game_chapter',
         default: null,
     },
+    isDeleted: { type: Boolean, default: false },
 });
 
 const User = mongoose.model<UserDocument>('User', userSchema);

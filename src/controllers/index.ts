@@ -4,7 +4,7 @@ import { GameController } from './game.controller';
 import { ItemController } from './item.controller';
 import { MarketplaceController } from './marketplace_item.controller';
 import { ClubDayController } from './clubday.controller';
-
+import { MobileDeviceController } from './mobile_device.controller';
 import { Controller } from './controller';
 import { DiscordController } from './discord.controller';
 import { GICController } from './gic.controller';
@@ -26,6 +26,7 @@ export {
     GICController,
     MazeController,
     MazeSessionController,
+    MobileDeviceController,
     MazeChapterController,
     MazeChapterSessionController,
     RecruitmentTeamController,
