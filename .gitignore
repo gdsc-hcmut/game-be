@@ -9,5 +9,6 @@ static/images
 ./.env
 .env*
 googleServiceAccountKey.json
+appleServiceAccountKey.json
 credentials.json
 .gitconfig

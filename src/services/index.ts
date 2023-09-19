@@ -11,6 +11,7 @@ import { MazeService } from './maze.service';
 import { MazeChapterService } from './maze_chapter.service';
 import { MazeChapterSessionService } from './maze_chapter_session.service';
 import { RecruitmentTeamService } from './recruitment_team.service';
+import { MobileDeviceService } from './mobile_device.service';
 
 export {
     AuthService,
@@ -26,4 +27,5 @@ export {
     MazeChapterService,
     MazeChapterSessionService,
     RecruitmentTeamService,
+    MobileDeviceService,
 };

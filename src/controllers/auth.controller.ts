@@ -46,6 +46,7 @@ export class AuthController extends Controller {
             '/mobile/apple/login',
             this.mobileAppleLogin.bind(this),
         );
+        this.router.post('/mobile/logout', this.mobileLogout.bind(this));
         this.router.get(
             '/google',
             (req, res, next) => {
@@ -168,6 +169,7 @@ export class AuthController extends Controller {
             const token = await this.authService.generateTokenGoogleSignin(
                 idToken,
             );
+
             res.composer.success({ token });
         } catch (error) {
             res.composer.badRequest(error.message);
@@ -178,15 +180,27 @@ export class AuthController extends Controller {
         try {
             const { idToken, nonce, givenName, familyName } = req.body;
 
-            console.log(givenName, familyName);
+            const { token, clientSecret } =
+                await this.authService.generateTokenAppleSignin(
+                    idToken,
+                    nonce,
+                    givenName,
+                    familyName,
+                );
+            res.composer.success({ token, clientSecret });
+        } catch (error) {
+            res.composer.badRequest(error.message);
+        }
+    }
 
-            const token = await this.authService.generateTokenAppleSignin(
-                idToken,
-                nonce,
-                givenName,
-                familyName,
-            );
-            res.composer.success({ token });
+    async mobileLogout(req: Request, res: Response) {
+        try {
+            const { userId } = req.tokenMeta;
+            const { deviceToken } = req.body;
+
+            await this.authService.mobileLogout(userId, deviceToken);
+
+            res.composer.success({});
         } catch (error) {
             res.composer.badRequest(error.message);
         }
