@@ -18,6 +18,7 @@ import {
     MazeService,
     MazeChapterService,
     MazeChapterSessionService,
+    MobileDeviceService,
 } from './services';
 import {
     AuthController,
@@ -32,6 +33,7 @@ import {
     MazeSessionController,
     MazeChapterController,
     MazeChapterSessionController,
+    MobileDeviceController,
 } from './controllers';
 import { ServiceType } from './types';
 
@@ -66,6 +68,10 @@ container
 container
     .bind<MarketplaceItemService>(ServiceType.MarketplaceItem)
     .to(MarketplaceItemService)
+    .inSingletonScope();
+container
+    .bind<MobileDeviceService>(ServiceType.MobileDevice)
+    .to(MobileDeviceService)
     .inSingletonScope();
 container
     .bind<TransactionService>(ServiceType.Transaction)
@@ -133,6 +139,7 @@ Promise.all([
             container.resolve<MazeChapterSessionController>(
                 MazeChapterSessionController,
             ),
+            container.resolve<MobileDeviceController>(MobileDeviceController),
         ],
         SERVICE_PORT,
         [

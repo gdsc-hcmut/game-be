@@ -228,13 +228,12 @@ export class UserController extends Controller {
                 new Types.ObjectId(userid),
             );
 
-            res.composer.success({});
-
             if (user) {
                 user.isDeleted = true;
                 await user.save();
-                res.composer.success({});
             }
+
+            res.composer.success({});
         } catch (error) {
             res.composer.badRequest(error.message);
         }
