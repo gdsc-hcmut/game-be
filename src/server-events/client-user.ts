@@ -3,6 +3,7 @@ import { EventTypes } from './event-types';
 import {
     GameService,
     ItemService,
+    MazeChapterSessionService,
     MazeService,
     TransactionService,
 } from '../services';
@@ -21,7 +22,9 @@ import { ItemDocument } from '../models/item.model';
 import { GICService } from '../services/gic/gic.service';
 import { mathQuizRarity } from '../services/gic/utils';
 import { GICAchievementService } from '../services/gic/gic_achievement.service';
+import { max_time } from '../constant/maze/map';
 const MAX_CHAPTER = 50;
+const timers: any = {};
 
 export interface SocketInfo {
     socket: CustomSocket;
@@ -33,6 +36,7 @@ export interface SocketInfo {
     isQuizTrue: boolean;
     questionTime: number;
     quizTimeout: ReturnType<typeof setTimeout>;
+    mazeTimeout: ReturnType<typeof setTimeout>;
 }
 
 type SocketMapType = {
@@ -52,6 +56,7 @@ class ClientUser {
     private gicAchievementService: GICAchievementService;
     private gicService: GICService;
     private mazeService: MazeService;
+    private mazeChapterSessionService: MazeChapterSessionService;
 
     constructor(
         userId: string,
@@ -63,6 +68,7 @@ class ClientUser {
         gicAchievementService: GICAchievementService,
         gicService: GICService,
         mazeService: MazeService,
+        mazeChapterSessionService: MazeChapterSessionService,
     ) {
         this.sockets = [] as any;
         this.userId = [] as any;
@@ -76,6 +82,8 @@ class ClientUser {
         this.gicAchievementService = gicAchievementService;
         this.gicService = gicService;
         this.mazeService = mazeService;
+        this.mazeChapterSessionService = mazeChapterSessionService;
+
         const userIdCast = new mongoose.Types.ObjectId(userId);
         this.userService
             .findById(userIdCast)
@@ -452,6 +460,7 @@ class ClientUser {
             isQuizTrue: false,
             questionTime: 2000,
             quizTimeout: null,
+            mazeTimeout: null,
         };
         this.sockets[socket.id] = { ...defaults };
         socket.on(EventTypes.DISCONNECT, (reason: any) =>
@@ -490,19 +499,72 @@ class ClientUser {
         });
     }
 
-    async startSession(socketId: any) {
+    // async submitSingleMove(sessionId: string, move: string, socketId: any) {
+    //     try {
+    //         const userIdCast = new mongoose.Types.ObjectId(this.userId);
+    //         const sessionIdCast = new mongoose.Types.ObjectId(sessionId);
+
+    //         const result = await this.mazeService.submitSingleMove(
+    //             sessionIdCast,
+    //             userIdCast,
+    //             move,
+    //         );
+
+    //         Object.keys(this.sockets).map((key: any, index: any) => {
+    //             this.sockets[key].socket.emit(EventTypes.MOVE_SUCCESS, result);
+    //         });
+    //     } catch (error) {
+    //         console.log(error.message);
+    //         this.sockets[socketId].socket.emit(EventTypes.MOVE_FAIL);
+    //     }
+    // }
+
+    // async countDownTime(socketId: any) {
+    //     try {
+    //         if (typeof timers[socketId] !== 'undefined') {
+    //             clearTimeout(timers[socketId]);
+    //         }
+
+    //         timers[socketId] = setTimeout(() => {
+    //             Object.keys(this.sockets).map((key: any, index: any) => {
+    //                 this.sockets[key].socket.emit(EventTypes.MAZE_TIMEOUT);
+    //             });
+    //         }, max_time);
+    //     } catch (err) {
+    //         console.log('ERRRR', err);
+    //         this.sockets[socketId].socket.emit(EventTypes.MAZE_TIMEOUT_FAIL);
+    //     }
+    // }
+
+    async startSession(
+        socketId: any,
+        chapterSessionId: string = null,
+        round: number,
+    ) {
         try {
-            console.log('Start Maze Session');
+            clearTimeout(this.sockets[socketId].mazeTimeout);
+            // console.log('Start Maze Session');
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
 
-            const session = await this.mazeService.createSession(userIdCast, 1);
+            const chapterSessionIdCast = new mongoose.Types.ObjectId(
+                chapterSessionId,
+            );
 
-            Object.keys(this.sockets).map((key: any, index: any) => {
-                this.sockets[key].socket.emit(
-                    EventTypes.START_MAZE_SESSION_SUCCESS,
-                    session,
+            const session =
+                await this.mazeChapterSessionService.startMazeSession(
+                    userIdCast,
+                    chapterSessionIdCast,
+                    round,
                 );
-            });
+
+            this.sockets[socketId].mazeTimeout = setTimeout(() => {
+                this.sockets[socketId].socket.emit(EventTypes.MAZE_TIMEOUT);
+            }, 30 * 1000);
+
+            this.sockets[socketId].socket.emit(
+                EventTypes.START_MAZE_SESSION_SUCCESS,
+                session,
+            );
         } catch (err) {
             console.log('ERRRR', err);
             this.sockets[socketId].socket.emit(
@@ -511,23 +573,33 @@ class ClientUser {
         }
     }
 
-    async submitSingleMove(sessionId: string, move: string, socketId: any) {
+    async submitMultipleMoves(
+        sessionId: string,
+        moves: string[],
+        useHelp: boolean,
+        socketId: any,
+    ) {
         try {
             const userIdCast = new mongoose.Types.ObjectId(this.userId);
             const sessionIdCast = new mongoose.Types.ObjectId(sessionId);
 
-            const result = await this.mazeService.submitSingleMove(
+            const result = await this.mazeService.submitMultipleMove(
                 sessionIdCast,
                 userIdCast,
-                move,
+                moves,
+                useHelp,
             );
+            clearTimeout(this.sockets[socketId].mazeTimeout);
 
-            Object.keys(this.sockets).map((key: any, index: any) => {
-                this.sockets[key].socket.emit(EventTypes.MOVE_SUCCESS, result);
-            });
+            // Object.keys(this.sockets).map((key: any, index: any) => {
+            this.sockets[socketId].socket.emit(
+                EventTypes.MULTIPLE_MOVE_SUCCESS,
+                result,
+            );
+            // });
         } catch (error) {
             console.log(error.message);
-            this.sockets[socketId].socket.emit(EventTypes.MOVE_FAIL);
+            this.sockets[socketId].socket.emit(EventTypes.MULTIPLE_MOVE_FAIL);
         }
     }
 

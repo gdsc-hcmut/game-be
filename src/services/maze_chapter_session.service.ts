@@ -14,6 +14,9 @@ import MazeGameSession, {
 import { Types } from 'mongoose';
 import { MazeService } from './maze.service';
 import { ServiceType } from '../types';
+import teamSchemaModel from '../models/recruitment_team.model';
+import { sessionInfo } from '../maze_game';
+import { max_time } from '../constant/maze/map';
 // import { ServiceType } from '../types';
 
 interface Score {
@@ -25,45 +28,55 @@ export class MazeChapterSessionService {
     constructor(@inject(ServiceType.Maze) private mazeService: MazeService) {}
 
     async startChapterSession(
-        userId: Types.ObjectId,
-        chapterLevel: number,
+        teamId: Types.ObjectId,
+        chapterLevel: number = 1,
     ): Promise<MazeGameChapterSessionDocument> {
-        let isNewChapter = false;
+        const team = await teamSchemaModel.findById(teamId);
 
-        const user = await User.findById(userId)
-            .populate('currentMazeChapter')
-            .exec();
-        const { currentMazeChapter } = user;
+        if (!team) {
+            throw Error('Team name is not valid');
+        }
+
+        // if (!team.leadId.equals(userId)) {
+        //     throw Error('Only leader has permission to start chapter session!');
+        // }
+
+        // let isNewChapter = false;
+
+        // const user = await User.findById(team._id)
+        //     .populate('currentMazeChapter')
+        //     .exec();
+        // const { currentMazeChapter } = user;
 
         if (chapterLevel <= 0) {
             throw Error('This chapter is not available!');
         }
 
-        if (!currentMazeChapter && chapterLevel > 1) {
-            throw Error(
-                'This chapter will be unlocked when you finish all the previous chapter!',
-            );
-        } else if (!currentMazeChapter && chapterLevel === 1) {
-            isNewChapter = true;
-        } else if (
-            currentMazeChapter &&
-            chapterLevel > currentMazeChapter.chapterLevel + 1
-        ) {
-            throw Error(
-                'This chapter will be unlocked when you finish all the previous chapter!',
-            );
-        } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
-            const currentChapter = await MazeGameChapterSession.findOne({
-                userId: userId,
-                status: ChapterStatus.Done,
-            });
+        // if (!currentMazeChapter && chapterLevel > 1) {
+        //     throw Error(
+        //         'This chapter will be unlocked when you finish all the previous chapter!',
+        //     );
+        // } else if (!currentMazeChapter && chapterLevel === 1) {
+        //     isNewChapter = true;
+        // } else if (
+        //     currentMazeChapter &&
+        //     chapterLevel > currentMazeChapter.chapterLevel + 1
+        // ) {
+        //     throw Error(
+        //         'This chapter will be unlocked when you finish all the previous chapter!',
+        //     );
+        // } else if (chapterLevel === currentMazeChapter.chapterLevel + 1) {
+        //     const currentChapter = await MazeGameChapterSession.findOne({
+        //         userId: team._id,
+        //         status: ChapterStatus.Done,
+        //     });
 
-            if (!currentChapter)
-                throw Error(
-                    'This chapter will be unlocked when you finish all the previous chapter!',
-                );
-            else isNewChapter = true;
-        }
+        //     if (!currentChapter)
+        //         throw Error(
+        //             'This chapter will be unlocked when you finish all the previous chapter!',
+        //         );
+        //     else isNewChapter = true;
+        // }
 
         const chapter = await MazeGameChapter.findOne({
             chapterLevel: chapterLevel,
@@ -74,47 +87,50 @@ export class MazeChapterSessionService {
         }
 
         // Check whether any InProgress session with that chapter, if yes, throw false.
-        const chapterSession = await MazeGameChapterSession.findOne({
-            userId: userId,
-            status: ChapterStatus.InProgress,
+        const currentChapterSession = await MazeGameChapterSession.findOne({
+            userId: team._id,
             chapterId: chapter._id,
         });
 
-        if (chapterSession) {
-            throw Error(
-                'Find another in-progress chapter, please finish it first',
-            );
+        if (currentChapterSession) {
+            if (currentChapterSession.status === ChapterStatus.Done) {
+                throw Error('Team has finished chapter!');
+            }
+            console.log('Find another in-progress chapter');
+            // );
+            return currentChapterSession;
         }
 
-        if (isNewChapter) {
-            await User.updateOne(
-                { _id: userId },
-                {
-                    $set: {
-                        currentMazeChapter: chapter._id,
-                    },
-                },
-            );
-        }
+        // if (isNewChapter) {
+        //     await User.updateOne(
+        //         { _id: userId },
+        //         {
+        //             $set: {
+        //                 currentMazeChapter: chapter._id,
+        //             },
+        //         },
+        //     );
+        // }
 
         const newChapterSession = new MazeGameChapterSession({
             chapterId: chapter._id,
             helpCount: chapter.helpCount,
             currentRound: 1,
-            userId: userId,
+            userId: team._id,
             rounds: [],
             status: ChapterStatus.InProgress,
+            team: team._id,
         });
 
         await newChapterSession.save();
         return newChapterSession;
     }
 
-    async createNewMazeSession(
+    async startMazeSession(
         userId: Types.ObjectId,
         chapterSessionId: Types.ObjectId,
         round: number,
-    ): Promise<MazeGameSessionDocument> {
+    ): Promise<sessionInfo> {
         const chapterSession = await MazeGameChapterSession.findById(
             chapterSessionId,
         );
@@ -147,18 +163,22 @@ export class MazeChapterSessionService {
 
             if (currentSession) {
                 if (currentSession.status === Status.InProgress)
-                    return currentSession;
+                    return {
+                        session: currentSession,
+                        time_left:
+                            max_time + Date.now() - currentSession.startTime,
+                    };
             }
         }
 
-        const newSession = await this.mazeService.createSession(
+        const newSession = await this.mazeService.startSession(
             userId,
             roundLevels[round - 1], // level of session
             chapterSessionId,
         );
 
         // const sessionId = new Types.ObjectId(newSession._id);
-        chapterSession.rounds[round - 1] = newSession._id;
+        chapterSession.rounds[round - 1] = newSession.session._id;
 
         await MazeGameChapterSession.updateOne(
             { _id: chapterSessionId },
@@ -211,48 +231,48 @@ export class MazeChapterSessionService {
         return { score: chapterScore };
     }
 
-    async getTotalScore(userId: Types.ObjectId): Promise<Score> {
-        const user = await User.findById(userId)
-            .populate('currentMazeChapter')
-            .exec();
+    // async getTotalScore(userId: Types.ObjectId): Promise<Score> {
+    //     const user = await User.findById(userId)
+    //         .populate('currentMazeChapter')
+    //         .exec();
 
-        if (!user) {
-            throw Error('User does not exist!');
-        }
+    //     if (!user) {
+    //         throw Error('User does not exist!');
+    //     }
 
-        if (!user.currentMazeChapter) {
-            throw Error('User has not been started maze game!');
-        }
+    //     if (!user.currentMazeChapter) {
+    //         throw Error('User has not been started maze game!');
+    //     }
 
-        const { chapterLevel } = user.currentMazeChapter;
-        let totalScore = 0;
-        let chapterScore: number;
-        let roundScore: { score: number };
-        let chapterSession: MazeGameChapterSessionDocument;
-        let chapter: MazeGameChapterDocument;
+    //     const { chapterLevel } = user.currentMazeChapter;
+    //     let totalScore = 0;
+    //     let chapterScore: number;
+    //     let roundScore: { score: number };
+    //     let chapterSession: MazeGameChapterSessionDocument;
+    //     let chapter: MazeGameChapterDocument;
 
-        for (let i = 1; i <= chapterLevel; i++) {
-            chapter = await MazeGameChapter.findOne({
-                chapterLevel: i,
-            });
+    //     for (let i = 1; i <= chapterLevel; i++) {
+    //         chapter = await MazeGameChapter.findOne({
+    //             chapterLevel: i,
+    //         });
 
-            if (!chapter) continue;
+    //         if (!chapter) continue;
 
-            chapterSession = await MazeGameChapterSession.findOne({
-                userId: userId,
-                chapterId: chapter._id,
-            });
-            if (!chapterSession) continue;
+    //         chapterSession = await MazeGameChapterSession.findOne({
+    //             userId: userId,
+    //             chapterId: chapter._id,
+    //         });
+    //         if (!chapterSession) continue;
 
-            chapterScore = 0;
-            for (const sessionId of chapterSession.rounds) {
-                const roundScore = await this.mazeService.getScore(sessionId);
-                // console.log('>>>', sessionId);
-                chapterScore += roundScore.score;
-            }
-            totalScore += chapterScore;
-        }
+    //         chapterScore = 0;
+    //         for (const sessionId of chapterSession.rounds) {
+    //             const roundScore = await this.mazeService.getScore(sessionId);
+    //             // console.log('>>>', sessionId);
+    //             chapterScore += roundScore.score;
+    //         }
+    //         totalScore += chapterScore;
+    //     }
 
-        return { score: totalScore };
-    }
+    //     return { score: totalScore };
+    // }
 }

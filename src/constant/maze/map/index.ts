@@ -1,5 +1,7 @@
 import { Cell, CellType } from '../../../models/maze_game.model';
 
+export const max_time: number = 10 * 60 * 1000;
+
 export const initMapLevel4: Cell[] = [
     {
         property: CellType.Path,

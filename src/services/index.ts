@@ -10,6 +10,7 @@ import { DiscordService } from './discord.service';
 import { MazeService } from './maze.service';
 import { MazeChapterService } from './maze_chapter.service';
 import { MazeChapterSessionService } from './maze_chapter_session.service';
+import { RecruitmentTeamService } from './recruitment_team.service';
 import { MobileDeviceService } from './mobile_device.service';
 
 export {
@@ -25,5 +26,6 @@ export {
     MazeService,
     MazeChapterService,
     MazeChapterSessionService,
+    RecruitmentTeamService,
     MobileDeviceService,
 };

@@ -12,6 +12,8 @@ import { MazeController } from './maze.controller';
 import { MazeSessionController } from './maze_session.controller';
 import { MazeChapterController } from './maze_chaper.controller';
 import { MazeChapterSessionController } from './maze_chapter_session.controller';
+
+import { RecruitmentTeamController } from './recruitment_team.controller';
 export {
     Controller,
     AuthController,
@@ -27,4 +29,5 @@ export {
     MobileDeviceController,
     MazeChapterController,
     MazeChapterSessionController,
+    RecruitmentTeamController,
 };

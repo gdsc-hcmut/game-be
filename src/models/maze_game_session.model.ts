@@ -27,6 +27,8 @@ export type MazeGameSessionDocument = Document & {
     status: Status;
     mapId: Types.ObjectId;
     moves: Direction[];
+    startTime: number;
+    helpCount: number;
 };
 
 const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
@@ -68,7 +70,7 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
         height: { type: Number },
     },
     level: { type: Number, default: 1 },
-    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    userId: { type: Schema.Types.ObjectId, ref: 'recruitment_team' },
     chapterSessionId: {
         type: Schema.Types.ObjectId,
         ref: 'maze_game_chapter_session',
@@ -76,6 +78,8 @@ const mazeGameSessionSchema = new Schema<MazeGameSessionDocument>({
     status: String,
     mapId: { type: Schema.Types.ObjectId, ref: 'maze_game' },
     moves: [{ type: String, default: [] }],
+    startTime: { type: Number, default: Date.now() },
+    helpCount: { type: Number, default: 3 },
 });
 
 const mazeGameSchemaModel = mongoose.model<MazeGameSessionDocument>(

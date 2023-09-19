@@ -18,6 +18,7 @@ import {
     MazeService,
     MazeChapterService,
     MazeChapterSessionService,
+    RecruitmentTeamService,
     MobileDeviceService,
 } from './services';
 import {
@@ -33,6 +34,7 @@ import {
     MazeSessionController,
     MazeChapterController,
     MazeChapterSessionController,
+    RecruitmentTeamController,
     MobileDeviceController,
 } from './controllers';
 import { ServiceType } from './types';
@@ -118,6 +120,10 @@ container
     .bind<MazeChapterSessionService>(ServiceType.MazeChapterSession)
     .to(MazeChapterSessionService)
     .inSingletonScope();
+container
+    .bind<RecruitmentTeamService>(ServiceType.RecruitmentTeam)
+    .to(RecruitmentTeamService)
+    .inSingletonScope();
 
 // Initialize service first
 Promise.all([
@@ -138,6 +144,9 @@ Promise.all([
             container.resolve<MazeChapterController>(MazeChapterController),
             container.resolve<MazeChapterSessionController>(
                 MazeChapterSessionController,
+            ),
+            container.resolve<RecruitmentTeamController>(
+                RecruitmentTeamController,
             ),
             container.resolve<MobileDeviceController>(MobileDeviceController),
         ],
