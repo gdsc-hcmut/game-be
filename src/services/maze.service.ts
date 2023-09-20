@@ -21,6 +21,8 @@ import mazeChapterSession, {
     ChapterStatus,
 } from '../models/maze_game_chapter_session.model';
 
+import recruitmentTeam from '../models/recruitment_team.model';
+
 // import { MapCell } from '../constant/maze/map/cellClass';
 import { Direction } from '../models/maze_game_session.model';
 import {
@@ -254,6 +256,8 @@ export class MazeService {
 
         let isHelp: boolean = false;
 
+        const score = getScore(currentSession);
+
         if (currentChapterSession) {
             const newRound = currentChapterSession.currentRound + 1;
             const maxRound = currentChapterSession.chapterId.roundLevels.length;
@@ -269,6 +273,13 @@ export class MazeService {
                 isHelp = true;
             }
 
+            const team = await recruitmentTeam.findById(
+                currentChapterSession.team,
+            );
+            let { scores, totalScore } = team;
+            scores.push(score);
+            totalScore += score;
+
             await mazeChapterSession.updateOne(
                 { _id: currentSession.chapterSessionId },
                 {
@@ -276,6 +287,16 @@ export class MazeService {
                         currentRound: newRound,
                         status: newStatus,
                         helpCount: helpCount,
+                    },
+                },
+            );
+
+            await recruitmentTeam.updateOne(
+                { _id: team._id },
+                {
+                    $set: {
+                        scores: scores,
+                        totalScore: totalScore,
                     },
                 },
             );
@@ -292,8 +313,6 @@ export class MazeService {
                 },
             },
         );
-
-        const score = getScore(currentSession);
 
         return {
             status: currentSession.status,
