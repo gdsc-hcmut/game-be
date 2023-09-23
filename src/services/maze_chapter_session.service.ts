@@ -93,10 +93,10 @@ export class MazeChapterSessionService {
         });
 
         if (currentChapterSession) {
-            if (currentChapterSession.status === ChapterStatus.Done) {
-                throw Error('Team has finished chapter!');
-            }
-            console.log('Find another in-progress chapter');
+            // if (currentChapterSession.status === ChapterStatus.Done) {
+            //     throw Error('Team has finished chapter!');
+            // }
+            // console.log('Find another in-progress chapter');
             // );
             return currentChapterSession;
         }
