@@ -5,6 +5,7 @@ export type TeamDocument = Document & {
     members: [string];
     scores: [number];
     totalScore: number;
+    miniGameMap: Array<Array<string>>;
 };
 
 const teamSchema = new Schema<TeamDocument>({
@@ -12,6 +13,7 @@ const teamSchema = new Schema<TeamDocument>({
     members: [String],
     scores: [{ type: Number, default: [] }],
     totalScore: { type: Number, default: 0 },
+    miniGameMap: [[{ type: String, default: [] }]],
 });
 
 const teamSchemaModel = mongoose.model<TeamDocument>(
