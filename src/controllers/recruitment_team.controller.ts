@@ -24,6 +24,7 @@ export class RecruitmentTeamController extends Controller {
         this.router.post('/', this.createNewTeam.bind(this));
         this.router.post('/delete', this.deleteTeam.bind(this));
         this.router.get('/:id', this.getTeamInfo.bind(this));
+        this.router.post('/:id/mini-game', this.submitMiniGame.bind(this));
     }
 
     async createNewTeam(req: Request, res: Response) {
@@ -69,6 +70,23 @@ export class RecruitmentTeamController extends Controller {
             const teamId = new Types.ObjectId(req.params.id);
 
             const team = await this.recruitmentService.getTeam(teamId);
+
+            res.composer.success(team);
+        } catch (error) {
+            console.log(error);
+            res.composer.badRequest(error.message);
+        }
+    }
+
+    async submitMiniGame(req: Request, res: Response) {
+        try {
+            const teamId = new Types.ObjectId(req.params.id);
+            const map: string[][] = req.body.map;
+
+            const team = await this.recruitmentService.submitMiniGame(
+                teamId,
+                map,
+            );
 
             res.composer.success(team);
         } catch (error) {

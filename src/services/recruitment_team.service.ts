@@ -59,4 +59,20 @@ export class RecruitmentTeamService {
             members: team.members,
         };
     }
+
+    async submitMiniGame(
+        teamId: Types.ObjectId,
+        map: Array<Array<string>>,
+    ): Promise<Team> {
+        const team = await RecruitmentTeam.findById(teamId);
+
+        if (!team) {
+            throw Error('Team does not exist');
+        }
+
+        team.miniGameMap = map;
+        await team.save();
+
+        return team;
+    }
 }
