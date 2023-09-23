@@ -343,7 +343,7 @@ export class MazeService {
         }
         handleMultipleMoves(currentSession, moves);
 
-        if (currentSession.helpCount < 0) {
+        if (currentSession.helpCount <= 0) {
             throw Error('Can not use Help');
         }
 
