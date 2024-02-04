@@ -24,6 +24,7 @@ export class DiscordController extends Controller {
     private readonly BUDPICK_DATE_TIMESTAMP = [
         new Date('2024-02-09T00:00:00.0+07:00').getTime(),
     ];
+    private readonly MINIMUM_BUDPICKS_FOR_RANDOM = 4;
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
@@ -151,10 +152,14 @@ export class DiscordController extends Controller {
                 `You received ${coinsReceived} coins from Bud Pick event`,
             );
 
+            const userPickedCount = await this.budPickService.countUserBudPicks(
+                userId,
+            );
+
             response.composer.success({
                 coinsReceived,
                 day: day + 1,
-                daysLeft: this.BUDPICK_EVENT_DURATION_DAYS - day - 1,
+                daysLeft: this.MINIMUM_BUDPICKS_FOR_RANDOM - userPickedCount,
             });
         } catch (error) {
             console.error(error);
@@ -175,8 +180,16 @@ export class DiscordController extends Controller {
             }
 
             const previousDay = day - 1;
-            const budPicksCount = await this.budPickService.countBudPicksOnDay(
+
+            const budPicks = await this.budPickService.getBudPicksOnDay(
                 previousDay,
+                { __v: 0 },
+                {
+                    populate: {
+                        path: 'userId',
+                        select: '_id name',
+                    },
+                },
             );
 
             response.composer.success({
@@ -187,7 +200,14 @@ export class DiscordController extends Controller {
                     this.BUDPICK_DATE_TIMESTAMP[previousDay + 1],
                 ).toISOString(),
                 day: previousDay + 1,
-                budPicksCount,
+                stale:
+                    now - this.BUDPICK_DATE_TIMESTAMP[previousDay + 1] >=
+                    1000 * 60 * 60 * 24,
+                budPicksCount: budPicks.length,
+                budPicks: _.map(budPicks, (budPick) => ({
+                    name: _.get(budPick, 'userId.name'),
+                    coinsReceived: _.get(budPick, 'coinsReceived'),
+                })),
             });
         } catch (error) {
             console.error(error);

@@ -10,7 +10,7 @@ export type BudPickDocument = Document & {
 const budPickSchema = new Schema<BudPickDocument>({
     userId: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'User',
     },
     coinsReceived: {
         type: Number,

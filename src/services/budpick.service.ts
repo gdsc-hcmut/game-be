@@ -58,4 +58,24 @@ export class BudPickService {
     public async countBudPicksOnDay(day: number) {
         return await this.count({ day });
     }
+
+    public async countUserBudPicks(userId: Types.ObjectId) {
+        return await this.count({ userId });
+    }
+
+    public async get(
+        query: FilterQuery<BudPickDocument>,
+        projection: ProjectionType<BudPickDocument> = {},
+        options: QueryOptions<BudPickDocument> = {},
+    ) {
+        return await BudPick.find(query, projection, options);
+    }
+
+    public async getBudPicksOnDay(
+        day: number,
+        projection: ProjectionType<BudPickDocument> = {},
+        options: QueryOptions<BudPickDocument> = {},
+    ) {
+        return await this.get({ day }, projection, options);
+    }
 }
