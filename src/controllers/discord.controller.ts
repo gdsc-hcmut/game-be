@@ -64,12 +64,17 @@ export class DiscordController extends Controller {
     }
 
     private initializeBudPickTimestamps() {
-        for (let i = 0; i < this.BUDPICK_EVENT_DURATION_DAYS; i++) {
+        for (let i = 0; i < this.BUDPICK_EVENT_DURATION_DAYS - 1; i++) {
             const date = new Date(
                 _.last(this.BUDPICK_DATE_TIMESTAMP) + 24 * 60 * 60 * 1000,
             );
             this.BUDPICK_DATE_TIMESTAMP.push(date.getTime());
         }
+        this.BUDPICK_DATE_TIMESTAMP.push(
+            new Date(
+                _.last(this.BUDPICK_DATE_TIMESTAMP) + 19 * 60 * 60 * 1000,
+            ).getTime(),
+        );
         console.debug(
             `Timestamps for Bud Pick event:`,
             _.map(this.BUDPICK_DATE_TIMESTAMP, (timestamp) =>
