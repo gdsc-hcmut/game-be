@@ -20,6 +20,7 @@ import {
     MazeChapterSessionService,
     RecruitmentTeamService,
     MobileDeviceService,
+    BudPickService,
 } from './services';
 import {
     AuthController,
@@ -123,6 +124,10 @@ container
 container
     .bind<RecruitmentTeamService>(ServiceType.RecruitmentTeam)
     .to(RecruitmentTeamService)
+    .inSingletonScope();
+container
+    .bind<BudPickService>(ServiceType.BudPick)
+    .to(BudPickService)
     .inSingletonScope();
 
 // Initialize service first
