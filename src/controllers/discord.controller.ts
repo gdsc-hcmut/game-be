@@ -164,7 +164,10 @@ export class DiscordController extends Controller {
             response.composer.success({
                 coinsReceived,
                 day: day + 1,
-                daysLeft: this.MINIMUM_BUDPICKS_FOR_RANDOM - userPickedCount,
+                daysLeft: Math.max(
+                    this.MINIMUM_BUDPICKS_FOR_RANDOM - userPickedCount,
+                    0,
+                ),
             });
         } catch (error) {
             console.error(error);
