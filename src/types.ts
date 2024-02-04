@@ -33,6 +33,7 @@ export const ServiceType = {
     MazeChapter: Symbol.for('MazeChapterService'),
     MazeChapterSession: Symbol.for('MazeChaperSessionService'),
     RecruitmentTeam: Symbol.for('RecuitmentTeam'),
+    BudPick: Symbol.for('BudPickService'),
 };
 
 export enum PrivacyType {

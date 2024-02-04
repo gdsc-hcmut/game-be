@@ -12,6 +12,7 @@ import { MazeChapterService } from './maze_chapter.service';
 import { MazeChapterSessionService } from './maze_chapter_session.service';
 import { RecruitmentTeamService } from './recruitment_team.service';
 import { MobileDeviceService } from './mobile_device.service';
+import { BudPickService } from './budpick.service';
 
 export {
     AuthService,
@@ -28,4 +29,5 @@ export {
     MazeChapterSessionService,
     RecruitmentTeamService,
     MobileDeviceService,
+    BudPickService,
 };
