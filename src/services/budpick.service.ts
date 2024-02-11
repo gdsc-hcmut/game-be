@@ -1,9 +1,12 @@
 import { injectable } from 'inversify';
 import { FilterQuery, ProjectionType, QueryOptions, Types } from 'mongoose';
 import BudPick, { BudPickDocument } from '../models/budpick.model';
+import _ from 'lodash';
 
 @injectable()
 export class BudPickService {
+    private MINIMUM_BUDPICKS_FOR_RANDOM = 4;
+
     constructor() {
         console.info(`[BudPickService] Initializing...`);
     }
@@ -77,5 +80,51 @@ export class BudPickService {
         options: QueryOptions<BudPickDocument> = {},
     ) {
         return await this.get({ day }, projection, options);
+    }
+
+    public getMinimumBudPicksForRandom() {
+        return this.MINIMUM_BUDPICKS_FOR_RANDOM;
+    }
+
+    public async getUsersEligibleForBudPickPrize() {
+        type EligibleUser = {
+            userId: Types.ObjectId;
+            name: string;
+            discordId: string;
+            pickCount: number;
+        };
+
+        const eligibleUsers = await BudPick.aggregate([
+            {
+                $group: {
+                    _id: '$userId',
+                    pickCount: { $count: {} },
+                },
+            },
+            {
+                $match: {
+                    pickCount: { $gte: this.getMinimumBudPicksForRandom() },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    userId: '$_id',
+                    name: { $first: '$user.name' },
+                    discordId: { $first: '$user.discordId' },
+                    pickCount: '$pickCount',
+                },
+            },
+        ]);
+
+        return eligibleUsers as EligibleUser[];
     }
 }
