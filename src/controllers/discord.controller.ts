@@ -24,7 +24,6 @@ export class DiscordController extends Controller {
     private readonly BUDPICK_DATE_TIMESTAMP = [
         new Date('2024-02-09T00:00:00.0+07:00').getTime(),
     ];
-    private readonly MINIMUM_BUDPICKS_FOR_RANDOM = 4;
 
     constructor(
         @inject(ServiceType.Auth) private authService: AuthService,
@@ -61,6 +60,64 @@ export class DiscordController extends Controller {
             '/public/bud/statistics/previous_day',
             this.getPreviousDayBudPickStatistics.bind(this),
         );
+
+        this.router.get(
+            '/public/bud/prize/eligible',
+            this.getUsersEligibleForBudPickPrize.bind(this),
+        );
+        this.router.get(
+            '/public/bud/prize/winners/next',
+            this.getNextBudPickWinner.bind(this),
+        );
+        this.router.get(
+            '/public/bud/prize/winners',
+            this.getShowedBudPickWinners.bind(this),
+        );
+    }
+
+    public async getShowedBudPickWinners(
+        _request: Request,
+        response: Response,
+    ) {
+        try {
+            const showedWinners =
+                await this.budPickService.getShowedBudPickWinners();
+
+            response.composer.success(showedWinners);
+        } catch (error) {
+            console.error(error);
+            response.composer.badRequest(error.message);
+        }
+    }
+
+    public async getNextBudPickWinner(_request: Request, response: Response) {
+        try {
+            const nextWinner = await this.budPickService.getNextBudPickWinner();
+
+            if (_.isNil(nextWinner)) {
+                throw Error(`No more winners available`);
+            }
+
+            response.composer.success(nextWinner);
+        } catch (error) {
+            console.error(error);
+            response.composer.badRequest(error.message);
+        }
+    }
+
+    public async getUsersEligibleForBudPickPrize(
+        _request: Request,
+        response: Response,
+    ) {
+        try {
+            const eligibleUsers =
+                await this.budPickService.getUsersEligibleForBudPickPrize();
+
+            response.composer.success(eligibleUsers);
+        } catch (error) {
+            console.error(error);
+            response.composer.badRequest(error.message);
+        }
     }
 
     private initializeBudPickTimestamps() {
@@ -165,7 +222,8 @@ export class DiscordController extends Controller {
                 coinsReceived,
                 day: day + 1,
                 daysLeft: Math.max(
-                    this.MINIMUM_BUDPICKS_FOR_RANDOM - userPickedCount,
+                    this.budPickService.getMinimumBudPicksForRandom() -
+                        userPickedCount,
                     0,
                 ),
             });
