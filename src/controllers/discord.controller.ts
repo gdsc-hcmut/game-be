@@ -65,6 +65,44 @@ export class DiscordController extends Controller {
             '/public/bud/prize/eligible',
             this.getUsersEligibleForBudPickPrize.bind(this),
         );
+        this.router.get(
+            '/public/bud/prize/winners/next',
+            this.getNextBudPickWinner.bind(this),
+        );
+        this.router.get(
+            '/public/bud/prize/winners',
+            this.getShowedBudPickWinners.bind(this),
+        );
+    }
+
+    public async getShowedBudPickWinners(
+        _request: Request,
+        response: Response,
+    ) {
+        try {
+            const showedWinners =
+                await this.budPickService.getShowedBudPickWinners();
+
+            response.composer.success(showedWinners);
+        } catch (error) {
+            console.error(error);
+            response.composer.badRequest(error.message);
+        }
+    }
+
+    public async getNextBudPickWinner(_request: Request, response: Response) {
+        try {
+            const nextWinner = await this.budPickService.getNextBudPickWinner();
+
+            if (_.isNil(nextWinner)) {
+                throw Error(`No more winners available`);
+            }
+
+            response.composer.success(nextWinner);
+        } catch (error) {
+            console.error(error);
+            response.composer.badRequest(error.message);
+        }
     }
 
     public async getUsersEligibleForBudPickPrize(

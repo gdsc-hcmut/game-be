@@ -10,6 +10,7 @@ export enum BudPickPrize {
 export type BudPickWinnerDocument = Document & {
     userId: Types.ObjectId;
     prize: BudPickPrize;
+    showed: boolean;
 };
 
 const budPickWinnerSchema = new Schema<BudPickWinnerDocument>({
@@ -22,6 +23,7 @@ const budPickWinnerSchema = new Schema<BudPickWinnerDocument>({
         enum: Object.values(BudPickPrize),
         required: true,
     },
+    showed: { type: Boolean, default: false },
 });
 
 const BudPickWinner = mongoose.model<BudPickWinnerDocument>(
