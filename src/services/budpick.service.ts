@@ -2,9 +2,9 @@ import { injectable } from 'inversify';
 import { FilterQuery, ProjectionType, QueryOptions, Types } from 'mongoose';
 import BudPick, { BudPickDocument } from '../models/budpick.model';
 import _ from 'lodash';
-import BudPickWinner, {
+import BudPickResult, {
     BudPickPrize,
-    BudPickWinnerDocument,
+    BudPickResultDocument,
 } from '../models/budpick-winner.model';
 
 type EligibleBudPickPlayerDto = {
@@ -149,20 +149,26 @@ export class BudPickService {
         return eligibleUsers as EligibleBudPickPlayerDto[];
     }
 
-    private async getBudPickWinners(
-        filter: FilterQuery<BudPickWinnerDocument>,
-        projection: ProjectionType<BudPickWinnerDocument> = {},
-        options: QueryOptions<BudPickWinnerDocument> = {},
+    private async getCurrentSessionBudPickResult(
+        filter: FilterQuery<BudPickResultDocument>,
+        projection: ProjectionType<BudPickResultDocument> = {},
+        options: QueryOptions<BudPickResultDocument> = {},
     ) {
-        return await BudPickWinner.find(filter, projection, options);
+        return await BudPickResult.findOne(
+            { ...filter, currentSession: true },
+            projection,
+            options,
+        );
     }
 
-    private async generateBudPickWinnersIfNone() {
-        const alreadyExistingWinners = await this.getBudPickWinners({});
-        if (alreadyExistingWinners.length > 0) {
-            return;
-        }
+    private async invalidateCurrentSessionBudPickResult() {
+        await BudPickResult.findOneAndUpdate(
+            { currentSession: true },
+            { currentSession: false },
+        );
+    }
 
+    private async createNewBudPickSession() {
         const eligibleUsers = await this.getUsersEligibleForBudPickPrize();
         const winners = _.take(_.shuffle(eligibleUsers), 5);
 
@@ -174,33 +180,35 @@ export class BudPickService {
             BudPickPrize.CONSOLATION,
         ];
 
-        await Promise.all(
-            _.map(winners, (winner, index) =>
-                BudPickWinner.create({
-                    userId: winner.userId,
-                    prize: PRIZE_MAP[index],
-                }),
-            ),
-        );
+        await BudPickResult.create({
+            winners: _.map(winners, (winner, index) => ({
+                userId: winner.userId,
+                prize: PRIZE_MAP[index],
+                showed: false,
+            })),
+            createdAt: Date.now(),
+            newest: true,
+        });
     }
 
     public async getNextBudPickWinner(): Promise<BudPickWinnerDto | null> {
-        await this.generateBudPickWinnersIfNone();
-
-        const winners = await this.getBudPickWinners(
-            { showed: false },
+        const currentSession = await this.getCurrentSessionBudPickResult(
+            {},
             {},
             {
                 populate: {
-                    path: 'userId',
+                    path: 'winners.userId',
                     select: '_id name discordId',
                 },
             },
         );
-        const nextWinner = _.first(
-            _.sortBy(winners, (winner) =>
-                _.indexOf(this.PRIZE_ORDER_ASCENDING, winner.prize),
-            ),
+        if (_.isNil(currentSession)) {
+            throw new Error(`No prize session currently in progress`);
+        }
+
+        const winners = currentSession.winners;
+        const nextWinner = _.last(
+            _.filter(winners, (winner) => winner.showed === false),
         );
 
         if (_.isNil(nextWinner)) {
@@ -208,7 +216,8 @@ export class BudPickService {
         }
 
         nextWinner.showed = true;
-        await nextWinner.save();
+        currentSession.markModified('winners');
+        await currentSession.save();
 
         return {
             userId: _.get(nextWinner, 'userId._id'),
@@ -219,20 +228,26 @@ export class BudPickService {
     }
 
     public async getShowedBudPickWinners(): Promise<BudPickWinnerByPrizeDto> {
-        await this.generateBudPickWinnersIfNone();
+        const currentSession = await this.getCurrentSessionBudPickResult(
+            {},
+            {},
+            {
+                populate: {
+                    path: 'winners.userId',
+                    select: '_id name discordId',
+                },
+            },
+        );
+        if (_.isNil(currentSession)) {
+            throw new Error(`No prize session currently in progress`);
+        }
 
         const winnersByPrize = await Promise.all(
             _.map(this.PRIZE_ORDER_ASCENDING, (prize) =>
                 (async () => {
-                    const winners = await this.getBudPickWinners(
-                        { prize, showed: true },
-                        {},
-                        {
-                            populate: {
-                                path: 'userId',
-                                select: '_id name discordId',
-                            },
-                        },
+                    const winners = _.filter(
+                        currentSession.winners,
+                        (winner) => winner.prize === prize && winner.showed,
                     );
 
                     return {
@@ -254,5 +269,21 @@ export class BudPickService {
         );
 
         return mergedWinners;
+    }
+
+    public async startNewBudPickPrizeSession() {
+        const currentSession = await this.getCurrentSessionBudPickResult({});
+        if (!_.isNil(currentSession)) {
+            throw new Error(`Prize session already in progress`);
+        }
+        await this.createNewBudPickSession();
+    }
+
+    public async endCurrentBudPickPrizeSession() {
+        const currentSession = await this.getCurrentSessionBudPickResult({});
+        if (_.isNil(currentSession)) {
+            throw new Error(`No prize session currently in progress`);
+        }
+        await this.invalidateCurrentSessionBudPickResult();
     }
 }

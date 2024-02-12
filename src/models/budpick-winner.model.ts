@@ -7,28 +7,33 @@ export enum BudPickPrize {
     FIRST = 'FIRST',
 }
 
-export type BudPickWinnerDocument = Document & {
-    userId: Types.ObjectId;
-    prize: BudPickPrize;
-    showed: boolean;
+export type BudPickResultDocument = Document & {
+    winners: {
+        userId: Types.ObjectId;
+        prize: BudPickPrize;
+        showed: boolean;
+    }[];
+    createdAt: number;
+    currentSession: boolean;
 };
 
-const budPickWinnerSchema = new Schema<BudPickWinnerDocument>({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-    },
-    prize: {
-        type: String,
-        enum: Object.values(BudPickPrize),
-        required: true,
-    },
-    showed: { type: Boolean, default: false },
+const budPickResultSchema = new Schema<BudPickResultDocument>({
+    winners: [
+        {
+            userId: { type: Schema.Types.ObjectId, ref: 'User' },
+            prize: { type: String, enum: BudPickPrize },
+            showed: false,
+        },
+    ],
+    createdAt: { type: Number, default: Date.now() },
+    currentSession: { type: Boolean, default: true },
 });
 
-const BudPickWinner = mongoose.model<BudPickWinnerDocument>(
-    'discord_bud_pick_winners',
-    budPickWinnerSchema,
+budPickResultSchema.index({ newest: 'hashed' });
+
+const BudPickResult = mongoose.model<BudPickResultDocument>(
+    'discord_bud_pick_result',
+    budPickResultSchema,
 );
 
-export default BudPickWinner;
+export default BudPickResult;

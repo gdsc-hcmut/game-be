@@ -61,27 +61,25 @@ export class DiscordController extends Controller {
             this.getPreviousDayBudPickStatistics.bind(this),
         );
 
-        this.router.get(
-            '/public/bud/prize/eligible',
-            this.getUsersEligibleForBudPickPrize.bind(this),
+        this.router.post(
+            '/public/bud/prize/session/start',
+            this.startBudPickPrizeSession.bind(this),
         );
         this.router.get(
-            '/public/bud/prize/winners/next',
+            '/public/bud/prize/session/winner/next',
             this.getNextBudPickWinner.bind(this),
         );
-        this.router.get(
-            '/public/bud/prize/winners',
-            this.getShowedBudPickWinners.bind(this),
+        this.router.post(
+            '/public/bud/prize/session/end',
+            this.endBudPickPrizeSession.bind(this),
         );
     }
 
-    public async getShowedBudPickWinners(
-        _request: Request,
-        response: Response,
-    ) {
+    public async endBudPickPrizeSession(_request: Request, response: Response) {
         try {
             const showedWinners =
                 await this.budPickService.getShowedBudPickWinners();
+            await this.budPickService.endCurrentBudPickPrizeSession();
 
             response.composer.success(showedWinners);
         } catch (error) {
@@ -105,15 +103,16 @@ export class DiscordController extends Controller {
         }
     }
 
-    public async getUsersEligibleForBudPickPrize(
+    public async startBudPickPrizeSession(
         _request: Request,
         response: Response,
     ) {
         try {
-            const eligibleUsers =
+            await this.budPickService.startNewBudPickPrizeSession();
+            const eligiblePlayers =
                 await this.budPickService.getUsersEligibleForBudPickPrize();
 
-            response.composer.success(eligibleUsers);
+            response.composer.success(eligiblePlayers);
         } catch (error) {
             console.error(error);
             response.composer.badRequest(error.message);
