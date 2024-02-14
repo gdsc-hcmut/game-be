@@ -192,11 +192,6 @@ export class BudPickService {
                         pickCount: '$pickCount',
                     },
                 },
-                {
-                    $match: {
-                        discordId: { $nin: this.PROHIBITED_PARTICIPANTS },
-                    },
-                },
             ]);
 
         return eligibleUsers;
@@ -224,7 +219,14 @@ export class BudPickService {
     private ensureFairness(
         eligibleUsers: EligibleBudPickPlayerDto[],
     ): EligibleBudPickPlayerDto[] {
-        const shuffledUsers = _.shuffle(eligibleUsers);
+        // Ensure that prohibited participants are not in the list
+        const shuffledUsers = _.shuffle(
+            _.filter(
+                eligibleUsers,
+                (user) =>
+                    !this.PROHIBITED_PARTICIPANTS.includes(user.discordId),
+            ),
+        );
 
         // Ensure that a maximum of 1 winner is from the reduced winrate list
         // While first 5 elements have more than 1 reduced winrate participant, we take the first
