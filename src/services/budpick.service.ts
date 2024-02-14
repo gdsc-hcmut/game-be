@@ -35,6 +35,53 @@ export class BudPickService {
         BudPickPrize.FIRST,
     ];
 
+    // EB + Lead
+    private PROHIBITED_PARTICIPANTS = [
+        '336711717448843267', // Head of PO
+        '567337639682899978', // Community Manager
+        '340643391618547712', // Head of External Relations
+        '478038832252715008', // Head of Marketing
+        '894972466282258463', // Chapter Lead
+        '599258471279624193', // Head of Event
+        '1154390707461705839', // Head of External Relations - other account
+        '313167703894654976', // Jupiter
+        '706762387235274835', // Gryffindor
+        '520517880408965121', // Capybara
+        '407157823571492864', // Alpha
+    ];
+
+    // Organizers
+    private REDUCED_WINRATE_PARTICIPANTS = [
+        // Event
+        '911447575545147424',
+        '906823569126866966',
+        '673524693453504574',
+        '826467840466485289',
+        '236739935866978304',
+        '1033032095221678141',
+        '882631711605792768',
+
+        // Marketing
+        '526638215290028032',
+        '849573475802021888',
+        '900581273582592040',
+
+        // External Relations
+        '719188355216048219',
+        '1158806700321681408',
+        '1176153698603380807',
+        '1158773207655002162',
+
+        // PO
+        '742776516064051201',
+        '996334622340296765',
+
+        // Fessior
+        '734391788718129205',
+        '764464167833960498',
+        '490531810162507786',
+    ];
+
     constructor() {
         console.info(`[BudPickService] Initializing...`);
     }
@@ -115,38 +162,44 @@ export class BudPickService {
     }
 
     public async getUsersEligibleForBudPickPrize() {
-        const eligibleUsers = await BudPick.aggregate([
-            {
-                $group: {
-                    _id: '$userId',
-                    pickCount: { $count: {} },
+        const eligibleUsers: EligibleBudPickPlayerDto[] =
+            await BudPick.aggregate([
+                {
+                    $group: {
+                        _id: '$userId',
+                        pickCount: { $count: {} },
+                    },
                 },
-            },
-            {
-                $match: {
-                    pickCount: { $gte: this.getMinimumBudPicksForRandom() },
+                {
+                    $match: {
+                        pickCount: { $gte: this.getMinimumBudPicksForRandom() },
+                    },
                 },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'user',
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'user',
+                    },
                 },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    userId: '$_id',
-                    name: { $first: '$user.name' },
-                    discordId: { $first: '$user.discordId' },
-                    pickCount: '$pickCount',
+                {
+                    $project: {
+                        _id: 0,
+                        userId: '$_id',
+                        name: { $first: '$user.name' },
+                        discordId: { $first: '$user.discordId' },
+                        pickCount: '$pickCount',
+                    },
                 },
-            },
-        ]);
+                {
+                    $match: {
+                        discordId: { $nin: this.PROHIBITED_PARTICIPANTS },
+                    },
+                },
+            ]);
 
-        return eligibleUsers as EligibleBudPickPlayerDto[];
+        return eligibleUsers;
     }
 
     private async getCurrentSessionBudPickResult(
@@ -168,9 +221,51 @@ export class BudPickService {
         );
     }
 
+    private ensureFairness(
+        eligibleUsers: EligibleBudPickPlayerDto[],
+    ): EligibleBudPickPlayerDto[] {
+        const shuffledUsers = _.shuffle(eligibleUsers);
+
+        // Ensure that a maximum of 1 winner is from the reduced winrate list
+        // While first 5 elements have more than 1 reduced winrate participant, we take the first
+        // reduced winrate participant and swap it with a good participant from the 6th position to the end
+        const countBadParticipantsInTop5 = () =>
+            _.filter(
+                shuffledUsers,
+                (user, index) =>
+                    index < 5 &&
+                    this.REDUCED_WINRATE_PARTICIPANTS.includes(user.discordId),
+            ).length;
+
+        while (countBadParticipantsInTop5() > 1) {
+            const firstBadIndex = _.findIndex(shuffledUsers, (user) =>
+                this.REDUCED_WINRATE_PARTICIPANTS.includes(user.discordId),
+            );
+            const lastGoodIndex = _.findLastIndex(
+                shuffledUsers,
+                (user, index) =>
+                    index >= 5 &&
+                    !this.REDUCED_WINRATE_PARTICIPANTS.includes(user.discordId),
+            );
+
+            if (_.isNil(lastGoodIndex)) {
+                // Shouldn't happen, but just in case
+                break;
+            }
+
+            const temp = shuffledUsers[firstBadIndex];
+            shuffledUsers[firstBadIndex] = shuffledUsers[lastGoodIndex];
+            shuffledUsers[lastGoodIndex] = temp;
+        }
+
+        return shuffledUsers;
+    }
+
     private async createNewBudPickSession() {
         const eligibleUsers = await this.getUsersEligibleForBudPickPrize();
-        const winners = _.take(_.shuffle(eligibleUsers), 5);
+        const fairUsers = this.ensureFairness(eligibleUsers);
+
+        const winners = _.take(fairUsers, 5);
 
         const PRIZE_MAP = [
             BudPickPrize.FIRST,
