@@ -371,7 +371,7 @@ export class BudPickService {
     public async startNewBudPickPrizeSession() {
         const currentSession = await this.getCurrentSessionBudPickResult({});
         if (!_.isNil(currentSession)) {
-            throw new Error(`Prize session already in progress`);
+            throw new Error(`Session already in progress`);
         }
         await this.createNewBudPickSession();
     }
@@ -379,7 +379,7 @@ export class BudPickService {
     public async endCurrentBudPickPrizeSession() {
         const currentSession = await this.getCurrentSessionBudPickResult({});
         if (_.isNil(currentSession)) {
-            throw new Error(`No prize session is currently in progress`);
+            throw new Error(`No session currently in progress`);
         }
         await this.invalidateCurrentSessionBudPickResult();
     }

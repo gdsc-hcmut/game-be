@@ -15,19 +15,22 @@ on:
                 description: 'SSH port'
                 required: true
                 type: string
+            server_user:
+                description: 'Username to SSH into server'
+                required: true
+                type: string
+            server_ip:
+                description: 'IP address of server'
+                required: true
+                type: string
+            project_path:
+                description: 'Path to project on server'
+                required: true
+                type: string
 
         secrets:
             ssh_private_key:
                 description: 'SSH private key'
-                required: true
-            server_user:
-                description: 'Username to SSH into server'
-                required: true
-            server_ip:
-                description: 'IP address of server'
-                required: true
-            project_path:
-                description: 'Path to project on server'
                 required: true
 
 jobs:
@@ -77,7 +80,7 @@ jobs:
                   script: |
                       source ~/.nvm/nvm.sh
                       cd ${{ secrets.project_path }}
-                      git pullRUNNING=$?
+                      git pull
 
                       # Check if PM2 is already running the app
                       pm2 describe ${{ inputs.project_name }} > /dev/null 2>&1
