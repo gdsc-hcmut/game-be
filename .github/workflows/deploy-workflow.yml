@@ -64,22 +64,22 @@ jobs:
               with:
                   switches: -zr --delete
                   path: dist/
-                  remote_path: ${{ secrets.project_path }}/dist/
-                  remote_host: ${{ secrets.server_ip }}
+                  remote_path: ${{ inputs.project_path }}/dist/
+                  remote_host: ${{ inputs.server_ip }}
                   remote_port: ${{ inputs.ssh_port }}
-                  remote_user: ${{ secrets.server_user }}
+                  remote_user: ${{ inputs.server_user }}
                   remote_key: ${{ secrets.ssh_private_key }}
 
             - name: Start application
               uses: appleboy/ssh-action@v1.0.3
               with:
-                  host: ${{ secrets.server_ip }}
-                  username: ${{ secrets.server_user }}
+                  host: ${{ inputs.server_ip }}
+                  username: ${{ inputs.server_user }}
                   key: ${{ secrets.ssh_private_key }}
                   port: ${{ inputs.ssh_port }}
                   script: |
                       source ~/.nvm/nvm.sh
-                      cd ${{ secrets.project_path }}
+                      cd ${{ inputs.project_path }}
                       git pull
 
                       # Check if PM2 is already running the app
