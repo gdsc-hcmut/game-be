@@ -1,0 +1,47 @@
+name: CI Workflow
+
+on:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - dev
+
+jobs:
+    check-modified-files-count:
+        uses: ./.github/workflows/check-modified-files-count.yml
+        with:
+            limit: 15
+            files_ignored: |
+                yarn.lock
+                **/*.{svg,png,jpg,jpeg}
+    commitlint:
+        uses: ./.github/workflows/commitlint.yml
+
+    # TODO: lint, tests
+
+    # Attempt to build the project to find any errors
+    build:
+        needs: [check-modified-files-count, commitlint]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node environment
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install
+
+            - name: Build app
+              run: yarn build
