@@ -336,7 +336,7 @@ export class BudPickService {
             },
         );
         if (_.isNil(currentSession)) {
-            throw new Error(`No prize session currently in progress`);
+            throw new Error(`No session currently in progress`);
         }
 
         const winnersByPrize = await Promise.all(
