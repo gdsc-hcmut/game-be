@@ -77,7 +77,7 @@ jobs:
                   script: |
                       source ~/.nvm/nvm.sh
                       cd ${{ secrets.project_path }}
-                      git pullRUNNING=$?
+                      git pull
 
                       # Check if PM2 is already running the app
                       pm2 describe ${{ inputs.project_name }} > /dev/null 2>&1
