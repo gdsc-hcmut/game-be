@@ -62,6 +62,43 @@ export class ClubDayService {
         return clubDay;
     }
 
+    async verifyActivity(
+        userId: string,
+        name: string,
+        isWin: boolean,
+    ): Promise<ClubDayDocument> {
+        let clubDay = await ClubDay.findOne({ userId: userId });
+
+        if (!clubDay) {
+            throw Error('Not Existed');
+        }
+
+        if (clubDay.isFinishCheckIn) {
+            throw Error('Already Finish');
+        }
+        if (name == 'key_matching') {
+            clubDay.isFinishKeyMatching = true;
+        } else if (name == 'check_in') {
+            clubDay.isFinishCheckIn = true;
+        } else if (name == 'game') {
+            clubDay.isFinishGame = true;
+        } else if (name == 'math_quiz') {
+            clubDay.isFinishMathQuiz = true;
+        } else if (name == 'maze') {
+            clubDay.isFinishMaze = true;
+        } else if (name == 'o_an_quan') {
+            clubDay.isFinishOAnQuan = true;
+        } else if (name == 'thay_da') {
+            clubDay.isFinishThayDa = true;
+        } else if (name == 'cu_quay') {
+            clubDay.isFinishCuQuay = true;
+        } else {
+            throw Error('Invalid activity');
+        }
+        clubDay.save();
+        return clubDay;
+    }
+
     async verifyMazeGame(userId: string): Promise<CheckMaze> {
         let clubDay = await ClubDay.findOne({ userId: userId });
 

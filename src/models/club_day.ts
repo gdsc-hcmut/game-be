@@ -11,6 +11,9 @@ export type ClubDayDocument = Document & {
     isFinishMaze: boolean;
     isFinishCheckIn: boolean;
     isFinishKeyMatching: boolean;
+    isFinishOAnQuan: boolean;
+    isFinishThayDa: boolean;
+    isFinishCuQuay: boolean;
     claimAt: number;
     gifts: Reward[];
 };
@@ -41,6 +44,18 @@ const clubDaySchema = new Schema<ClubDayDocument>({
         default: false,
     },
     isFinishKeyMatching: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishOAnQuan: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishThayDa: {
+        type: Boolean,
+        default: false,
+    },
+    isFinishCuQuay: {
         type: Boolean,
         default: false,
     },

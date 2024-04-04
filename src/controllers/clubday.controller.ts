@@ -185,14 +185,11 @@ export class ClubDayController extends Controller {
             }
 
             let clubDay;
-            if (req.body.type === 'key_matching')
-                clubDay = await this.clubdayService.verifyKeyMatching(
-                    req.body.userId,
-                );
-            else
-                clubDay = await this.clubdayService.verifyCheckIn(
-                    req.body.userId,
-                );
+            await this.clubdayService.verifyActivity(
+                req.body.userId,
+                req.body.type,
+                req.body.isWin,
+            );
             res.composer.success('Success');
         } catch (error) {
             console.log(error);
