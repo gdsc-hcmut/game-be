@@ -140,7 +140,6 @@ Promise.all([
             container.resolve<UserController>(UserController),
             container.resolve<GameController>(GameController),
             container.resolve<GICController>(GICController),
-            container.resolve<ItemController>(ItemController),
             container.resolve<MarketplaceController>(MarketplaceController),
             container.resolve<ClubDayController>(ClubDayController),
             container.resolve<DiscordController>(DiscordController),
@@ -154,6 +153,7 @@ Promise.all([
                 RecruitmentTeamController,
             ),
             container.resolve<MobileDeviceController>(MobileDeviceController),
+            container.resolve<ItemController>(ItemController),
         ],
         SERVICE_PORT,
         [
