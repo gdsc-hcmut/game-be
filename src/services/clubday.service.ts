@@ -73,24 +73,45 @@ export class ClubDayService {
             throw Error('Not Existed');
         }
 
-        if (clubDay.isFinishCheckIn) {
-            throw Error('Already Finish');
-        }
         if (name == 'key_matching') {
+            if (clubDay.isFinishKeyMatching) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishKeyMatching = true;
         } else if (name == 'check_in') {
+            if (clubDay.isFinishCheckIn) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishCheckIn = true;
         } else if (name == 'game') {
+            if (clubDay.isFinishGame) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishGame = true;
         } else if (name == 'math_quiz') {
+            if (clubDay.isFinishMathQuiz) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishMathQuiz = true;
         } else if (name == 'maze') {
+            if (clubDay.isFinishMaze) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishMaze = true;
         } else if (name == 'o_an_quan') {
+            if (clubDay.isFinishOAnQuan) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishOAnQuan = true;
         } else if (name == 'thay_da') {
+            if (clubDay.isFinishThayDa) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishThayDa = true;
         } else if (name == 'cu_quay') {
+            if (clubDay.isFinishCuQuay) {
+                throw Error('Already Finish');
+            }
             clubDay.isFinishCuQuay = true;
         } else {
             throw Error('Invalid activity');
