@@ -34,7 +34,7 @@ export class ItemController extends Controller {
 
         // Force authenticate all routes
         this.router.all('*', this.authService.authenticate());
-        this.router.post('/admin/private/items', this.createNewItem.bind(this));
+        this.router.get('/admin/private/items', this.createNewItem.bind(this));
         this.router.get('/private/items', this.getUserItems.bind(this));
         this.router.post('/private/received', this.receivedRealItem.bind(this));
         // this.router.patch(
