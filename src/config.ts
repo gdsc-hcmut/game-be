@@ -210,7 +210,7 @@ export const BOX_PRICE = 10000;
 
 export const SYSTEM_ACCOUNT_ID = new mongoose.Types.ObjectId(
     process.env.ENV == 'dev'
-        ? '63f32487419633ae2a19cd4b'
+        ? '64df0e0df114264096a79dc7'
         : '63ee1f5514690baf606a88d4',
 );
 
