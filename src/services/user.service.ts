@@ -335,7 +335,7 @@ export class UserService {
     }
 
     async getUserBalance(userId: Types.ObjectId): Promise<number> {
-        const { balance } = await User.findById(userId, { balance: 1 });
+        const { balance } = await User.findById(userId);
         return balance;
     }
 
@@ -354,7 +354,10 @@ export class UserService {
         return user;
     }
 
-    async findOne(query: FilterQuery<UserDocument> = {}, keepAll = false): Promise<UserDocument> {
+    async findOne(
+        query: FilterQuery<UserDocument> = {},
+        keepAll = false,
+    ): Promise<UserDocument> {
         const user = (await User.findOne(query)) as UserDocument;
 
         if (_.isEmpty(user)) throw new ErrorUserInvalid('User not found');
