@@ -209,7 +209,7 @@ export const LIMIT_PAGING = 24;
 export const BOX_PRICE = 10000;
 
 export const SYSTEM_ACCOUNT_ID = new mongoose.Types.ObjectId(
-    process.env.ENV == 'dev'
+    process.env.ENV == 'development'
         ? '64df0e0df114264096a79dc7'
         : '63ee1f5514690baf606a88d4',
 );
