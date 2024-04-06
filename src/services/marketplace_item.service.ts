@@ -254,7 +254,10 @@ export class MarketplaceItemService {
             query = {
                 ...query,
                 collectionName: collectionName,
-                currentBidUserId: { $exists: true },
+                $or: [
+                    { expiredAt: { $lt: Date.now() } },
+                    { currentBidUserId: { $exists: true } },
+                ],
             };
         }
         const marketplaceItems = await MarketplaceItem.find(query)
