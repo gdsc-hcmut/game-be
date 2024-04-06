@@ -7,7 +7,7 @@ export type Collection =
     | 'Keychain'
     | 'Bracelet'
     | 'Tote'
-    | 'GicReward'
+    | 'GicReward';
 
 export type PriceHistory = {
     email: string;
@@ -23,7 +23,7 @@ export type ItemDocument = Document & {
     description: string;
     currentPrice: number;
     isReceived: boolean;
-    receivedAt: boolean;
+    receivedAt: number;
     receivedNote: string;
     isRequestToReceiveItem: boolean;
     requestToReceiveItemAt: number;

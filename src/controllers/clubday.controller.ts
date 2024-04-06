@@ -25,7 +25,7 @@ import levels from '../game/levels.json';
 import { LevelInfo } from '../models/game_session.modal';
 import bodyParser from 'body-parser';
 import { Reward } from '../models/club_day';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 @injectable()
 export class ClubDayController extends Controller {
     public readonly router = Router();
@@ -220,56 +220,72 @@ export class ClubDayController extends Controller {
             ) {
                 throw Error('You are not Staff of Club Day');
             }
-            let clubDay = await this.clubdayService.getUserClubDay(
-                req.query.userId.toString(),
+            // let clubDay = await this.clubdayService.getUserClubDay(
+            //     req.query.userId.toString(),
+            // );
+
+            if (!req.query.itemId) throw Error('Item Id is required');
+
+            let item = await this.itemService.getItemById(
+                new mongoose.Types.ObjectId(req.query.itemId.toString()),
             );
 
-            if (!clubDay) throw Error('User Clubday not existed');
+            if (!item) throw Error('Item not existed');
 
-            let reward: Array<Array<Reward>>;
-            let count = 0;
-            if (clubDay.isFinishGame) count++;
-            if (clubDay.isFinishMathQuiz) count++;
-            if (clubDay.isFinishKeyMatching) count++;
-            if (clubDay.isFinishCheckIn) count++;
+            // if (!clubDay) throw Error('User Clubday not existed');
 
-            if (count == 0) reward = [];
-            else if (count == 1)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                    ],
-                ];
-            else if (count == 2)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                    ],
-                ];
-            else if (count == 3)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                        { type: 'tote bag', quantity: 1 },
-                    ],
-                ];
-            else if (count == 4)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                        { type: 'tote bag', quantity: 1 },
-                        { type: 'lanyard', quantity: 1 },
-                    ],
-                ];
+            // let reward: Array<Array<Reward>>;
+            // let count = 0;
+            // if (clubDay.isFinishGame) count++;
+            // if (clubDay.isFinishMathQuiz) count++;
+            // if (clubDay.isFinishKeyMatching) count++;
+            // if (clubDay.isFinishCheckIn) count++;
 
-            res.composer.success(reward);
+            // if (count == 0) reward = [];
+            // else if (count == 1)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 2)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 3)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //             { type: 'tote bag', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 4)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //             { type: 'tote bag', quantity: 1 },
+            //             { type: 'lanyard', quantity: 1 },
+            //         ],
+            //     ];
+
+            res.composer.success({
+                item: {
+                    name: item.name,
+                    isReceived: item.isReceived,
+                    receivedAt: item.receivedAt,
+                    isRequestToReceiveItem: item.isRequestToReceiveItem,
+                    requestToReceiveItemAt: item.requestToReceiveItemAt,
+                },
+            });
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);
@@ -283,63 +299,82 @@ export class ClubDayController extends Controller {
             ) {
                 throw Error('You are not Staff of Club Day');
             }
-            let clubDay = await this.clubdayService.getUserClubDay(
-                req.body.userId,
+            // let clubDay = await this.clubdayService.getUserClubDay(
+            //     req.body.userId,
+            // );
+
+            // if (clubDay.claimAt) {
+            //     throw Error('Error user received');
+            // }
+
+            // let reward: Array<Array<Reward>>;
+            // let count = 0;
+            // if (clubDay.isFinishGame) count++;
+            // if (clubDay.isFinishMathQuiz) count++;
+            // if (clubDay.isFinishKeyMatching) count++;
+            // if (clubDay.isFinishCheckIn) count++;
+
+            // if (count == 0) reward = [];
+            // else if (count == 1)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 2)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 3)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //             { type: 'tote bag', quantity: 1 },
+            //         ],
+            //     ];
+            // else if (count == 4)
+            //     reward = [
+            //         [
+            //             { type: 'sticker', quantity: 2 },
+            //             { type: 'bracelet', quantity: 1 },
+            //             { type: 'keychain', quantity: 1 },
+            //             { type: 'tote bag', quantity: 1 },
+            //             { type: 'lanyard', quantity: 1 },
+            //         ],
+            //     ];
+
+            // if (req.body.option > reward.length) throw Error('Error received');
+
+            // clubDay.gifts = reward[req.body.option];
+            // clubDay.claimAt = Date.now();
+            // await clubDay.save();
+
+            if (!req.query.itemId) throw Error('Item Id is required');
+
+            let item = await this.itemService.getItemById(
+                new mongoose.Types.ObjectId(req.query.itemId.toString()),
             );
 
-            if (clubDay.claimAt) {
-                throw Error('Error user received');
-            }
+            if (!item.isRequestToReceiveItem)
+                throw Error('Item is not requested to receive');
 
-            let reward: Array<Array<Reward>>;
-            let count = 0;
-            if (clubDay.isFinishGame) count++;
-            if (clubDay.isFinishMathQuiz) count++;
-            if (clubDay.isFinishKeyMatching) count++;
-            if (clubDay.isFinishCheckIn) count++;
+            if (item.isReceived) throw Error('Item already received');
 
-            if (count == 0) reward = [];
-            else if (count == 1)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                    ],
-                ];
-            else if (count == 2)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                    ],
-                ];
-            else if (count == 3)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                        { type: 'tote bag', quantity: 1 },
-                    ],
-                ];
-            else if (count == 4)
-                reward = [
-                    [
-                        { type: 'sticker', quantity: 2 },
-                        { type: 'bracelet', quantity: 1 },
-                        { type: 'keychain', quantity: 1 },
-                        { type: 'tote bag', quantity: 1 },
-                        { type: 'lanyard', quantity: 1 },
-                    ],
-                ];
+            if (!item) throw Error('Item not existed');
 
-            if (req.body.option > reward.length) throw Error('Error received');
+            item.isReceived = true;
+            item.receivedAt = Date.now();
+            item.receivedNote = 'OIF 2024';
+            await item.save();
 
-            clubDay.gifts = reward[req.body.option];
-            clubDay.claimAt = Date.now();
-            await clubDay.save();
-            res.composer.success(clubDay);
+            res.composer.success(item);
         } catch (error) {
             console.log(error);
             res.composer.badRequest(error.message);

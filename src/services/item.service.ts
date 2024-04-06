@@ -1,5 +1,11 @@
 import { injectable } from 'inversify';
-import { FilterQuery, ObjectId, QueryOptions, Types, UpdateQuery } from 'mongoose';
+import {
+    FilterQuery,
+    ObjectId,
+    QueryOptions,
+    Types,
+    UpdateQuery,
+} from 'mongoose';
 import Item, { ItemDocument } from '../models/item.model';
 import RandomPool, { RandomPoolDocument } from '../models/random_pool.model';
 import { GicItemName, GicRare, GicRarity, gicItems, random } from './gic/utils';
@@ -54,9 +60,9 @@ export class ItemService {
         const items = await Item.find({ ownerId: userId });
         return items;
     }
-    
+
     async getItemsOfUser(userId: Types.ObjectId) {
-        return await Item.find({ ownerId: userId })
+        return await Item.find({ ownerId: userId });
     }
 
     async updateItemById(itemId: string, update: any): Promise<ItemDocument> {
@@ -71,13 +77,17 @@ export class ItemService {
         const item = await this.createNewItem(itemData);
         return item;
     }
-    
+
     async findOne(query: FilterQuery<ItemDocument>) {
-        return await Item.findOne(query)
+        return await Item.findOne(query);
     }
-    
-    async findOneAndUpdate(query: FilterQuery<ItemDocument>, update: UpdateQuery<ItemDocument>, options: QueryOptions<ItemDocument> = {}) {
-        return await Item.findOneAndUpdate(query, update, options)
+
+    async findOneAndUpdate(
+        query: FilterQuery<ItemDocument>,
+        update: UpdateQuery<ItemDocument>,
+        options: QueryOptions<ItemDocument> = {},
+    ) {
+        return await Item.findOneAndUpdate(query, update, options);
     }
 
     getRandomItemWithRare(rarity: GicRarity): GicItemName {
@@ -113,7 +123,7 @@ export class ItemService {
             description: `This is a magical item in GicReward called ${itemName}`,
             currentPrice: 0,
             isReceived: false,
-            receivedAt: false,
+            receivedAt: 0,
             receivedNote: '',
             isRequestToReceiveItem: false,
             requestToReceiveItemAt: 0,
@@ -121,12 +131,12 @@ export class ItemService {
         } as ItemDocument;
         return item;
     }
-    
+
     async deleteOneGicItemOfUser(userId: Types.ObjectId, name: string) {
         return await Item.findOneAndDelete({
             ownerId: userId,
-            collectionName: "GicReward",
-            name: name
-        })
+            collectionName: 'GicReward',
+            name: name,
+        });
     }
 }
