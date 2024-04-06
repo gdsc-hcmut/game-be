@@ -359,7 +359,7 @@ export class ClubDayController extends Controller {
             if (!req.query.itemId) throw Error('Item Id is required');
 
             let item = await this.itemService.getItemById(
-                new mongoose.Types.ObjectId(req.query.itemId.toString()),
+                new mongoose.Types.ObjectId(req.body.itemId.toString()),
             );
 
             if (!item.isRequestToReceiveItem)
