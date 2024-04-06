@@ -263,7 +263,7 @@ export class MarketplaceItemService {
         const marketplaceItems = await MarketplaceItem.find(query)
             .sort({
                 expiredAt: 1,
-                currentBidUserId: 1,
+                currentBidUserId: -1,
             })
             .populate('itemId');
         return marketplaceItems;
