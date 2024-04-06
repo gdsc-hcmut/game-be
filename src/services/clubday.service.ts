@@ -5,6 +5,7 @@ import { ServiceType } from '../types';
 import { SocketService } from '../server-events';
 import { TransactionService } from './transaction.service';
 import mongoose from 'mongoose';
+import { lazyInject } from '../container';
 
 interface CheckMaze {
     canPlay: boolean;
@@ -12,11 +13,10 @@ interface CheckMaze {
 
 @injectable()
 export class ClubDayService {
-    constructor(
-        @inject(ServiceType.Socket) private socketService: SocketService,
-        @inject(ServiceType.Transaction)
-        private transactionService: TransactionService,
-    ) {}
+    @lazyInject(ServiceType.Socket) private socketService: SocketService;
+    @lazyInject(ServiceType.Transaction)
+    private transactionService: TransactionService;
+    constructor() {}
 
     async createClubDay(
         userId: string,
