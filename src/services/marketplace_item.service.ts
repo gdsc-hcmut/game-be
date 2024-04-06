@@ -254,6 +254,7 @@ export class MarketplaceItemService {
             query = {
                 ...query,
                 collectionName: collectionName,
+                currentBidUserId: { $exists: true },
             };
         }
         const marketplaceItems = await MarketplaceItem.find(query)
