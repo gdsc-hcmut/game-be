@@ -484,7 +484,7 @@ export class GICService {
             description: `This is a magical item in GicReward called ${itemName}`,
             currentPrice: 0,
             isReceived: false,
-            receivedAt: false,
+            receivedAt: 0,
             receivedNote: '',
             isRequestToReceiveItem: false,
             requestToReceiveItemAt: 0,

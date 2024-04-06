@@ -39,7 +39,7 @@ const itemSchema = new Schema<ItemDocument>({
     currentPrice: Number,
     collectionName: String,
     isReceived: { type: Boolean, default: false },
-    receivedAt: Boolean,
+    receivedAt: Number,
     receivedNote: String,
     isRequestToReceiveItem: { type: Boolean, default: false },
     requestToReceiveItemAt: Number,
