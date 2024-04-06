@@ -486,9 +486,9 @@ class ClientUser {
 
     notifyClient(data: any) {
         console.log('Notify', data);
-        // Object.keys(this.sockets).map((key: any, index: any) => {
-        //     this.sockets[key].emit(EventTypes.NOTIFY, data);
-        // });
+        Object.keys(this.sockets).map((key: any, index: any) => {
+            this.sockets[key].socket.emit(EventTypes.NOTIFY, data);
+        });
     }
 
     notifyEvent(message: string) {

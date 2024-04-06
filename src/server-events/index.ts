@@ -213,6 +213,12 @@ export class SocketService {
         });
     };
 
+    notifyGeneralEvent = (userId: string, message: any) => {
+        Object.keys(this.connectedUser).map((key: any, index: any) => {
+            if (userId == key) this.connectedUser[key].notifyClient(message);
+        });
+    };
+
     notifyEvent = (userId: string, message: string) => {
         Object.keys(this.connectedUser).map((key: any, index: any) => {
             console.log(userId, key, 'keyy');

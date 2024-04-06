@@ -1,6 +1,10 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import _ from 'lodash';
 import ClubDay, { ClubDayDocument } from '../models/club_day';
+import { ServiceType } from '../types';
+import { SocketService } from '../server-events';
+import { TransactionService } from './transaction.service';
+import mongoose from 'mongoose';
 
 interface CheckMaze {
     canPlay: boolean;
@@ -8,7 +12,11 @@ interface CheckMaze {
 
 @injectable()
 export class ClubDayService {
-    constructor() {}
+    constructor(
+        @inject(ServiceType.Socket) private socketService: SocketService,
+        @inject(ServiceType.Transaction)
+        private transactionService: TransactionService,
+    ) {}
 
     async createClubDay(
         userId: string,
@@ -83,6 +91,16 @@ export class ClubDayService {
                 throw Error('Already Finish');
             }
             clubDay.isFinishCheckIn = true;
+            this.socketService.notifyGeneralEvent(userId.toString(), {
+                type: 'success',
+                message:
+                    'You have finish checkin for OIF. Rewarded with 2000 GCoins',
+            });
+            await this.transactionService.createNewTransactionFromSystem(
+                new mongoose.Types.ObjectId(userId),
+                2000,
+                'You have finish checkin for OIF. Rewarded with 2000 GCoins',
+            );
         } else if (name == 'game') {
             if (clubDay.isFinishGame) {
                 throw Error('Already Finish');
@@ -103,16 +121,46 @@ export class ClubDayService {
                 throw Error('Already Finish');
             }
             clubDay.isFinishOAnQuan = true;
+            this.socketService.notifyGeneralEvent(userId.toString(), {
+                type: 'success',
+                message:
+                    'You have finish Mandarin square capturing for OIF. Rewarded with 2000 GCoins',
+            });
+            await this.transactionService.createNewTransactionFromSystem(
+                new mongoose.Types.ObjectId(userId),
+                2000,
+                'You have finish Mandarin square capturing for OIF. Rewarded with 2000 GCoins',
+            );
         } else if (name == 'thay_da') {
             if (clubDay.isFinishThayDa) {
                 throw Error('Already Finish');
             }
             clubDay.isFinishThayDa = true;
+            this.socketService.notifyGeneralEvent(userId.toString(), {
+                type: 'success',
+                message:
+                    'You have finish Rock Juggling for OIF. Rewarded with 2000 GCoins',
+            });
+            await this.transactionService.createNewTransactionFromSystem(
+                new mongoose.Types.ObjectId(userId),
+                2000,
+                'You have finish Rock Juggling for OIF. Rewarded with 2000 GCoins',
+            );
         } else if (name == 'cu_quay') {
             if (clubDay.isFinishCuQuay) {
                 throw Error('Already Finish');
             }
             clubDay.isFinishCuQuay = true;
+            this.socketService.notifyGeneralEvent(userId.toString(), {
+                type: 'success',
+                message:
+                    'You have finish Spinning Top for OIF. Rewarded with 2000 GCoins',
+            });
+            await this.transactionService.createNewTransactionFromSystem(
+                new mongoose.Types.ObjectId(userId),
+                2000,
+                'You have finish Spinning Top for OIF. Rewarded with 2000 GCoins',
+            );
         } else {
             throw Error('Invalid activity');
         }
