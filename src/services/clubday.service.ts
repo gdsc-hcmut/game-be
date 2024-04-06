@@ -80,6 +80,7 @@ export class ClubDayService {
         if (!clubDay) {
             throw Error('Not Existed');
         }
+        console.log('Trigger Event');
 
         if (name == 'key_matching') {
             if (clubDay.isFinishKeyMatching) {
