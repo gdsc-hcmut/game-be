@@ -220,9 +220,6 @@ export class ClubDayController extends Controller {
             ) {
                 throw Error('You are not Staff of Club Day');
             }
-            // let clubDay = await this.clubdayService.getUserClubDay(
-            //     req.query.userId.toString(),
-            // );
 
             if (!req.query.itemId) throw Error('Item Id is required');
 
