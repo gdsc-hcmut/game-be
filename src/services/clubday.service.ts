@@ -122,15 +122,15 @@ export class ClubDayService {
                 throw Error('Already Finish');
             }
             clubDay.isFinishOAnQuan = true;
+            const coin = isWin ? 10000 : 5000;
             this.socketService.notifyGeneralEvent(userId.toString(), {
                 type: 'success',
-                message:
-                    'You have finish Mandarin square capturing for OIF. Rewarded with 2000 GCoins',
+                message: `You have finish Mandarin square capturing for OIF. Rewarded with ${coin} GCoins`,
             });
             await this.transactionService.createNewTransactionFromSystem(
                 new mongoose.Types.ObjectId(userId),
-                2000,
-                'You have finish Mandarin square capturing for OIF. Rewarded with 2000 GCoins',
+                coin,
+                `You have finish Mandarin square capturing for OIF. Rewarded with ${coin} GCoins`,
             );
         } else if (name == 'thay_da') {
             if (clubDay.isFinishThayDa) {
@@ -140,12 +140,12 @@ export class ClubDayService {
             this.socketService.notifyGeneralEvent(userId.toString(), {
                 type: 'success',
                 message:
-                    'You have finish Rock Juggling for OIF. Rewarded with 2000 GCoins',
+                    'You have finish Rock Juggling for OIF. Rewarded with 7000 GCoins',
             });
             await this.transactionService.createNewTransactionFromSystem(
                 new mongoose.Types.ObjectId(userId),
-                2000,
-                'You have finish Rock Juggling for OIF. Rewarded with 2000 GCoins',
+                7000,
+                'You have finish Rock Juggling for OIF. Rewarded with 7000 GCoins',
             );
         } else if (name == 'cu_quay') {
             if (clubDay.isFinishCuQuay) {
@@ -155,12 +155,12 @@ export class ClubDayService {
             this.socketService.notifyGeneralEvent(userId.toString(), {
                 type: 'success',
                 message:
-                    'You have finish Spinning Top for OIF. Rewarded with 2000 GCoins',
+                    'You have finish Spinning Top for OIF. Rewarded with 10000 GCoins',
             });
             await this.transactionService.createNewTransactionFromSystem(
                 new mongoose.Types.ObjectId(userId),
-                2000,
-                'You have finish Spinning Top for OIF. Rewarded with 2000 GCoins',
+                10000,
+                'You have finish Spinning Top for OIF. Rewarded with 10000 GCoins',
             );
         } else {
             throw Error('Invalid activity');

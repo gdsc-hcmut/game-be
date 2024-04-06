@@ -338,11 +338,11 @@ class ClientUser {
                     }Gcoin from the GDSC Math Quiz`,
                 )
                 .then(() => {
-                    this.sendGICRewardByMathQuiz(
-                        socketId,
-                        this.userId,
-                        this.sockets[socketId].scoreQuiz / 10,
-                    );
+                    // this.sendGICRewardByMathQuiz(
+                    //     socketId,
+                    //     this.userId,
+                    //     this.sockets[socketId].scoreQuiz / 10,
+                    // );
                     Object.keys(connectedUser).map(
                         (userKey: any, index: any) => {
                             Object.keys(connectedUser[userKey].sockets).map(
@@ -389,8 +389,13 @@ class ClientUser {
                 this.sockets[socketId].socket.emit(EventTypes.NOTIFY, {
                     type: 'success',
                     message:
-                        'You have pass first 30 level and claim reward from Club Day ',
+                        'You have pass first 30 level and claim reward from OIF ',
                 });
+                await this.transactionService.createNewTransactionFromSystem(
+                    new mongoose.Types.ObjectId(this.userId),
+                    5000,
+                    `You have finish Mandarin square capturing for OIF. Rewarded with 5000 GCoins`,
+                );
             } catch (err) {}
     }
 
@@ -413,11 +418,11 @@ class ClientUser {
                 }Gcoin from the GDSC Math Quiz`,
             )
             .then(() => {
-                this.sendGICRewardByMathQuiz(
-                    socketId,
-                    this.userId,
-                    this.sockets[socketId].scoreQuiz / 10,
-                );
+                // this.sendGICRewardByMathQuiz(
+                //     socketId,
+                //     this.userId,
+                //     this.sockets[socketId].scoreQuiz / 10,
+                // );
                 Object.keys(connectedUser).map((userKey: any, index: any) => {
                     Object.keys(connectedUser[userKey].sockets).map(
                         (key: any, index: any) => {
