@@ -255,7 +255,7 @@ export class MarketplaceItemService {
                 ...query,
                 collectionName: collectionName,
                 $or: [
-                    { expiredAt: { $lt: Date.now() } },
+                    { expiredAt: { $gt: Date.now() } },
                     { currentBidUserId: { $exists: true } },
                 ],
             };
