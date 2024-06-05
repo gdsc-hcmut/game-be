@@ -264,33 +264,43 @@ class ClientUser {
     };
 
     createQuestionForKids = (level: number, isFake: boolean) => {
-        const minRange = level < 20 ? 0 : 10; // 0  - 10 - 10
-        const maxRange = level < 20 ? 10 : level < 30 ? 30 : 50; // 10 - 30 - 50
+        const minRange = level < 15 ? 0 : 10;
+        const maxRange = level < 15 ? 10 : level < 30 ? 20 : 50;
 
         let num1 = this.getRandomInt(minRange, maxRange);
         let num2 = this.getRandomInt(minRange, maxRange);
-
         let operation = _.sample(['+', '-', '*', '/']);
 
         if (level < 15) {
             operation = _.sample(['+', '-']);
         }
 
-        if (operation === '*' && level < 30) {
-            if (num1 >= 10 && num2 >= 10) {
-                num2 = this.getRandomInt(0, 9);
+        if (operation === '-' && num1 < num2) {
+            [num1, num2] = [num2, num1];
+        }
+        if (operation === '*') {
+            if (level < 30) {
+                num1 = this.getRandomInt(1, 10);
+                num2 = this.getRandomInt(1, 10);
+            } else {
+                num2 = this.getRandomInt(1, 10);
+            }
+        }
+        if (operation === '/') {
+            num2 = this.getRandomInt(1, 10);
+            if (level < 30) {
+                num1 = num2 * this.getRandomInt(1, 10);
+            } else {
+                num1 = num2 * this.getRandomInt(1, 100);
             }
         }
 
-        if (operation === '/' && level < 30) {
-            if (num2 === 0 || num2 > 10) num2 = this.getRandomInt(1, 10);
-            num1 = num2 * this.getRandomInt(1, 10);
-        }
-
         let realAnswer = eval(num1 + operation + num2);
-        let answer = isFake
-            ? realAnswer + this.getRandomInt(-10, 10)
-            : realAnswer;
+        let answer = realAnswer;
+
+        while (isFake && answer === realAnswer) {
+            answer = realAnswer + this.getRandomInt(-answer, 10);
+        }
 
         return expressionToSVG(`${num1} ${operation} ${num2} = ${answer}`);
     };
