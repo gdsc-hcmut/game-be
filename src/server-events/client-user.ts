@@ -299,7 +299,9 @@ class ClientUser {
         let answer = realAnswer;
 
         while (isFake && answer === realAnswer) {
-            answer = realAnswer + this.getRandomInt(-10, 10);
+            answer =
+                realAnswer +
+                this.getRandomInt(realAnswer > 10 ? -10 : -realAnswer, 10);
         }
 
         return expressionToSVG(`${num1} ${operation} ${num2} = ${answer}`);
