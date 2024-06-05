@@ -299,8 +299,8 @@ class ClientUser {
         let answer = realAnswer;
 
         if (isFake) {
-            while (answer === realAnswer || answer < 0) {
-                answer = realAnswer + this.getRandomInt(-10, 10);
+            while (answer === realAnswer) {
+                answer = Math.abs(realAnswer + this.getRandomInt(-10, 10));
             }
         }
 
