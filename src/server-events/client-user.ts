@@ -264,7 +264,7 @@ class ClientUser {
     };
 
     createQuestionForKids = (level: number, isFake: boolean) => {
-        const minRange = level < 15 ? 0 : 10;
+        const minRange = level < 15 ? 1 : 10;
         const maxRange = level < 15 ? 10 : level < 30 ? 20 : 50;
 
         let num1 = this.getRandomInt(minRange, maxRange);
@@ -299,7 +299,7 @@ class ClientUser {
         let answer = realAnswer;
 
         while (isFake && answer === realAnswer) {
-            answer = realAnswer + this.getRandomInt(-answer, 10);
+            answer = realAnswer + this.getRandomInt(-10, 10);
         }
 
         return expressionToSVG(`${num1} ${operation} ${num2} = ${answer}`);
