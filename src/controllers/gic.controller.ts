@@ -224,20 +224,20 @@ export class GICController extends Controller {
         );
 
         // schedule sending emails
-        scheduleJob(
-            '0 0 18 14 6 *',
-            this.send30MinutesReminderSeminar1.bind(this),
-        );
-        scheduleJob('0 15 16 16 6 *', this.send1DayReminderSeminar2.bind(this));
-        scheduleJob(
-            '0 0 8 17 6 *',
-            this.send30MinutesReminderSeminar2.bind(this),
-        );
-        scheduleJob(
-            '0 40 19 24 6 *',
-            this.send1DayReminderIdeaShowcase.bind(this),
-        );
-        scheduleJob('0 15 14 28 6 *', this.sendThankYouEmail.bind(this));
+        // scheduleJob(
+        //     '0 0 18 14 6 *',
+        //     this.send30MinutesReminderSeminar1.bind(this),
+        // );
+        // scheduleJob('0 15 16 16 6 *', this.send1DayReminderSeminar2.bind(this));
+        // scheduleJob(
+        //     '0 0 8 17 6 *',
+        //     this.send30MinutesReminderSeminar2.bind(this),
+        // );
+        // scheduleJob(
+        //     '0 40 19 24 6 *',
+        //     this.send1DayReminderIdeaShowcase.bind(this),
+        // );
+        // scheduleJob('0 15 14 28 6 *', this.sendThankYouEmail.bind(this));
 
         // voting
         this.router.post('/contest/vote/:ideaId', this.voteTeam.bind(this));
