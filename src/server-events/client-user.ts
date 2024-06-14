@@ -263,6 +263,50 @@ class ClientUser {
         return 2000;
     };
 
+    createQuestionForKids = (level: number, isFake: boolean) => {
+        const minRange = level < 15 ? 1 : 10;
+        const maxRange = level < 15 ? 10 : level < 30 ? 20 : 50;
+
+        let num1 = this.getRandomInt(minRange, maxRange);
+        let num2 = this.getRandomInt(minRange, maxRange);
+        let operation = _.sample(['+', '-', '*', '/']);
+
+        if (level < 15) {
+            operation = _.sample(['+', '-']);
+        }
+
+        if (operation === '-' && num1 < num2) {
+            [num1, num2] = [num2, num1];
+        }
+        if (operation === '*') {
+            if (level < 30) {
+                num1 = this.getRandomInt(1, 10);
+                num2 = this.getRandomInt(1, 10);
+            } else {
+                num2 = this.getRandomInt(1, 10);
+            }
+        }
+        if (operation === '/') {
+            num2 = this.getRandomInt(1, 10);
+            if (level < 30) {
+                num1 = num2 * this.getRandomInt(1, 10);
+            } else {
+                num1 = num2 * this.getRandomInt(1, 100);
+            }
+        }
+
+        let realAnswer = eval(num1 + operation + num2);
+        let answer = realAnswer;
+
+        if (isFake) {
+            while (answer === realAnswer) {
+                answer = Math.abs(realAnswer + this.getRandomInt(-10, 10));
+            }
+        }
+
+        return expressionToSVG(`${num1} ${operation} ${num2} = ${answer}`);
+    };
+
     createQuestion = (level: number, isFake: boolean) => {
         let num1 = this.getRandomInt(
             this.calMinRangeWithLevel(level % MAX_CHAPTER),
@@ -373,7 +417,7 @@ class ClientUser {
 
         this.sockets[socketId].socket.emit(EventTypes.RECEIVE_QUESTION_QUIZ, {
             level: this.sockets[socketId].levelQuiz,
-            question: this.createQuestion(
+            question: this.createQuestionForKids(
                 this.sockets[socketId].levelQuiz,
                 fake,
             ),
